@@ -19,6 +19,15 @@ geoalchemy2==0.15.2
 # ---------------------------------------------------------------------------
 pydantic==2.9.2
 pydantic-settings==2.6.1
+email-validator==2.3.0    # Required for pydantic EmailStr field type
+
+# ---------------------------------------------------------------------------
+# Authentication
+# ---------------------------------------------------------------------------
+python-jose[cryptography]==3.3.0   # JWT encode/decode
+passlib[bcrypt]==1.7.4             # bcrypt password hashing
+bcrypt==4.0.1                      # pinned: bcrypt 5.x breaks passlib 1.7.x
+python-multipart==0.0.12           # multipart/form-data for file uploads
 
 # ---------------------------------------------------------------------------
 # Testing

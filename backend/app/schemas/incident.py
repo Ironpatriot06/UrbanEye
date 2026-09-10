@@ -3,8 +3,9 @@ Pydantic schemas for the Incident resource.
 
 Separation of concerns
 -----------------------
-  IncidentCreate  — validated input for POST /incidents
-  IncidentUpdate  — validated input for PATCH /incidents/{id}/status
+  IncidentCreate  — validated input for POST /incidents (JSON fields only;
+                    images are uploaded separately as multipart form fields)
+  IncidentStatusUpdate — validated input for PATCH /incidents/{id}/status
   IncidentRead    — response shape (what the API sends back to clients)
 
 Validation rules enforced here
@@ -20,7 +21,7 @@ Validation rules enforced here
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 from app.models.incident import (
     IncidentCategory,
@@ -86,7 +87,13 @@ class _IncidentBase(BaseModel):
 # ---------------------------------------------------------------------------
 
 class IncidentCreate(_IncidentBase):
-    """Request body for creating a new incident."""
+    """
+    Request body for creating a new incident.
+
+    Note: image files are accepted as multipart/form-data alongside these
+    JSON fields.  The `reported_by` field is NOT accepted from the client —
+    it is determined from the authenticated user's JWT token.
+    """
 
     model_config = {"json_schema_extra": {
         "example": {
@@ -115,6 +122,15 @@ class IncidentStatusUpdate(BaseModel):
     }}
 
 
+class AgentAssignUpdate(BaseModel):
+    """Request body for admin to manually assign/reassign an agent."""
+
+    agent_id: Optional[int] = Field(
+        None,
+        description="ID of the agent to assign. Set to null to unassign.",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Response schema
 # ---------------------------------------------------------------------------
@@ -129,6 +145,11 @@ class IncidentRead(_IncidentBase):
 
     id: int
     status: IncidentStatus
+    reported_by: Optional[int] = None
+    reported_by_name: Optional[str] = None
+    assigned_agent_id: Optional[int] = None
+    assigned_agent_name: Optional[str] = None
+    image_count: int = 0
     created_at: datetime
     updated_at: datetime
 

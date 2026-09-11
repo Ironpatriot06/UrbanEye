@@ -29,9 +29,13 @@ class UserCreate(BaseModel):
 
 
 class UserLogin(BaseModel):
-    """Request body for login."""
+    """Request body for login.
 
-    email: EmailStr
+    Uses plain str (not EmailStr) so that demo accounts with .local TLDs
+    (which email-validator rejects as RFC-reserved) can still log in.
+    """
+
+    email: str = Field(..., description="Email address.")
     password: str
 
     model_config = {"json_schema_extra": {
@@ -56,13 +60,29 @@ class UserRead(BaseModel):
     name: str
     email: str
     role: UserRole
+
+    # Agent fields.  `is_available` is persistent state: it is changed only by
+    # the agent themselves or by an admin — never as a side effect of login.
     is_available: bool
+    last_assigned_at: Optional[datetime] = None
+
+    # Number of incidents assigned to this agent that are not yet RESOLVED or
+    # CLOSED.  Lets the admin UI distinguish "available" from "available but
+    # already busy".  Populated only on the admin agent listing.
+    active_incident_count: int = 0
+
     created_at: datetime
 
     model_config = {"from_attributes": True}
 
 
 class AgentAvailabilityUpdate(BaseModel):
-    """Request body for toggling agent availability."""
+    """
+    Request body for setting agent availability.
+
+    Used both by an agent setting their own status and by an admin overriding
+    another agent's status.  The value is persisted, so it survives logout and
+    subsequent logins.
+    """
 
     is_available: bool

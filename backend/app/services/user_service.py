@@ -54,12 +54,47 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
 
 
 def get_all_agents(db: Session) -> list[User]:
-    """Return all users with the AGENT role."""
-    return db.query(User).filter(User.role == UserRole.AGENT).all()
+    """Return all users with the AGENT role, with their current workload attached.
+
+    `active_incident_count` is a transient attribute (not an ORM column) read by
+    the UserRead schema so the admin dashboard can tell an idle available agent
+    apart from a busy one.
+    """
+    from app.services.incident_service import count_open_incidents_for_agent
+
+    agents = (
+        db.query(User)
+        .filter(User.role == UserRole.AGENT)
+        .order_by(User.name)
+        .all()
+    )
+    for agent in agents:
+        agent.active_incident_count = count_open_incidents_for_agent(db, agent.id)
+    return agents
+
+
+def get_agent_by_id(db: Session, agent_id: int) -> Optional[User]:
+    """Return the AGENT-role user with the given id, or None.
+
+    Returns None for a non-agent user so callers cannot flip availability on an
+    admin or citizen account.
+    """
+    return (
+        db.query(User)
+        .filter(User.id == agent_id, User.role == UserRole.AGENT)
+        .first()
+    )
 
 
 def set_agent_availability(db: Session, agent: User, is_available: bool) -> User:
-    """Update agent availability flag."""
+    """
+    Persist an agent's availability flag.
+
+    This is the ONLY place availability changes.  Authentication deliberately
+    does not touch it: an agent who marked themselves unavailable stays
+    unavailable across logout and the next login, until they or an admin change
+    it explicitly.
+    """
     agent.is_available = is_available
     db.commit()
     db.refresh(agent)

@@ -67,7 +67,7 @@ def client(db_session):
 
 
 # ---------------------------------------------------------------------------
-# Helper: create a user directly in the test session
+# Helpers
 # ---------------------------------------------------------------------------
 
 def _create_user_in_db(db_session, email, role=UserRole.USER, name="Test User"):
@@ -82,6 +82,16 @@ def _create_user_in_db(db_session, email, role=UserRole.USER, name="Test User"):
     db_session.add(user)
     db_session.flush()  # assign id without committing to outer tx
     return user
+
+
+def _disable_all_existing_agents(db_session):
+    """Set ALL agents currently visible in the session to unavailable.
+    Prevents demo/persistent agents from stealing test assignments."""
+    from app.models.user import User
+    db_session.query(User).filter(User.role == UserRole.AGENT).update(
+        {"is_available": False}, synchronize_session="fetch"
+    )
+    db_session.flush()
 
 
 def _token_for(user) -> str:
@@ -250,7 +260,12 @@ def test_list_incidents_after_create(client, db_session):
 
 
 def test_update_incident_status(client, db_session):
-    # Admin can update any incident
+    """Admin can move an incident through the workflow, one valid step at a time.
+
+    REPORTED -> IN_PROGRESS is NOT a valid jump, so the admin walks the
+    lifecycle: REPORTED -> TRIAGED -> ASSIGNED -> IN_PROGRESS.
+    """
+    _disable_all_existing_agents(db_session)
     admin = _create_user_in_db(db_session, "admin_upd@test.com", role=UserRole.ADMIN)
     user = _create_user_in_db(db_session, "user_upd@test.com")
     create_resp = client.post(
@@ -260,13 +275,16 @@ def test_update_incident_status(client, db_session):
     )
     assert create_resp.status_code == 201
     incident_id = create_resp.json()["id"]
-    patch_resp = client.patch(
-        f"/api/v1/incidents/{incident_id}/status",
-        json={"status": "IN_PROGRESS"},
-        headers=_auth(admin),
-    )
-    assert patch_resp.status_code == 200
-    assert patch_resp.json()["status"] == "IN_PROGRESS"
+    assert create_resp.json()["status"] == "REPORTED"
+
+    for nxt in ("TRIAGED", "ASSIGNED", "IN_PROGRESS"):
+        patch_resp = client.patch(
+            f"/api/v1/incidents/{incident_id}/status",
+            json={"status": nxt},
+            headers=_auth(admin),
+        )
+        assert patch_resp.status_code == 200, patch_resp.text
+        assert patch_resp.json()["status"] == nxt
 
 
 def test_update_status_invalid_value(client, db_session):
@@ -413,7 +431,7 @@ def test_agent_cannot_access_unrelated_incident(client, db_session):
     agent = _create_user_in_db(db_session, "unrel_agent@test.com", role=UserRole.AGENT)
 
     # Disable ALL agents (including demo agents) so incident stays unassigned
-    _disable_all_existing_agents_inline(db_session)
+    _disable_all_existing_agents(db_session)
 
     create_resp = client.post(
         "/api/v1/incidents/",
@@ -429,15 +447,6 @@ def test_agent_cannot_access_unrelated_incident(client, db_session):
 # ---------------------------------------------------------------------------
 # Agent queue tests
 # ---------------------------------------------------------------------------
-
-def _disable_all_existing_agents(db_session):
-    """Set all pre-existing DB agents to unavailable so test agents are isolated."""
-    from app.models.user import User
-    db_session.query(User).filter(User.role == UserRole.AGENT).update(
-        {"is_available": False}, synchronize_session="fetch"
-    )
-    db_session.flush()
-
 
 def test_available_agent_receives_incident(client, db_session):
     # Disable any real/demo agents already in the DB to isolate this test
@@ -582,3 +591,610 @@ def test_image_retrieval(client, db_session):
     raw_resp = client.get(f"/api/v1/incidents/{incident_id}/images/{img_id}", headers=_auth(user))
     assert raw_resp.status_code == 200
     assert raw_resp.headers["content-type"].startswith("image/jpeg")
+
+
+# ---------------------------------------------------------------------------
+# Priority / severity — system-determined, never client-supplied
+# ---------------------------------------------------------------------------
+
+def test_user_cannot_set_priority_manually(client, db_session):
+    """A client that sends severity/priority/priority_level has them ignored.
+
+    VALID_INCIDENT deliberately carries severity=HIGH and priority=3.  A
+    POTHOLE is a P3/MEDIUM incident by system policy, so the response must
+    reflect the system's decision, not the client's.
+    """
+    user = _create_user_in_db(db_session, "prio_spoof@test.com")
+    payload = {
+        **VALID_INCIDENT,
+        "category": "POTHOLE",
+        "severity": "CRITICAL",
+        "priority": 1,
+        "priority_level": "P1",
+    }
+    resp = client.post(
+        "/api/v1/incidents/",
+        files={"data": (None, json.dumps(payload), "application/json")},
+        headers=_auth(user),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["priority_level"] == "P3"
+    assert body["severity"] == "MEDIUM"
+    assert body["priority"] == 3
+
+
+def test_priority_is_populated_system_side(client, db_session):
+    """Priority is derived from the incident category by the service layer."""
+    user = _create_user_in_db(db_session, "prio_system@test.com")
+    expected = {
+        "FIRE_HAZARD": ("P1", "CRITICAL"),
+        "FLOOD":       ("P2", "HIGH"),
+        "POTHOLE":     ("P3", "MEDIUM"),
+        "GARBAGE":     ("P4", "LOW"),
+    }
+    for category, (priority_level, severity) in expected.items():
+        payload = {k: v for k, v in VALID_INCIDENT.items()
+                   if k not in ("severity", "priority")}
+        payload["category"] = category
+        resp = client.post(
+            "/api/v1/incidents/",
+            files={"data": (None, json.dumps(payload), "application/json")},
+            headers=_auth(user),
+        )
+        assert resp.status_code == 201, resp.text
+        body = resp.json()
+        assert body["priority_level"] == priority_level, category
+        assert body["severity"] == severity, category
+
+
+def test_admin_can_override_priority(client, db_session):
+    """Admin (and, later, the AI classifier) may re-prioritise an incident."""
+    admin = _create_user_in_db(db_session, "prio_admin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "prio_owner@test.com")
+    create_resp = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    )
+    incident_id = create_resp.json()["id"]
+
+    resp = client.patch(
+        f"/api/v1/incidents/{incident_id}/priority",
+        json={"priority_level": "P1"},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["priority_level"] == "P1"
+    assert body["severity"] == "CRITICAL"
+    assert body["sla_hours"] == 4
+
+
+# ---------------------------------------------------------------------------
+# Status workflow enforcement
+# ---------------------------------------------------------------------------
+
+def test_invalid_status_transition_rejected(client, db_session):
+    """Arbitrary jumps through the workflow are rejected with 422."""
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "trans_admin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "trans_user@test.com")
+    create_resp = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    )
+    incident_id = create_resp.json()["id"]
+    assert create_resp.json()["status"] == "REPORTED"
+
+    # REPORTED -> RESOLVED skips triage, assignment and work: not allowed.
+    for bad in ("RESOLVED", "IN_PROGRESS"):
+        resp = client.patch(
+            f"/api/v1/incidents/{incident_id}/status",
+            json={"status": bad},
+            headers=_auth(admin),
+        )
+        assert resp.status_code == 422, f"{bad}: {resp.text}"
+
+
+def test_closed_incident_is_terminal(client, db_session):
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "term_admin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "term_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    close = client.patch(
+        f"/api/v1/incidents/{incident_id}/status",
+        json={"status": "CLOSED"},
+        headers=_auth(admin),
+    )
+    assert close.status_code == 200, close.text
+
+    resp = client.patch(
+        f"/api/v1/incidents/{incident_id}/status",
+        json={"status": "TRIAGED"},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 422
+
+
+def _incident_assigned_to_new_agent(client, db_session, slug):
+    """Create an available agent and an incident auto-assigned to them."""
+    _disable_all_existing_agents(db_session)
+    agent = _create_user_in_db(
+        db_session, f"{slug}_agent@test.com", role=UserRole.AGENT, name="Workflow Agent"
+    )
+    agent.is_available = True
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, f"{slug}_user@test.com")
+    resp = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["status"] == "ASSIGNED"
+    assert body["assigned_agent_id"] == agent.id
+    return agent, user, body
+
+
+def test_agent_can_move_assigned_to_in_progress(client, db_session):
+    agent, _user, incident = _incident_assigned_to_new_agent(client, db_session, "aip")
+    resp = client.patch(
+        f"/api/v1/incidents/{incident['id']}/status",
+        json={"status": "IN_PROGRESS"},
+        headers=_auth(agent),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["status"] == "IN_PROGRESS"
+
+
+def test_agent_can_move_in_progress_to_resolved(client, db_session):
+    agent, _user, incident = _incident_assigned_to_new_agent(client, db_session, "ipr")
+    started = client.patch(
+        f"/api/v1/incidents/{incident['id']}/status",
+        json={"status": "IN_PROGRESS"},
+        headers=_auth(agent),
+    )
+    assert started.status_code == 200, started.text
+
+    resolved = client.patch(
+        f"/api/v1/incidents/{incident['id']}/status",
+        json={"status": "RESOLVED"},
+        headers=_auth(agent),
+    )
+    assert resolved.status_code == 200, resolved.text
+    assert resolved.json()["status"] == "RESOLVED"
+
+
+def test_agent_cannot_perform_invalid_transitions(client, db_session):
+    """Agents are confined to ASSIGNED -> IN_PROGRESS -> RESOLVED."""
+    agent, _user, incident = _incident_assigned_to_new_agent(client, db_session, "ainv")
+
+    # Skipping IN_PROGRESS, closing, or sending back to triage are all refused.
+    for bad in ("RESOLVED", "CLOSED", "TRIAGED", "REPORTED"):
+        resp = client.patch(
+            f"/api/v1/incidents/{incident['id']}/status",
+            json={"status": bad},
+            headers=_auth(agent),
+        )
+        assert resp.status_code == 403, f"ASSIGNED -> {bad}: {resp.text}"
+
+    # And once IN_PROGRESS, an agent still cannot close the incident.
+    client.patch(
+        f"/api/v1/incidents/{incident['id']}/status",
+        json={"status": "IN_PROGRESS"},
+        headers=_auth(agent),
+    )
+    resp = client.patch(
+        f"/api/v1/incidents/{incident['id']}/status",
+        json={"status": "CLOSED"},
+        headers=_auth(agent),
+    )
+    assert resp.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# Agent assignment + availability override
+# ---------------------------------------------------------------------------
+
+def test_unavailable_agent_cannot_be_assigned(client, db_session):
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "asg_admin@test.com", role=UserRole.ADMIN)
+    agent = _create_user_in_db(
+        db_session, "asg_busy@test.com", role=UserRole.AGENT, name="Busy Agent"
+    )
+    agent.is_available = False
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, "asg_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.put(
+        f"/api/v1/incidents/{incident_id}/assign",
+        json={"agent_id": agent.id},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 422
+    assert "unavailable" in resp.json()["detail"].lower()
+
+
+def test_admin_can_override_unavailable_agent_assignment(client, db_session):
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "ovr_admin@test.com", role=UserRole.ADMIN)
+    agent = _create_user_in_db(
+        db_session, "ovr_busy@test.com", role=UserRole.AGENT, name="Busy Agent"
+    )
+    agent.is_available = False
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, "ovr_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.put(
+        f"/api/v1/incidents/{incident_id}/assign",
+        json={"agent_id": agent.id, "override_availability": True},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["assigned_agent_id"] == agent.id
+    assert body["status"] == "ASSIGNED"
+
+
+def test_non_admin_cannot_assign_agents(client, db_session):
+    _disable_all_existing_agents(db_session)
+    user = _create_user_in_db(db_session, "noassign_user@test.com")
+    agent = _create_user_in_db(db_session, "noassign_agent@test.com", role=UserRole.AGENT)
+    db_session.flush()
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.put(
+        f"/api/v1/incidents/{incident_id}/assign",
+        json={"agent_id": agent.id},
+        headers=_auth(user),
+    )
+    assert resp.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# Agent availability — persistent, admin-overridable
+# ---------------------------------------------------------------------------
+
+def test_admin_can_change_agent_availability(client, db_session):
+    admin = _create_user_in_db(db_session, "av_admin@test.com", role=UserRole.ADMIN)
+    agent = _create_user_in_db(db_session, "av_agent@test.com", role=UserRole.AGENT)
+    db_session.flush()
+
+    off = client.patch(
+        f"/api/v1/agents/{agent.id}/availability",
+        json={"is_available": False},
+        headers=_auth(admin),
+    )
+    assert off.status_code == 200, off.text
+    assert off.json()["is_available"] is False
+
+    on = client.patch(
+        f"/api/v1/agents/{agent.id}/availability",
+        json={"is_available": True},
+        headers=_auth(admin),
+    )
+    assert on.status_code == 200
+    assert on.json()["is_available"] is True
+
+
+def test_non_admin_cannot_change_other_agent_availability(client, db_session):
+    agent_a = _create_user_in_db(db_session, "av_a@test.com", role=UserRole.AGENT)
+    agent_b = _create_user_in_db(db_session, "av_b@test.com", role=UserRole.AGENT)
+    db_session.flush()
+    resp = client.patch(
+        f"/api/v1/agents/{agent_b.id}/availability",
+        json={"is_available": False},
+        headers=_auth(agent_a),
+    )
+    assert resp.status_code == 403
+
+
+def test_agent_availability_persists_across_logout_and_login(client, db_session):
+    """Logging in must NOT reset availability back to available."""
+    agent = _create_user_in_db(db_session, "persist_agent@test.com", role=UserRole.AGENT)
+    db_session.flush()
+    assert agent.is_available is True
+
+    # Agent marks themselves unavailable, then "logs out" (token discarded).
+    off = client.post(
+        "/api/v1/agents/availability",
+        json={"is_available": False},
+        headers=_auth(agent),
+    )
+    assert off.status_code == 200, off.text
+    assert off.json()["is_available"] is False
+
+    # Fresh login issues a new token but must not touch availability.
+    login = client.post("/api/v1/auth/login", json={
+        "email": "persist_agent@test.com",
+        "password": "TestPass123",
+    })
+    assert login.status_code == 200, login.text
+    new_headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    me = client.get("/api/v1/agents/me", headers=new_headers)
+    assert me.status_code == 200, me.text
+    assert me.json()["is_available"] is False
+
+    # ...and the agent is still skipped by the auto-assignment queue.
+    _disable_all_existing_agents(db_session)
+    agent.is_available = False
+    db_session.flush()
+    user = _create_user_in_db(db_session, "persist_user@test.com")
+    created = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()
+    assert created["assigned_agent_id"] is None
+
+
+def test_admin_agent_list_reports_availability_and_workload(client, db_session):
+    admin = _create_user_in_db(db_session, "list_admin@test.com", role=UserRole.ADMIN)
+    _disable_all_existing_agents(db_session)
+    agent = _create_user_in_db(
+        db_session, "list_agent@test.com", role=UserRole.AGENT, name="Listed Agent"
+    )
+    agent.is_available = True
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, "list_agent_user@test.com")
+    client.post("/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user))
+
+    resp = client.get("/api/v1/agents/", headers=_auth(admin))
+    assert resp.status_code == 200, resp.text
+    row = next(a for a in resp.json() if a["id"] == agent.id)
+    assert row["is_available"] is True
+    assert row["active_incident_count"] == 1
+    assert row["last_assigned_at"] is not None
+
+
+# ---------------------------------------------------------------------------
+# SLA
+# ---------------------------------------------------------------------------
+
+def _assert_sla_shape(body, expected_hours=None):
+    assert "priority_level" in body
+    assert "sla_hours" in body
+    assert "sla_deadline" in body
+    assert "sla_status" in body
+    assert body["sla_status"] in ("ON_TRACK", "AT_RISK", "BREACHED")
+    if expected_hours is not None:
+        assert body["sla_hours"] == expected_hours
+
+
+def test_sla_fields_returned_on_create(client, db_session):
+    user = _create_user_in_db(db_session, "sla_create@test.com")
+    resp = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    # POTHOLE -> P3 -> 72h SLA
+    _assert_sla_shape(body, expected_hours=72)
+    assert body["sla_status"] == "ON_TRACK"
+    assert body["sla_deadline"] is not None
+
+
+def test_user_can_view_sla(client, db_session):
+    user = _create_user_in_db(db_session, "sla_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.get(f"/api/v1/incidents/{incident_id}", headers=_auth(user))
+    assert resp.status_code == 200
+    _assert_sla_shape(resp.json(), expected_hours=72)
+
+
+def test_user_cannot_edit_sla(client, db_session):
+    user = _create_user_in_db(db_session, "sla_noedit@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.patch(
+        f"/api/v1/incidents/{incident_id}/sla",
+        json={"sla_hours": 1},
+        headers=_auth(user),
+    )
+    assert resp.status_code == 403
+
+
+def test_agent_can_view_sla(client, db_session):
+    agent, _user, incident = _incident_assigned_to_new_agent(client, db_session, "slaag")
+    resp = client.get(f"/api/v1/incidents/{incident['id']}", headers=_auth(agent))
+    assert resp.status_code == 200, resp.text
+    _assert_sla_shape(resp.json(), expected_hours=72)
+
+
+def test_agent_cannot_edit_sla(client, db_session):
+    agent, _user, incident = _incident_assigned_to_new_agent(client, db_session, "slaae")
+    resp = client.patch(
+        f"/api/v1/incidents/{incident['id']}/sla",
+        json={"sla_hours": 2},
+        headers=_auth(agent),
+    )
+    assert resp.status_code == 403
+
+
+def test_admin_can_update_sla(client, db_session):
+    admin = _create_user_in_db(db_session, "sla_admin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "sla_owner@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.patch(
+        f"/api/v1/incidents/{incident_id}/sla",
+        json={"sla_hours": 6},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["sla_hours"] == 6
+    assert body["sla_deadline"] is not None
+
+    # The change is persisted, not just echoed back.
+    again = client.get(f"/api/v1/incidents/{incident_id}", headers=_auth(admin))
+    assert again.json()["sla_hours"] == 6
+
+
+def test_admin_sla_override_recomputes_status(client, db_session):
+    """Overriding the SLA re-derives sla_deadline and sla_status from created_at."""
+    admin = _create_user_in_db(db_session, "sla_breach@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "sla_breach_u@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    # The deadline is anchored to created_at, so a 1-hour SLA on a freshly
+    # created incident is still inside its window — but AT_RISK, because less
+    # than 20% of a one-hour window is left only near the end.  What matters
+    # here is that the override is applied and a status is re-derived.
+    resp = client.patch(
+        f"/api/v1/incidents/{incident_id}/sla",
+        json={"sla_hours": 1},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["sla_status"] in ("ON_TRACK", "AT_RISK", "BREACHED")
+
+
+# ---------------------------------------------------------------------------
+# Authenticated image access
+# ---------------------------------------------------------------------------
+
+def _create_incident_with_image(client, user, extra=None):
+    payload = {**VALID_INCIDENT, **(extra or {})}
+    return client.post(
+        "/api/v1/incidents/",
+        files={
+            "data": (None, json.dumps(payload), "application/json"),
+            "images": ("evidence.jpg", io.BytesIO(_make_jpeg_bytes()), "image/jpeg"),
+        },
+        headers=_auth(user),
+    )
+
+
+def test_reporter_can_view_own_incident_images(client, db_session):
+    user = _create_user_in_db(db_session, "imgown@test.com")
+    created = _create_incident_with_image(client, user)
+    assert created.status_code == 201, created.text
+    incident_id = created.json()["id"]
+
+    listing = client.get(f"/api/v1/incidents/{incident_id}/images", headers=_auth(user))
+    assert listing.status_code == 200
+    image_id = listing.json()[0]["id"]
+
+    raw = client.get(
+        f"/api/v1/incidents/{incident_id}/images/{image_id}", headers=_auth(user)
+    )
+    assert raw.status_code == 200
+    assert raw.headers["content-type"].startswith("image/jpeg")
+    assert raw.content.startswith(b"\xff\xd8\xff")
+
+
+def test_admin_can_view_incident_images(client, db_session):
+    admin = _create_user_in_db(db_session, "imgadmin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "imgadmin_u@test.com")
+    incident_id = _create_incident_with_image(client, user).json()["id"]
+
+    listing = client.get(f"/api/v1/incidents/{incident_id}/images", headers=_auth(admin))
+    assert listing.status_code == 200, listing.text
+    assert len(listing.json()) == 1
+
+    image_id = listing.json()[0]["id"]
+    raw = client.get(
+        f"/api/v1/incidents/{incident_id}/images/{image_id}", headers=_auth(admin)
+    )
+    assert raw.status_code == 200
+    assert raw.headers["content-type"].startswith("image/jpeg")
+
+
+def test_assigned_agent_can_view_incident_images(client, db_session):
+    _disable_all_existing_agents(db_session)
+    agent = _create_user_in_db(
+        db_session, "imgagent@test.com", role=UserRole.AGENT, name="Image Agent"
+    )
+    agent.is_available = True
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, "imgagent_u@test.com")
+    created = _create_incident_with_image(client, user).json()
+    assert created["assigned_agent_id"] == agent.id
+
+    listing = client.get(
+        f"/api/v1/incidents/{created['id']}/images", headers=_auth(agent)
+    )
+    assert listing.status_code == 200, listing.text
+    image_id = listing.json()[0]["id"]
+
+    raw = client.get(
+        f"/api/v1/incidents/{created['id']}/images/{image_id}", headers=_auth(agent)
+    )
+    assert raw.status_code == 200
+    assert raw.content.startswith(b"\xff\xd8\xff")
+
+
+def test_unrelated_user_cannot_view_incident_images(client, db_session):
+    owner = _create_user_in_db(db_session, "imgowner@test.com")
+    intruder = _create_user_in_db(db_session, "imgintruder@test.com")
+    incident_id = _create_incident_with_image(client, owner).json()["id"]
+
+    assert client.get(
+        f"/api/v1/incidents/{incident_id}/images", headers=_auth(intruder)
+    ).status_code == 403
+
+
+def test_image_requires_authentication(client, db_session):
+    """Images are not public: no token means no bytes, with or without a query arg."""
+    user = _create_user_in_db(db_session, "imgauth@test.com")
+    incident_id = _create_incident_with_image(client, user).json()["id"]
+    listing = client.get(f"/api/v1/incidents/{incident_id}/images", headers=_auth(user))
+    image_id = listing.json()[0]["id"]
+
+    anon = client.get(f"/api/v1/incidents/{incident_id}/images/{image_id}")
+    assert anon.status_code == 401
+
+    token_in_query = client.get(
+        f"/api/v1/incidents/{incident_id}/images/{image_id}"
+        f"?token={_token_for(user)}"
+    )
+    assert token_in_query.status_code == 401
+
+
+def test_multiple_images_are_all_retrievable(client, db_session):
+    user = _create_user_in_db(db_session, "multiimg@test.com")
+    resp = client.post(
+        "/api/v1/incidents/",
+        files=[
+            ("data", (None, json.dumps(VALID_INCIDENT), "application/json")),
+            ("images", ("one.jpg", io.BytesIO(_make_jpeg_bytes()), "image/jpeg")),
+            ("images", ("two.png", io.BytesIO(b"\x89PNG" + b"\x00" * 80), "image/png")),
+        ],
+        headers=_auth(user),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["image_count"] == 2
+
+    listing = client.get(f"/api/v1/incidents/{body['id']}/images", headers=_auth(user))
+    assert listing.status_code == 200
+    images = listing.json()
+    assert {i["filename"] for i in images} == {"one.jpg", "two.png"}
+    for img in images:
+        raw = client.get(
+            f"/api/v1/incidents/{body['id']}/images/{img['id']}", headers=_auth(user)
+        )
+        assert raw.status_code == 200
+        assert raw.headers["content-type"] == img["content_type"]

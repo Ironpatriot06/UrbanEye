@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     DEMO_AGENT_PASSWORD: str = "Agent@1234"
     DEMO_AGENT_NAME: str = "Field Agent"
 
+    DEMO_AGENT_EMAIL_2: str = "agent2@urbaneye.local"
+    DEMO_AGENT_PASSWORD_2: str = "Agent2@1234"
+    DEMO_AGENT_NAME_2: str = "Field Agent 2"
+
     DEMO_USER_EMAIL: str = "user@urbaneye.local"
     DEMO_USER_PASSWORD: str = "User@1234"
     DEMO_USER_NAME: str = "Demo Citizen"

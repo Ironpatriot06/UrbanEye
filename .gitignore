@@ -19,7 +19,10 @@ out/
 *.pt
 *.pth
 *.onnx
-models/
+# Anchored to the repo root: an unanchored "models/" matches a directory of
+# that name at ANY depth, which silently excluded backend/app/models/ (the
+# SQLAlchemy ORM package) from version control.
+/models/
 datasets/
 
 # OS

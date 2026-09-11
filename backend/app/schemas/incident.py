@@ -3,19 +3,24 @@ Pydantic schemas for the Incident resource.
 
 Separation of concerns
 -----------------------
-  IncidentCreate  — validated input for POST /incidents (JSON fields only;
-                    images are uploaded separately as multipart form fields)
+  IncidentCreate      — citizen input: title, description, category, source, lat/lon.
+                        NO severity or priority_level — those are system-determined.
   IncidentStatusUpdate — validated input for PATCH /incidents/{id}/status
-  IncidentRead    — response shape (what the API sends back to clients)
+  SLAUpdate           — admin-only SLA override
+  AgentAssignUpdate   — admin assign/unassign with optional override
+  IncidentRead        — response shape (what the API sends back to clients)
 
 Validation rules enforced here
 -------------------------------
-- title:       1–200 characters, required
-- description: max 2 000 characters, optional
-- latitude:    –90 to +90
-- longitude:   –180 to +180
-- category, source, status, severity:  must be a valid enum member
-- priority:    1–10 (1 = most urgent)
+- title:       1-200 characters, required
+- description: max 2000 characters, optional
+- latitude:    -90 to +90
+- longitude:   -180 to +180
+- category, source:  must be a valid enum member
+
+NOTE: Citizens do NOT set severity or priority_level.
+      The service layer derives these from category on creation.
+      Admins may update priority_level and SLA via dedicated endpoints.
 """
 
 from datetime import datetime
@@ -25,17 +30,31 @@ from pydantic import BaseModel, Field
 
 from app.models.incident import (
     IncidentCategory,
+    IncidentPriority,
     IncidentSeverity,
     IncidentSource,
     IncidentStatus,
+    SLAStatus,
 )
 
 
 # ---------------------------------------------------------------------------
-# Shared field definitions
+# Request schemas
 # ---------------------------------------------------------------------------
 
-class _IncidentBase(BaseModel):
+class IncidentCreate(BaseModel):
+    """
+    Request body for creating a new incident.
+
+    Note: image files are accepted as multipart/form-data alongside these
+    JSON fields.  The `reported_by` field is NOT accepted from the client —
+    it is determined from the authenticated user's JWT token.
+
+    priority_level and severity are intentionally excluded — the service layer
+    determines these from the incident category and will later be overridden
+    by the AI analysis module.
+    """
+
     title: str = Field(
         ...,
         min_length=1,
@@ -56,16 +75,6 @@ class _IncidentBase(BaseModel):
         IncidentSource.CITIZEN,
         description="How the incident was reported.",
     )
-    severity: IncidentSeverity = Field(
-        IncidentSeverity.MEDIUM,
-        description="Estimated severity level.",
-    )
-    priority: int = Field(
-        5,
-        ge=1,
-        le=10,
-        description="Priority score where 1 is most urgent and 10 is least urgent.",
-    )
     latitude: float = Field(
         ...,
         ge=-90.0,
@@ -81,28 +90,12 @@ class _IncidentBase(BaseModel):
         examples=[77.5946],
     )
 
-
-# ---------------------------------------------------------------------------
-# Request schemas
-# ---------------------------------------------------------------------------
-
-class IncidentCreate(_IncidentBase):
-    """
-    Request body for creating a new incident.
-
-    Note: image files are accepted as multipart/form-data alongside these
-    JSON fields.  The `reported_by` field is NOT accepted from the client —
-    it is determined from the authenticated user's JWT token.
-    """
-
     model_config = {"json_schema_extra": {
         "example": {
             "title": "Large pothole near City Bus Stop 14",
             "description": "Approximately 30 cm deep pothole causing vehicle damage.",
             "category": "POTHOLE",
             "source": "CITIZEN",
-            "severity": "HIGH",
-            "priority": 3,
             "latitude": 12.9716,
             "longitude": 77.5946,
         }
@@ -129,13 +122,40 @@ class AgentAssignUpdate(BaseModel):
         None,
         description="ID of the agent to assign. Set to null to unassign.",
     )
+    override_availability: bool = Field(
+        False,
+        description=(
+            "Admin override: if True, allows assigning an unavailable agent. "
+            "A confirmation warning should be shown in the UI before sending this flag."
+        ),
+    )
+
+
+class SLAUpdate(BaseModel):
+    """Admin-only: override SLA hours for an incident."""
+
+    sla_hours: Optional[int] = Field(
+        None,
+        ge=1,
+        le=8760,  # max 1 year
+        description="Target resolution time in hours. Set to null to clear.",
+    )
+
+
+class PriorityUpdate(BaseModel):
+    """Admin-only: manually set incident priority (also used by future AI module)."""
+
+    priority_level: IncidentPriority = Field(
+        ...,
+        description="New priority level (P1=CRITICAL, P2=HIGH, P3=MEDIUM, P4=LOW).",
+    )
 
 
 # ---------------------------------------------------------------------------
 # Response schema
 # ---------------------------------------------------------------------------
 
-class IncidentRead(_IncidentBase):
+class IncidentRead(BaseModel):
     """
     Full incident representation returned by the API.
 
@@ -144,12 +164,37 @@ class IncidentRead(_IncidentBase):
     """
 
     id: int
+    title: str
+    description: Optional[str] = None
+    category: IncidentCategory
+    source: IncidentSource
     status: IncidentStatus
+
+    # Priority / severity — assigned by the system, never by the reporter
+    priority_level: IncidentPriority
+    priority_label: str = ""    # "Critical" / "High" / "Medium" / "Low"
+    severity: IncidentSeverity  # derived from priority_level
+    priority: int               # legacy integer priority
+
+    # SLA — visible to every role, editable only by an admin
+    sla_hours: Optional[int] = None
+    sla_deadline: Optional[datetime] = None
+    sla_status: Optional[SLAStatus] = None
+
+    # Location
+    latitude: float
+    longitude: float
+
+    # Ownership
     reported_by: Optional[int] = None
     reported_by_name: Optional[str] = None
     assigned_agent_id: Optional[int] = None
     assigned_agent_name: Optional[str] = None
+
+    # Images
     image_count: int = 0
+
+    # Timestamps
     created_at: datetime
     updated_at: datetime
 

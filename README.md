@@ -44,7 +44,10 @@ dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web appli
   `override_availability` flag, validated on the server
 - **Authenticated image upload/serving** — images stored as BYTEA, streamed only to the
   reporter, the assigned agent, or an admin
-- 161 passing tests
+- **Proof of work** — after marking an incident Resolved, the assigned agent attaches a
+  photo of the finished job. Stored and served identically to the citizen's report photo,
+  tagged `RESOLUTION`, and shown to the reporter, the agent and admins alike.
+- 189 passing tests
 
 **Frontend** (Next.js 14 App Router)
 - Citizen dashboard — report incidents (no severity picker: the system decides), track progress
@@ -108,7 +111,8 @@ UrbanEye/
 │   │   ├── add_user_columns.sql
 │   │   ├── add_priority_sla_columns.sql
 │   │   ├── add_incident_history.sql
-│   │   └── add_auth_and_user_management.sql
+│   │   ├── add_auth_and_user_management.sql
+│   │   └── add_resolution_proof_images.sql
 │   ├── scripts/
 │   │   └── create_demo_data.py     # Seeds the ADMIN / AGENT / USER accounts
 │   ├── app/
@@ -128,7 +132,8 @@ UrbanEye/
 │   └── tests/
 │       ├── test_incidents.py       # 72 tests — API, workflow, SLA, authorization
 │       ├── test_history.py         # 15 tests — incident audit trail
-│       └── test_auth_roles.py      # 74 tests — auth, Google, roles, lockout
+│       ├── test_auth_roles.py      # 76 tests — auth, Google, roles, lockout
+│       └── test_resolution_images.py  # 26 tests — agent proof-of-work photos
 ├── frontend/
 │   ├── .env.local.example          # NEXT_PUBLIC_API_URL template
 │   └── src/
@@ -182,9 +187,12 @@ docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
 
 docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
   < backend/migrations/add_auth_and_user_management.sql
+
+docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
+  < backend/migrations/add_resolution_proof_images.sql
 ```
 
-All four are idempotent and safe to re-run; none deletes or overwrites an existing row.
+All five are idempotent and safe to re-run; none deletes or overwrites an existing row.
 
 - `add_priority_sla_columns.sql` backfills `priority_level` from the legacy `severity`
   column and derives the SLA window from it, so incidents created before Phase 2 continue
@@ -196,6 +204,10 @@ All four are idempotent and safe to re-run; none deletes or overwrites an existi
   password), and creates the append-only `user_audit_log`. **Existing accounts keep their
   id, email, password and role** — `is_active` defaults to `TRUE`, so every current admin,
   agent and citizen continues to work unchanged.
+- `add_resolution_proof_images.sql` adds `kind` (`REPORT` / `RESOLUTION`) to
+  `incident_images` so an agent's proof-of-work photo can be told apart from the
+  citizen's report photo. Every existing image is back-filled to `REPORT` by the
+  column default — no image bytes are read, rewritten or deleted.
 
 Verify afterwards:
 
@@ -297,8 +309,8 @@ source .venv/bin/activate
 pytest -v
 ```
 
-**161 tests** — 72 API/workflow/SLA, 15 incident-history, 74 authentication and role
-management. They run against the real development PostgreSQL/PostGIS database; each test
+**189 tests** — 72 API/workflow/SLA, 15 incident-history, 76 authentication and role
+management, 26 proof-of-work images. They run against the real development PostgreSQL/PostGIS database; each test
 that writes uses a SAVEPOINT transaction rolled back afterwards, so no test data persists.
 The Docker container must be running first, and the migrations above must have been applied.
 
@@ -368,12 +380,21 @@ tokens. `auth_methods` reports *how* an account signs in (`EMAIL`, `GOOGLE`, or 
 
 | Method | Path | Access | Description |
 |---|---|---|---|
-| GET | `/api/v1/incidents/{id}/images` | Reporter / assigned agent / admin | List image metadata |
+| GET | `/api/v1/incidents/{id}/images` | Reporter / assigned agent / admin | List image metadata (both kinds) |
 | GET | `/api/v1/incidents/{id}/images/{image_id}` | Reporter / assigned agent / admin | Stream image bytes |
+| POST | `/api/v1/incidents/{id}/images/resolution` | Assigned agent / admin | Attach proof that the work was completed |
 
 > Images are **not** public. There is no query-string token — requests must carry
 > `Authorization: Bearer <token>`. The frontend fetches them with the header and renders
 > from blob object URLs.
+
+> **Proof of work.** Once the assigned agent marks an incident **Resolved**, they can
+> attach a photo of the finished job. It is stored exactly like a citizen's report photo —
+> same table, same JPEG/PNG/WEBP + 5 MB validation, same authenticated streaming endpoint —
+> and tagged `RESOLUTION` so each dashboard can label it. It is then visible to the
+> reporting citizen, the assigned agent and any admin, under the same access rule as every
+> other image on that incident. A citizen gets `403` (they cannot attest that work was
+> done); uploading before the incident is Resolved gets `422`.
 
 ### Agents
 

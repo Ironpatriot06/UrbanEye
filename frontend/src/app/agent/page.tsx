@@ -9,6 +9,7 @@ import {
   StatusBadge,
 } from '@/components/IncidentCard';
 import { IncidentImages } from '@/components/IncidentImages';
+import { ResolutionProofUpload } from '@/components/ResolutionProofUpload';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
 import { IncidentHistory } from '@/components/IncidentHistory';
 import {
@@ -46,6 +47,10 @@ export default function AgentPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<IncidentStatus | null>(null);
   const [statusError, setStatusError] = useState('');
+
+  // Bumped after each proof upload so the gallery re-fetches. Attaching an
+  // image does not touch the incident row, so updated_at would not move.
+  const [imagesNonce, setImagesNonce] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -277,7 +282,9 @@ export default function AgentPage() {
                   </div>
                 ) : (
                   <p className="alert alert-info alert-sm">
-                    {selected.status === 'RESOLVED' || selected.status === 'CLOSED'
+                    {selected.status === 'RESOLVED'
+                      ? 'You have resolved this incident. Attach proof of the work below. Only an admin can reopen or close it.'
+                      : selected.status === 'CLOSED'
                       ? 'This incident is finished. Only an admin can reopen or close it.'
                       : `Nothing for you to do while this incident is ${STATUS_LABELS[selected.status]}. An admin moves it on from here.`}
                   </p>
@@ -303,7 +310,18 @@ export default function AgentPage() {
               <IncidentImages
                 incidentId={selected.id}
                 expectedCount={selected.image_count}
+                reloadKey={imagesNonce}
               />
+
+              {/* Proof of work is offered once the agent has marked the job
+                  resolved — that is the point at which there is something
+                  finished to photograph. The backend enforces the same rule. */}
+              {selected.status === 'RESOLVED' && (
+                <ResolutionProofUpload
+                  incidentId={selected.id}
+                  onUploaded={() => setImagesNonce((n) => n + 1)}
+                />
+              )}
             </aside>
           )}
         </div>

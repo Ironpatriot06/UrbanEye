@@ -256,11 +256,27 @@ export interface Incident {
   updated_at: string;
 }
 
+/**
+ * What an attached image is evidence of. Mirrors ImageKind on the backend.
+ *
+ * REPORT     — the citizen's photo of the problem.
+ * RESOLUTION — the assigned agent's photo of the finished work.
+ *
+ * Both are stored and served identically; this only decides the label.
+ */
+export type ImageKind = 'REPORT' | 'RESOLUTION';
+
+export const IMAGE_KIND_LABELS: Record<ImageKind, string> = {
+  REPORT: 'Reported problem',
+  RESOLUTION: 'Proof of work',
+};
+
 export interface ImageMeta {
   id: number;
   incident_id: number;
   filename: string;
   content_type: string;
+  kind: ImageKind;
   created_at: string;
 }
 
@@ -614,6 +630,44 @@ export async function apiGetHistory(incidentId: number): Promise<HistoryEvent[]>
 // ── Images ────────────────────────────────────────────────────
 export async function apiGetImages(incidentId: number): Promise<ImageMeta[]> {
   return apiFetch<ImageMeta[]>(`/api/v1/incidents/${incidentId}/images`);
+}
+
+/**
+ * Attach proof that the work was completed.
+ *
+ * Agent-only in practice: the backend accepts this from the assigned agent (or
+ * an admin) and only once the incident is RESOLVED — a citizen gets 403 and an
+ * early upload gets 422, whatever the UI offers. The image lands in the same
+ * store as a report photo and becomes visible to the reporter, the assigned
+ * agent, and admins.
+ */
+export async function apiUploadResolutionImage(
+  incidentId: number,
+  file: File,
+): Promise<ImageMeta> {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  let res: Response;
+  try {
+    res = await fetch(
+      `${BASE_URL}/api/v1/incidents/${incidentId}/images/resolution`,
+      {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      },
+    );
+  } catch {
+    throw new ApiError(
+      `Cannot reach the UrbanEye+ API at ${BASE_URL}. Is the backend running?`,
+      0,
+    );
+  }
+  if (res.status === 401) onUnauthenticated();
+  if (!res.ok) throw new ApiError(await readError(res), res.status);
+  return res.json();
 }
 
 /**

@@ -10,7 +10,7 @@
    ====================================================== */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageMeta, apiGetImages, fetchImageObjectUrl } from '@/lib/api';
+import { ImageKind, ImageMeta, apiGetImages, fetchImageObjectUrl } from '@/lib/api';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -48,7 +48,10 @@ function AuthImage({
     };
   }, [incidentId, image.id]);
 
-  const alt = `Photo attached to incident #${incidentId}: ${image.filename}`;
+  const alt =
+    image.kind === 'RESOLUTION'
+      ? `Proof of completed work on incident #${incidentId}: ${image.filename}`
+      : `Photo attached to incident #${incidentId}: ${image.filename}`;
 
   if (state === 'loading') {
     return (
@@ -127,9 +130,16 @@ function Lightbox({
 export function IncidentImages({
   incidentId,
   expectedCount,
+  reloadKey,
 }: {
   incidentId: number;
   expectedCount?: number;
+  /**
+   * Bump to re-fetch the gallery. The agent dashboard increments it after a
+   * proof upload — the incident row itself does not change when an image is
+   * attached, so there is nothing else for this component to notice.
+   */
+  reloadKey?: number;
 }) {
   const [images, setImages] = useState<ImageMeta[]>([]);
   const [state, setState] = useState<LoadState>('loading');
@@ -150,51 +160,86 @@ export function IncidentImages({
     return () => {
       cancelled = true;
     };
-  }, [incidentId]);
+  }, [incidentId, reloadKey]);
 
   const openLightbox = useCallback((url: string, alt: string) => {
     setLightbox({ url, alt });
   }, []);
 
+  const byKind = (kind: ImageKind) => images.filter((i) => i.kind === kind);
+  const reportImages = byKind('REPORT');
+  const proofImages = byKind('RESOLUTION');
+
+  // Unchanged from before proof-of-work existed: an incident with no photos
+  // and none expected renders nothing at all, so callers can drop this in
+  // unconditionally.
   if (state === 'ready' && images.length === 0 && !expectedCount) return null;
 
   return (
-    <section className="detail-section">
-      <h4 className="detail-section__title">
-        Photos{state === 'ready' && images.length > 0 ? ` (${images.length})` : ''}
-      </h4>
+    <>
+      <section className="detail-section">
+        <h4 className="detail-section__title">
+          Photos{state === 'ready' && reportImages.length > 0 ? ` (${reportImages.length})` : ''}
+        </h4>
 
-      {state === 'loading' && (
-        <div className="thumb-row" aria-busy="true">
-          {Array.from({ length: Math.max(expectedCount ?? 1, 1) }).map((_, i) => (
-            <div key={i} className="img-thumb img-thumb--placeholder">
-              <span className="spinner spinner-sm" />
-            </div>
-          ))}
-        </div>
-      )}
+        {state === 'loading' && (
+          <div className="thumb-row" aria-busy="true">
+            {Array.from({ length: Math.max(expectedCount ?? 1, 1) }).map((_, i) => (
+              <div key={i} className="img-thumb img-thumb--placeholder">
+                <span className="spinner spinner-sm" />
+              </div>
+            ))}
+          </div>
+        )}
 
-      {state === 'error' && (
-        <p className="alert alert-error alert-sm">
-          Could not load the photos for this incident.
-        </p>
-      )}
+        {state === 'error' && (
+          <p className="alert alert-error alert-sm">
+            Could not load the photos for this incident.
+          </p>
+        )}
 
-      {state === 'ready' && images.length === 0 && (
-        <p className="muted-note">No photos were attached to this report.</p>
-      )}
+        {state === 'ready' && reportImages.length === 0 && (
+          <p className="muted-note">No photos were attached to this report.</p>
+        )}
 
-      {state === 'ready' && images.length > 0 && (
-        <div className="thumb-row">
-          {images.map((img) => (
-            <AuthImage
-              key={img.id}
-              incidentId={incidentId}
-              image={img}
-              onOpen={openLightbox}
-            />
-          ))}
-        </div>
+        {state === 'ready' && reportImages.length > 0 && (
+          <div className="thumb-row">
+            {reportImages.map((img) => (
+              <AuthImage
+                key={img.id}
+                incidentId={incidentId}
+                image={img}
+                onOpen={openLightbox}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Proof of work. Rendered for every role that can see the incident —
+          the reporting citizen, the assigned agent and admins all reach the
+          same endpoint under the same authorization rule. The section is
+          omitted entirely when no proof has been attached, so incidents that
+          are still open look exactly as they did before. */}
+      {state === 'ready' && proofImages.length > 0 && (
+        <section className="detail-section">
+          <h4 className="detail-section__title">
+            Proof of work ({proofImages.length})
+          </h4>
+          <p className="muted-note">
+            Attached by the agent after the work was completed.
+          </p>
+          <div className="thumb-row">
+            {proofImages.map((img) => (
+              <AuthImage
+                key={img.id}
+                incidentId={incidentId}
+                image={img}
+                onOpen={openLightbox}
+              />
+            ))}
+          </div>
+        </section>
       )}
 
       {lightbox && (
@@ -204,6 +249,6 @@ export function IncidentImages({
           onClose={() => setLightbox(null)}
         />
       )}
-    </section>
+    </>
   );
 }

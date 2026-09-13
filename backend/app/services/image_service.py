@@ -16,7 +16,7 @@ from typing import List, Optional
 from fastapi import HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
-from app.models.image import IncidentImage
+from app.models.image import ImageKind, IncidentImage
 
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
@@ -55,9 +55,15 @@ async def save_image(
     incident_id: int,
     file: UploadFile,
     actor=None,
+    kind: ImageKind = ImageKind.REPORT,
 ) -> IncidentImage:
     """
     Read, validate, and persist an uploaded image for the given incident.
+
+    One path for both kinds: a citizen's report photo and an agent's proof of
+    completed work are validated, stored and served identically.  `kind` only
+    decides how the image is labelled — for the UI, and in the sentence written
+    to the audit trail.
 
     An IMAGE_ADDED audit entry is written in the same transaction, but only
     after validation passes — a rejected upload attached nothing, so it is not
@@ -80,11 +86,13 @@ async def save_image(
         filename=file.filename or "upload",
         content_type=content_type,
         image_data=data,
+        kind=kind,
     )
     db.add(image)
     db.flush()  # assign image.id so the audit entry can name it
 
     size_kb = max(1, round(len(data) / 1024))
+    noun = "Proof-of-work photo" if kind == ImageKind.RESOLUTION else "Photo"
     history_service.record(
         db,
         incident_id,
@@ -92,7 +100,7 @@ async def save_image(
         actor=actor,
         new_value=image.filename,
         description=(
-            f"Photo '{image.filename}' attached ({content_type}, {size_kb} KB, "
+            f"{noun} '{image.filename}' attached ({content_type}, {size_kb} KB, "
             f"image #{image.id})."
         ),
     )
@@ -102,14 +110,22 @@ async def save_image(
     return image
 
 
-def get_images_for_incident(db: Session, incident_id: int) -> List[IncidentImage]:
-    """Return all images for the given incident."""
-    return (
-        db.query(IncidentImage)
-        .filter(IncidentImage.incident_id == incident_id)
-        .order_by(IncidentImage.created_at)
-        .all()
-    )
+def get_images_for_incident(
+    db: Session,
+    incident_id: int,
+    kind: Optional[ImageKind] = None,
+) -> List[IncidentImage]:
+    """
+    Return images for the given incident, oldest first.
+
+    Both kinds are returned by default: a caller showing an incident wants the
+    report photos and the proof of work together, and separating them is the
+    UI's job, not a second round trip's.
+    """
+    query = db.query(IncidentImage).filter(IncidentImage.incident_id == incident_id)
+    if kind is not None:
+        query = query.filter(IncidentImage.kind == kind)
+    return query.order_by(IncidentImage.created_at, IncidentImage.id).all()
 
 
 def get_image_by_id(

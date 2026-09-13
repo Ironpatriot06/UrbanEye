@@ -963,6 +963,12 @@ tbody tr.row-static { cursor: default; }
 .dropzone__title { font-weight: 600; color: var(--text-primary); font-size: .9rem; }
 .dropzone__hint  { font-size: .78rem; color: var(--text-muted); }
 
+/* Proof-of-work upload sits inside the agent's detail panel, which is far
+   narrower than the report form the full-size dropzone was built for. */
+.dropzone--compact { padding: 1rem .75rem; }
+.dropzone--compact .dropzone__icon { font-size: 1.25rem; }
+.dropzone:disabled { opacity: .6; cursor: progress; }
+
 .upload-previews { list-style: none; }
 .upload-preview { position: relative; width: 84px; }
 .upload-preview__name {

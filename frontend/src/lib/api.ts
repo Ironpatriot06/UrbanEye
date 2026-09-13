@@ -120,6 +120,105 @@ export const CATEGORY_LABELS: Record<string, string> = {
   OTHER: 'Other',
 };
 
+/**
+ * The controlled set of auditable actions. Mirrors HistoryAction in
+ * app/models/history.py — the backend is the authority; this exists so the UI
+ * can label and group events.
+ */
+export type HistoryActionType =
+  | 'INCIDENT_CREATED'
+  | 'INCIDENT_TRIAGED'
+  | 'PRIORITY_CHANGED'
+  | 'SLA_CREATED'
+  | 'SLA_UPDATED'
+  | 'AGENT_ASSIGNED'
+  | 'AGENT_REASSIGNED'
+  | 'AGENT_UNASSIGNED'
+  | 'STATUS_CHANGED'
+  | 'AGENT_AVAILABILITY_CHANGED'
+  | 'IMAGE_ADDED'
+  | 'INCIDENT_RESOLVED'
+  | 'INCIDENT_CLOSED'
+  | 'INCIDENT_REOPENED'
+  | 'ADMIN_OVERRIDE';
+
+/** Mirrors ActorRole on the backend: the three user roles plus SYSTEM. */
+export type ActorRole = Role | 'SYSTEM';
+
+/** Short headline for each event type, shown as the timeline entry's title. */
+export const HISTORY_ACTION_LABELS: Record<HistoryActionType, string> = {
+  INCIDENT_CREATED: 'Incident reported',
+  INCIDENT_TRIAGED: 'Triaged',
+  PRIORITY_CHANGED: 'Priority changed',
+  SLA_CREATED: 'Response target set',
+  SLA_UPDATED: 'Response target changed',
+  AGENT_ASSIGNED: 'Agent assigned',
+  AGENT_REASSIGNED: 'Agent reassigned',
+  AGENT_UNASSIGNED: 'Agent unassigned',
+  STATUS_CHANGED: 'Status changed',
+  AGENT_AVAILABILITY_CHANGED: 'Agent availability changed',
+  IMAGE_ADDED: 'Photo added',
+  INCIDENT_RESOLVED: 'Resolved',
+  INCIDENT_CLOSED: 'Closed',
+  INCIDENT_REOPENED: 'Reopened',
+  ADMIN_OVERRIDE: 'Admin override',
+};
+
+/**
+ * Which visual family an event belongs to. Drives the marker colour only —
+ * every event carries its own full text regardless.
+ */
+export const HISTORY_ACTION_TONE: Record<HistoryActionType, string> = {
+  INCIDENT_CREATED: 'start',
+  INCIDENT_TRIAGED: 'status',
+  PRIORITY_CHANGED: 'priority',
+  SLA_CREATED: 'sla',
+  SLA_UPDATED: 'sla',
+  AGENT_ASSIGNED: 'agent',
+  AGENT_REASSIGNED: 'agent',
+  AGENT_UNASSIGNED: 'agent',
+  STATUS_CHANGED: 'status',
+  AGENT_AVAILABILITY_CHANGED: 'agent',
+  IMAGE_ADDED: 'image',
+  INCIDENT_RESOLVED: 'done',
+  INCIDENT_CLOSED: 'done',
+  INCIDENT_REOPENED: 'warn',
+  ADMIN_OVERRIDE: 'warn',
+};
+
+/** Glyph shown in the timeline marker. Decorative — always paired with text. */
+export const HISTORY_ACTION_ICONS: Record<HistoryActionType, string> = {
+  INCIDENT_CREATED: '\u25CF',
+  INCIDENT_TRIAGED: '\u25C6',
+  PRIORITY_CHANGED: '\u2191',
+  SLA_CREATED: '\u23F1',
+  SLA_UPDATED: '\u23F1',
+  AGENT_ASSIGNED: '\u25B8',
+  AGENT_REASSIGNED: '\u21C4',
+  AGENT_UNASSIGNED: '\u2205',
+  STATUS_CHANGED: '\u2192',
+  AGENT_AVAILABILITY_CHANGED: '\u25CB',
+  IMAGE_ADDED: '\u25A3',
+  INCIDENT_RESOLVED: '\u2713',
+  INCIDENT_CLOSED: '\u2714',
+  INCIDENT_REOPENED: '\u21BA',
+  ADMIN_OVERRIDE: '\u26A0',
+};
+
+/** One entry in an incident's audit trail. Read-only: the API has no writer. */
+export interface HistoryEvent {
+  id: number;
+  incident_id: number;
+  actor_name?: string | null;
+  actor_id?: number | null;
+  actor_role: ActorRole;
+  action: HistoryActionType;
+  old_value?: string | null;
+  new_value?: string | null;
+  description?: string | null;
+  created_at: string;
+}
+
 export interface UserInfo {
   user_id: number;
   name: string;
@@ -371,6 +470,19 @@ export async function apiUpdatePriority(
   });
 }
 
+// ── History / audit trail ─────────────────────────────────────
+/**
+ * An incident's audit trail, oldest event first.
+ *
+ * Authorization matches reading the incident itself: a citizen gets their own
+ * incidents, an agent gets the ones assigned to them, an admin gets any. There
+ * is deliberately no writer here — history is produced by the backend as a
+ * side effect of real operations and cannot be posted, edited or deleted.
+ */
+export async function apiGetHistory(incidentId: number): Promise<HistoryEvent[]> {
+  return apiFetch<HistoryEvent[]>(`/api/v1/incidents/${incidentId}/history`);
+}
+
 // ── Images ────────────────────────────────────────────────────
 export async function apiGetImages(incidentId: number): Promise<ImageMeta[]> {
   return apiFetch<ImageMeta[]>(`/api/v1/incidents/${incidentId}/images`);
@@ -453,6 +565,14 @@ export function formatDate(iso?: string | null): string {
     day: '2-digit',
     year: 'numeric',
   });
+}
+
+/** "18:42" — the time of day, for dense timeline rows. */
+export function formatTime(iso?: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
 
 /** "in 3h 20m" / "4h 10m overdue" — relative to an SLA deadline. */

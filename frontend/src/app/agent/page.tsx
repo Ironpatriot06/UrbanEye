@@ -10,6 +10,7 @@ import {
 } from '@/components/IncidentCard';
 import { IncidentImages } from '@/components/IncidentImages';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
+import { IncidentHistory } from '@/components/IncidentHistory';
 import {
   DetailHeader,
   IncidentMetadata,
@@ -284,6 +285,13 @@ export default function AgentPage() {
               </section>
 
               <WorkflowTimeline status={selected.status} />
+              {/* Agents see the full trail for their own incidents, including
+                  admin overrides and availability changes affecting them. */}
+              <IncidentHistory
+                key={`hist-${selected.id}-${selected.updated_at}`}
+                incidentId={selected.id}
+                title="Incident history"
+              />
               <PrioritySummary incident={selected} />
               <SlaSummary incident={selected}>
                 <p className="system-note">

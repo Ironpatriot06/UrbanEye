@@ -86,7 +86,12 @@ def get_agent_by_id(db: Session, agent_id: int) -> Optional[User]:
     )
 
 
-def set_agent_availability(db: Session, agent: User, is_available: bool) -> User:
+def set_agent_availability(
+    db: Session,
+    agent: User,
+    is_available: bool,
+    actor: Optional[User] = None,
+) -> User:
     """
     Persist an agent's availability flag.
 
@@ -94,8 +99,53 @@ def set_agent_availability(db: Session, agent: User, is_available: bool) -> User
     does not touch it: an agent who marked themselves unavailable stays
     unavailable across logout and the next login, until they or an admin change
     it explicitly.
+
+    Audit trail
+    -----------
+    Availability belongs to the agent, not to any one incident, but the audit
+    trail is per-incident — so the event is recorded against each incident
+    still open on that agent's plate, which is exactly where it is
+    operationally relevant: those are the incidents whose handling it affects.
+    Finished incidents are left alone; their outcome cannot change now.
+
+    `actor` distinguishes an agent setting their own status from an admin
+    overriding it, which is the difference the admin audit view needs to show.
+    A call that does not change the flag records nothing.
     """
+    from app.models.history import HistoryAction
+    from app.models.incident import SLA_FREEZE_STATUSES, Incident
+    from app.services import history_service
+
+    changed = agent.is_available != is_available
     agent.is_available = is_available
+
+    if changed:
+        open_incidents = (
+            db.query(Incident)
+            .filter(
+                Incident.assigned_agent_id == agent.id,
+                Incident.status.notin_(list(SLA_FREEZE_STATUSES)),
+            )
+            .all()
+        )
+        state = "Available" if is_available else "Unavailable"
+        by_self = actor is not None and actor.id == agent.id
+        who = "themselves" if by_self else (actor.name if actor else "the system")
+
+        for incident in open_incidents:
+            history_service.record(
+                db,
+                incident.id,
+                HistoryAction.AGENT_AVAILABILITY_CHANGED,
+                actor=actor,
+                old_value="Available" if not is_available else "Unavailable",
+                new_value=state,
+                description=(
+                    f"{agent.name}, the agent on this incident, was marked "
+                    f"{state.lower()} by {who}."
+                ),
+            )
+
     db.commit()
     db.refresh(agent)
     return agent

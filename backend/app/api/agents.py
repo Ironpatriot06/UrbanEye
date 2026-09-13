@@ -62,7 +62,9 @@ def set_availability(
     db: Session = Depends(get_db),
     current_user=Depends(require_agent),
 ) -> UserRead:
-    return user_service.set_agent_availability(db, current_user, payload.is_available)
+    return user_service.set_agent_availability(
+        db, current_user, payload.is_available, actor=current_user
+    )
 
 
 @router.get(
@@ -102,7 +104,9 @@ def admin_set_availability(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Agent with id={agent_id} not found.",
         )
-    updated = user_service.set_agent_availability(db, agent, payload.is_available)
+    updated = user_service.set_agent_availability(
+        db, agent, payload.is_available, actor=current_user
+    )
     updated.active_incident_count = incident_service.count_open_incidents_for_agent(
         db, updated.id
     )

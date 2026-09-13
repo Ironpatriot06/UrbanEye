@@ -5,6 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { PriorityBadge, SlaBadge, StatusBadge } from '@/components/IncidentCard';
 import { IncidentImages } from '@/components/IncidentImages';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
+import { IncidentHistory } from '@/components/IncidentHistory';
 import {
   DetailHeader,
   Field,
@@ -66,6 +67,12 @@ export default function AdminPage() {
 
   const [slaDraft, setSlaDraft] = useState('');
 
+  // Bumped after every successful action so the audit trail re-fetches.
+  // The incident's own updated_at is not a sufficient trigger on its own: an
+  // agent-availability override writes history against the incident without
+  // touching the incident row, so updated_at would not move.
+  const [historyNonce, setHistoryNonce] = useState(0);
+
   const load = useCallback(async () => {
     setLoading(true);
     setLoadError('');
@@ -113,6 +120,7 @@ export default function AdminPage() {
     setPanelNotice('');
     try {
       await fn();
+      setHistoryNonce((n) => n + 1);
     } catch (err: unknown) {
       setPanelError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
@@ -591,6 +599,16 @@ export default function AdminPage() {
               </section>
 
               <IncidentMetadata incident={selected} />
+
+              {/* Complete audit trail: every actor, role, transition,
+                  assignment, priority/SLA change, override and image. */}
+              <IncidentHistory
+                key={`hist-${selected.id}-${selected.updated_at}-${historyNonce}`}
+                incidentId={selected.id}
+                title="Audit trail"
+                showActorRole
+              />
+
               <IncidentImages
                 incidentId={selected.id}
                 expectedCount={selected.image_count}

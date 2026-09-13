@@ -32,6 +32,17 @@ PATCH  /api/v1/incidents/{incident_id}/sla
 
 PATCH  /api/v1/incidents/{incident_id}/priority
     Admin-only: override priority level (AI hook)
+
+GET    /api/v1/incidents/{incident_id}/history
+    Read the incident's audit trail, oldest event first.
+    Gated by exactly the same rule as reading the incident itself.
+
+Why there is no write endpoint for history
+------------------------------------------
+The audit trail is produced by the service layer as a side effect of real
+operations.  Exposing any way to post, edit or delete an entry would be a way
+to forge one, so the router offers GET and nothing else — for every role,
+admins included.
 """
 
 import json
@@ -53,6 +64,7 @@ from app.core.deps import get_current_user, require_admin
 from app.db.database import get_db
 from app.models.incident import IncidentCategory, IncidentStatus
 from app.models.user import UserRole
+from app.schemas.history import HistoryEventRead
 from app.schemas.incident import (
     AgentAssignUpdate,
     IncidentCreate,
@@ -61,7 +73,7 @@ from app.schemas.incident import (
     PriorityUpdate,
     SLAUpdate,
 )
-from app.services import image_service, incident_service
+from app.services import history_service, image_service, incident_service
 
 router = APIRouter(prefix="/incidents", tags=["Incidents"])
 
@@ -112,14 +124,14 @@ async def create_incident(
             detail=f"Invalid incident data: {exc}",
         )
 
-    incident = incident_service.create_incident(
-        db, payload, reported_by_id=current_user.id
-    )
+    incident = incident_service.create_incident(db, payload, reporter=current_user)
 
     # Persist any uploaded images
     for upload in images:
         if upload.filename:
-            await image_service.save_image(db, incident.id, upload)
+            await image_service.save_image(
+                db, incident.id, upload, actor=current_user
+            )
 
     # Re-fetch with updated image_count
     return incident_service.get_incident_by_id(db, incident.id)
@@ -208,7 +220,9 @@ def update_status(
         )
 
     is_agent = (role == UserRole.AGENT)
-    return incident_service.update_incident_status(db, incident, payload, is_agent=is_agent)
+    return incident_service.update_incident_status(
+        db, incident, payload, is_agent=is_agent, actor=current_user
+    )
 
 
 @router.put(
@@ -230,7 +244,7 @@ def assign_agent(
     incident = incident_service.get_incident_by_id(db, incident_id)
     if incident is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found.")
-    return incident_service.assign_agent(db, incident, payload)
+    return incident_service.assign_agent(db, incident, payload, actor=current_user)
 
 
 @router.patch(
@@ -248,7 +262,7 @@ def update_sla(
     incident = incident_service.get_incident_by_id(db, incident_id)
     if incident is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found.")
-    return incident_service.update_sla(db, incident, payload)
+    return incident_service.update_sla(db, incident, payload, actor=current_user)
 
 
 @router.patch(
@@ -269,4 +283,34 @@ def update_priority(
     incident = incident_service.get_incident_by_id(db, incident_id)
     if incident is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found.")
-    return incident_service.update_priority(db, incident, payload)
+    return incident_service.update_priority(db, incident, payload, actor=current_user)
+
+
+@router.get(
+    "/{incident_id}/history",
+    response_model=List[HistoryEventRead],
+    summary="Get an incident's audit trail",
+    description=(
+        "Return every recorded action on this incident, oldest first.\n\n"
+        "USER — their own incidents only.\n"
+        "AGENT — incidents assigned to them.\n"
+        "ADMIN — any incident, and the complete trail.\n\n"
+        "Citizens do not receive internal staffing events (an agent's "
+        "availability changing, an admin overriding it); every other role sees "
+        "the full record. The trail is read-only for all three roles."
+    ),
+)
+def get_incident_history(
+    incident_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+) -> List[HistoryEventRead]:
+    incident = incident_service.get_incident_by_id(db, incident_id)
+    # Same gate as reading the incident itself: a citizen asking for someone
+    # else's history gets the same 404 they would get for the incident, so the
+    # endpoint never confirms that an incident they cannot see exists.
+    _assert_incident_access(incident, current_user)
+
+    return history_service.get_history_for_incident(
+        db, incident_id, viewer_role=current_user.role
+    )

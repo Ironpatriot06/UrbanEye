@@ -51,9 +51,26 @@ def _validate_image(data: bytes, content_type: str) -> None:
 
 
 async def save_image(
-    db: Session, incident_id: int, file: UploadFile
+    db: Session,
+    incident_id: int,
+    file: UploadFile,
+    actor=None,
 ) -> IncidentImage:
-    """Read, validate, and persist an uploaded image for the given incident."""
+    """
+    Read, validate, and persist an uploaded image for the given incident.
+
+    An IMAGE_ADDED audit entry is written in the same transaction, but only
+    after validation passes — a rejected upload attached nothing, so it is not
+    something that happened to the incident.
+
+    The entry carries the filename, media type and size only.  The bytes stay
+    in incident_images; duplicating them into the audit trail would bloat a
+    table that exists to be read, and the image is already addressable by its
+    own endpoint.
+    """
+    from app.models.history import HistoryAction
+    from app.services import history_service
+
     data = await file.read()
     content_type = file.content_type or "application/octet-stream"
     _validate_image(data, content_type)
@@ -65,6 +82,21 @@ async def save_image(
         image_data=data,
     )
     db.add(image)
+    db.flush()  # assign image.id so the audit entry can name it
+
+    size_kb = max(1, round(len(data) / 1024))
+    history_service.record(
+        db,
+        incident_id,
+        HistoryAction.IMAGE_ADDED,
+        actor=actor,
+        new_value=image.filename,
+        description=(
+            f"Photo '{image.filename}' attached ({content_type}, {size_kb} KB, "
+            f"image #{image.id})."
+        ),
+    )
+
     db.commit()
     db.refresh(image)
     return image

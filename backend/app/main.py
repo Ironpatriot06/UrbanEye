@@ -38,6 +38,7 @@ from app.db.database import check_db_connection, engine
 from app.models import incident as _incident_models  # noqa: F401
 from app.models import user as _user_models  # noqa: F401
 from app.models import image as _image_models  # noqa: F401
+from app.models import history as _history_models  # noqa: F401
 
 from app.api.auth import router as auth_router
 from app.api.incidents import router as incidents_router

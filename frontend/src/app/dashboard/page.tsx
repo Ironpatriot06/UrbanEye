@@ -7,6 +7,7 @@ import { LocationCapture } from '@/components/LocationCapture';
 import { ImageUploadField } from '@/components/ImageUploadField';
 import { IncidentImages } from '@/components/IncidentImages';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
+import { IncidentHistory } from '@/components/IncidentHistory';
 import {
   DetailHeader,
   IncidentMetadata,
@@ -293,6 +294,13 @@ export default function DashboardPage() {
             <aside className="workspace__side card detail-panel">
               <DetailHeader incident={selected} onClose={() => setSelectedId(null)} />
               <WorkflowTimeline status={selected.status} />
+              {/* Keyed on updated_at so the trail reloads after any change to
+                  this incident rather than showing a stale list. */}
+              <IncidentHistory
+                key={`hist-${selected.id}-${selected.updated_at}`}
+                incidentId={selected.id}
+                title="What has happened"
+              />
               <PrioritySummary incident={selected} />
               <SlaSummary incident={selected}>
                 <p className="system-note">

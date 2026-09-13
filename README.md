@@ -18,6 +18,18 @@ dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web appli
 **Backend**
 - FastAPI REST API with JWT authentication (bcrypt password hashing)
 - Role-based access control — `USER` (citizen), `AGENT` (field agent), `ADMIN`
+- **Self-service sign-up** — email/password registration and **Google Sign-In** (OAuth 2.0
+  authorization-code flow, ID token verified server-side). New accounts are always `USER`;
+  a client cannot choose its own role. Ordinary users no longer need a seeding script.
+- **Account linking** — signing in with Google using an address that already has a password
+  account links the two rather than creating a duplicate, and keeps the existing role
+- **Admin user management** — list every account, promote `USER ⇄ AGENT ⇄ ADMIN`, deactivate
+  and reactivate accounts. Guarded so an admin cannot demote themselves and the last active
+  admin cannot be removed — the system always retains a usable administrator.
+- **Authorization from the database, not the token** — a promotion or demotion takes effect
+  on the user's next request; a deactivated account's outstanding tokens stop working at once
+- **Account audit trail** (`user_audit_log`) — registrations, role changes, activations and
+  Google links, append-only, kept separate from incident history
 - PostgreSQL / PostGIS spatial storage (GEOGRAPHY POINT, SRID 4326)
 - **System-assigned priority** — P1/P2/P3/P4, derived server-side from the incident
   category. Citizens cannot set it; client-supplied values are stripped.
@@ -32,13 +44,18 @@ dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web appli
   `override_availability` flag, validated on the server
 - **Authenticated image upload/serving** — images stored as BYTEA, streamed only to the
   reporter, the assigned agent, or an admin
-- 61 passing tests
+- 161 passing tests
 
 **Frontend** (Next.js 14 App Router)
 - Citizen dashboard — report incidents (no severity picker: the system decides), track progress
 - Agent dashboard — work queue, ASSIGNED → IN_PROGRESS → RESOLVED, own availability toggle
 - Admin dashboard — all incidents, full detail, status/assignment/SLA/priority control,
   agent availability management
+- **Admin → User Management** — every account in one table (name, email, role, sign-in
+  method, created, last login, status), role changes with confirmation before granting
+  admin, and the account audit trail. Linked from the admin navbar; hidden from citizens
+  and agents (and refused by the backend regardless)
+- Login page with email/password, *Continue with Google*, and create-account
 - Visual workflow timeline, SLA badges, authenticated image galleries with lightbox
 - Responsive dark theme, WCAG-AA text contrast, keyboard-accessible controls
 
@@ -82,13 +99,16 @@ UrbanEye/
 ├── .env.example                    # Backend environment template
 ├── .env                            # Local environment (git-ignored)
 ├── docs/
-│   └── architecture.md             # Architecture documentation
+│   ├── architecture.md             # Architecture documentation
+│   └── authentication.md           # Auth, Google setup, roles, security notes
 ├── backend/
 │   ├── requirements.txt
 │   ├── pyproject.toml              # pytest configuration
 │   ├── migrations/                 # Plain-SQL migrations (no Alembic)
 │   │   ├── add_user_columns.sql
-│   │   └── add_priority_sla_columns.sql
+│   │   ├── add_priority_sla_columns.sql
+│   │   ├── add_incident_history.sql
+│   │   └── add_auth_and_user_management.sql
 │   ├── scripts/
 │   │   └── create_demo_data.py     # Seeds the ADMIN / AGENT / USER accounts
 │   ├── app/
@@ -98,16 +118,22 @@ UrbanEye/
 │   │   │   ├── security.py         # bcrypt hashing + JWT encode/decode
 │   │   │   └── deps.py             # Auth dependencies, role guards
 │   │   ├── db/                     # Declarative base, engine, session
-│   │   ├── models/                 # incident.py, user.py, image.py (+ workflow rules)
+│   │   ├── models/                 # incident.py, user.py, image.py, history.py,
+│   │   │                           #   user_audit.py (+ workflow rules)
 │   │   ├── schemas/                # Pydantic request/response shapes
-│   │   ├── api/                    # auth.py, incidents.py, agents.py, images.py
+│   │   ├── api/                    # auth.py, incidents.py, agents.py, images.py,
+│   │   │                           #   admin_users.py
 │   │   └── services/               # Business logic / DB operations
+│   │                               #   (incl. google_oauth.py, user_audit_service.py)
 │   └── tests/
-│       └── test_incidents.py       # 61 tests
+│       ├── test_incidents.py       # 72 tests — API, workflow, SLA, authorization
+│       ├── test_history.py         # 15 tests — incident audit trail
+│       └── test_auth_roles.py      # 74 tests — auth, Google, roles, lockout
 ├── frontend/
 │   ├── .env.local.example          # NEXT_PUBLIC_API_URL template
 │   └── src/
-│       ├── app/                    # login, dashboard (citizen), agent, admin
+│       ├── app/                    # login, auth/callback, dashboard (citizen),
+│       │                           #   agent, admin, admin/users
 │       ├── components/             # Timeline, images, badges, detail panels
 │       └── lib/api.ts              # Typed API client + JWT handling
 ├── ml/                             # Placeholder — not yet implemented
@@ -143,19 +169,42 @@ pip install -r requirements.txt
 On an existing database you must run the SQL migrations once, in order:
 
 ```bash
+cd /path/to/UrbanEye
+
 docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
   < backend/migrations/add_user_columns.sql
 
 docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
   < backend/migrations/add_priority_sla_columns.sql
+
+docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
+  < backend/migrations/add_incident_history.sql
+
+docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
+  < backend/migrations/add_auth_and_user_management.sql
 ```
 
-Both are idempotent and safe to re-run. `add_priority_sla_columns.sql` backfills
-`priority_level` from the legacy `severity` column and derives the SLA window from it, so
-incidents created before Phase 2 continue to load correctly. No existing row is modified
-destructively.
+All four are idempotent and safe to re-run; none deletes or overwrites an existing row.
 
-### 4. Seed the demo accounts
+- `add_priority_sla_columns.sql` backfills `priority_level` from the legacy `severity`
+  column and derives the SLA window from it, so incidents created before Phase 2 continue
+  to load correctly.
+- `add_incident_history.sql` creates the incident audit trail and gives pre-existing
+  incidents an opening event.
+- `add_auth_and_user_management.sql` adds `is_active`, `google_subject_id` and
+  `last_login_at` to `users`, makes `password_hash` nullable (a Google-only account has no
+  password), and creates the append-only `user_audit_log`. **Existing accounts keep their
+  id, email, password and role** — `is_active` defaults to `TRUE`, so every current admin,
+  agent and citizen continues to work unchanged.
+
+Verify afterwards:
+
+```bash
+docker exec -i urbaneye-postgres psql -U urbaneye -d urbaneye \
+  -c "SELECT role, count(*) FROM users GROUP BY role;"
+```
+
+### 4. Seed the bootstrap admin and demo accounts
 
 ```bash
 cd backend
@@ -173,6 +222,37 @@ The script is idempotent — existing accounts are skipped, never overwritten. C
 read from `DEMO_*` variables (see `.env.example`); note that `pydantic-settings` resolves
 `.env` relative to the **current working directory**, so run the script from a directory
 containing your `.env` or export the variables to override the defaults.
+
+**This script is now only a bootstrap.** Ordinary users register in the app and appear
+immediately in Admin → User Management, where an admin promotes them. The script still
+exists because the *first* admin cannot promote themselves into existence; run it once, sign
+in as that admin, and manage everyone else from the UI. Change `DEMO_ADMIN_PASSWORD` before
+using it anywhere but a development machine.
+
+### 4b. (Optional) Configure Google Sign-In
+
+Google sign-in is optional — leave the variables blank and the app runs on email/password
+alone, with the Google button hidden and the endpoints returning `503`.
+
+Create an OAuth client at <https://console.cloud.google.com/apis/credentials>
+(Web application), register the redirect URI
+
+```
+http://localhost:8000/api/v1/auth/google/callback
+```
+
+and set in `.env`:
+
+```bash
+GOOGLE_CLIENT_ID=<your-id>.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=<your-secret>
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
+FRONTEND_URL=http://localhost:3000
+```
+
+Full walkthrough, including the consent screen and test users:
+**[docs/authentication.md](docs/authentication.md)**. Never commit real credentials —
+`.env.example` holds placeholders only.
 
 ### 5. Start the backend
 
@@ -217,9 +297,16 @@ source .venv/bin/activate
 pytest -v
 ```
 
-**61 tests.** They run against the real development PostgreSQL/PostGIS database; each test
+**161 tests** — 72 API/workflow/SLA, 15 incident-history, 74 authentication and role
+management. They run against the real development PostgreSQL/PostGIS database; each test
 that writes uses a SAVEPOINT transaction rolled back afterwards, so no test data persists.
-The Docker container must be running first.
+The Docker container must be running first, and the migrations above must have been applied.
+
+Google's own servers are not contacted by the suite. What *is* tested is everything on this
+side of that boundary: the OAuth `state`/CSRF checks, ID-token claim validation, the refusal
+of an unverified email, and account creation, reuse and linking. Completing a real consent
+screen requires an interactive login — see the manual step in
+[docs/authentication.md](docs/authentication.md).
 
 Frontend checks:
 
@@ -238,13 +325,32 @@ npm run build
 
 | Method | Path | Access | Description |
 |---|---|---|---|
-| POST | `/api/v1/auth/register` | Public | Register a citizen account (**USER role only**) |
+| POST | `/api/v1/auth/register` | Public | Register an account (**always USER**), returns a JWT |
 | POST | `/api/v1/auth/login` | Public | Log in, receive a JWT |
 | GET | `/api/v1/auth/me` | Authenticated | Current user profile |
+| GET | `/api/v1/auth/config` | Public | Whether Google sign-in is configured |
+| GET | `/api/v1/auth/google/login` | Public | Start Google sign-in (redirects to Google) |
+| GET | `/api/v1/auth/google/callback` | Public | Google's redirect back; issues the session |
 
-> Admin and agent accounts cannot be created through the API. Use
-> `scripts/create_demo_data.py` — the `role` field is ignored on registration and always
-> forced to `USER`.
+> **A client can never choose its own role.** A `role` field in the request body — or in the
+> query string — is ignored; registration and Google sign-in always produce `USER`. Only an
+> authenticated `ADMIN` can change a role, through the endpoints below.
+
+### Admin · User management
+
+| Method | Path | Access | Description |
+|---|---|---|---|
+| GET | `/api/v1/admin/users` | ADMIN | Every account, newest first (`?role=`, `?q=`) |
+| PATCH | `/api/v1/admin/users/{id}/role` | ADMIN | Grant `USER` / `AGENT` / `ADMIN` |
+| PATCH | `/api/v1/admin/users/{id}/status` | ADMIN | Activate or deactivate an account |
+| GET | `/api/v1/admin/audit` | ADMIN | Account & authorization audit trail |
+
+Unauthenticated → `401`. A `USER` or `AGENT` → `403`, regardless of what the frontend shows.
+Refused with `409` when the caller targets their own account, or when the change would leave
+no active administrator.
+
+Responses carry **no credential material** — no password hashes, no Google subject ids, no
+tokens. `auth_methods` reports *how* an account signs in (`EMAIL`, `GOOGLE`, or both).
 
 ### Incidents
 

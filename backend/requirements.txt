@@ -29,6 +29,13 @@ passlib[bcrypt]==1.7.4             # bcrypt password hashing
 bcrypt==4.0.1                      # pinned: bcrypt 5.x breaks passlib 1.7.x
 python-multipart==0.0.12           # multipart/form-data for file uploads
 
+# Google Sign-In.  google-auth verifies the signature, issuer, audience and
+# expiry of Google's ID token against Google's published certificates — the
+# authorization code itself is exchanged with httpx, which is already a
+# dependency, so no HTTP client is added.
+google-auth==2.35.0
+requests==2.32.3                   # transport google-auth uses to fetch Google's certs
+
 # ---------------------------------------------------------------------------
 # Testing
 # ---------------------------------------------------------------------------

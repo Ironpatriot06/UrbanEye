@@ -34,6 +34,35 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 1440  # 24 hours
 
     # ------------------------------------------------------------------
+    # Google Sign-In (OAuth 2.0 / OpenID Connect)
+    # ------------------------------------------------------------------
+    # Obtained from the Google Cloud Console — see docs/authentication.md.
+    # Both default to "" so the rest of the application starts and every other
+    # feature works without them; the Google endpoints then return HTTP 503
+    # instead of failing at import time.
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    # Must match a redirect URI registered on the OAuth client EXACTLY.
+    # This points at the BACKEND callback, not the frontend: the code is
+    # exchanged server-side so the client secret never reaches the browser.
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/google/callback"
+
+    # Where the backend sends the browser once Google sign-in has completed.
+    # Also the origin used to validate any post-login redirect target, so a
+    # crafted `next` parameter cannot bounce a fresh token off-site.
+    FRONTEND_URL: str = "http://localhost:3000"
+
+    #: Lifetime of the OAuth `state` token.  Long enough for a human to get
+    #: through the Google consent screen, short enough that a leaked state is
+    #: useless later.
+    OAUTH_STATE_EXPIRE_SECONDS: int = 600
+
+    #: Send the OAuth state cookie with the Secure flag.  Must be True in any
+    #: deployment served over HTTPS; False locally because http://localhost
+    #: would otherwise drop the cookie.
+    COOKIE_SECURE: bool = False
+
+    # ------------------------------------------------------------------
     # Demo account seeds (read by scripts/create_demo_data.py)
     # ------------------------------------------------------------------
     DEMO_ADMIN_EMAIL: str = "admin@urbaneye.local"

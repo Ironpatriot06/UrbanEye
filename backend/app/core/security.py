@@ -68,3 +68,53 @@ def decode_access_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
+
+
+# ---------------------------------------------------------------------------
+# OAuth state tokens
+# ---------------------------------------------------------------------------
+#
+# The `state` parameter of an OAuth authorization request is the CSRF defence:
+# without it an attacker can feed their own authorization code to our callback
+# and land the victim in the attacker's account.
+#
+# We make state a short-lived JWT signed with SECRET_KEY, so the callback can
+# verify it is one we issued and has not expired without keeping any
+# server-side session store.  The same value is also set as an HttpOnly cookie
+# and compared on return (a double-submit), so a state token stolen from a
+# browser URL cannot be replayed from a different browser.
+
+#: Marks a token as an OAuth state token so it can never be presented as an
+#: access token, and vice versa.
+_OAUTH_STATE_TOKEN_TYPE = "oauth_state"
+
+
+def create_oauth_state_token(nonce: str, next_path: str | None = None) -> str:
+    """Create the signed, short-lived `state` value for an OAuth redirect."""
+    payload = {
+        "typ": _OAUTH_STATE_TOKEN_TYPE,
+        "nonce": nonce,
+        "exp": datetime.now(timezone.utc)
+        + timedelta(seconds=settings.OAUTH_STATE_EXPIRE_SECONDS),
+    }
+    if next_path:
+        payload["next"] = next_path
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_oauth_state_token(token: str) -> Optional[dict]:
+    """
+    Validate an OAuth `state` token.
+
+    Returns the payload, or None if the token is invalid, expired, or is some
+    other kind of token (an access token replayed as state, for instance).
+    """
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
+    except JWTError:
+        return None
+    if payload.get("typ") != _OAUTH_STATE_TOKEN_TYPE:
+        return None
+    return payload

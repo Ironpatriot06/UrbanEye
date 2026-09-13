@@ -275,6 +275,80 @@ export interface Agent {
   created_at: string;
 }
 
+/**
+ * How an account can sign in. Derived server-side from which credentials the
+ * account actually holds — the credentials themselves are never sent.
+ */
+export type AuthMethod = 'EMAIL' | 'GOOGLE';
+
+export const AUTH_METHOD_LABELS: Record<AuthMethod, string> = {
+  EMAIL: 'Email',
+  GOOGLE: 'Google',
+};
+
+export const ROLE_LABELS: Record<Role, string> = {
+  USER: 'Citizen',
+  AGENT: 'Agent',
+  ADMIN: 'Admin',
+};
+
+/** The order roles are offered in, least privileged first. */
+export const ROLES: Role[] = ['USER', 'AGENT', 'ADMIN'];
+
+/**
+ * One row of the admin user-management table.
+ *
+ * Deliberately carries no credential material: no password hash, no Google
+ * subject id, no tokens. The backend does not send them.
+ */
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+  is_active: boolean;
+  auth_methods: AuthMethod[];
+  created_at: string;
+  last_login_at?: string | null;
+  is_available: boolean;
+}
+
+/** Mirrors UserAuditAction on the backend. */
+export type UserAuditActionType =
+  | 'USER_REGISTERED'
+  | 'USER_ROLE_CHANGED'
+  | 'USER_STATUS_CHANGED'
+  | 'GOOGLE_ACCOUNT_LINKED';
+
+export const USER_AUDIT_LABELS: Record<UserAuditActionType, string> = {
+  USER_REGISTERED: 'Account created',
+  USER_ROLE_CHANGED: 'Role changed',
+  USER_STATUS_CHANGED: 'Status changed',
+  GOOGLE_ACCOUNT_LINKED: 'Google account linked',
+};
+
+/**
+ * One entry of the account audit trail.
+ *
+ * Separate from HistoryEvent on purpose: that answers "what happened to
+ * incident N", this answers "what happened to this account". Read-only — the
+ * API has no writer, and the table rejects UPDATE and DELETE.
+ */
+export interface UserAuditEvent {
+  id: number;
+  action: UserAuditActionType;
+  actor_name?: string | null;
+  actor_email?: string | null;
+  actor_role: ActorRole;
+  target_user_id?: number | null;
+  target_name?: string | null;
+  target_email?: string | null;
+  old_value?: string | null;
+  new_value?: string | null;
+  description?: string | null;
+  created_at: string;
+}
+
 /** Thrown by apiFetch so callers can branch on the HTTP status. */
 export class ApiError extends Error {
   status: number;
@@ -354,15 +428,69 @@ export async function apiLogin(email: string, password: string): Promise<UserInf
   return userInfo;
 }
 
-export async function apiRegister(name: string, email: string, password: string) {
-  return apiFetch('/api/v1/auth/register', {
+/**
+ * Create an account and sign in with it.
+ *
+ * There is no role argument, and adding one to the body would achieve nothing:
+ * the backend hard-codes USER for every registration and its request schema has
+ * no role field. Promotion to AGENT or ADMIN happens only in Admin → User
+ * Management, by an authenticated admin.
+ */
+export async function apiRegister(
+  name: string,
+  email: string,
+  password: string,
+): Promise<UserInfo> {
+  const data = await apiFetch<{
+    access_token: string;
+    role: Role;
+    user_id: number;
+    name: string;
+  }>('/api/v1/auth/register', {
     method: 'POST',
     body: JSON.stringify({ name, email, password }),
   });
+  const userInfo: UserInfo = {
+    user_id: data.user_id,
+    name: data.name,
+    role: data.role,
+    access_token: data.access_token,
+  };
+  setToken(data.access_token);
+  setStoredUser(userInfo);
+  return userInfo;
 }
 
-export async function apiMe() {
-  return apiFetch('/api/v1/auth/me');
+export async function apiMe(): Promise<AdminUser> {
+  return apiFetch<AdminUser>('/api/v1/auth/me');
+}
+
+/** Which sign-in methods this server is configured for. */
+export async function apiAuthConfig(): Promise<{ google_enabled: boolean }> {
+  return apiFetch<{ google_enabled: boolean }>('/api/v1/auth/config');
+}
+
+/**
+ * Start Google sign-in.
+ *
+ * A full-page navigation, not a fetch: the backend needs to set the HttpOnly
+ * state cookie that its callback checks, and Google's consent screen cannot be
+ * loaded in an XHR. The browser comes back to /auth/callback with a token.
+ */
+export function startGoogleSignIn(next = '/auth/callback') {
+  window.location.href = `${BASE_URL}/api/v1/auth/google/login?next=${encodeURIComponent(next)}`;
+}
+
+/**
+ * Adopt the session handed back by the Google callback.
+ *
+ * The role in the URL is only used to pick a landing page; every protected
+ * request is authorized by the backend from the token, so a tampered role
+ * parameter buys nothing beyond a redirect to a page that will refuse to load.
+ */
+export function adoptSession(info: UserInfo) {
+  setToken(info.access_token);
+  setStoredUser(info);
 }
 
 // ── Incidents ─────────────────────────────────────────────────
@@ -540,6 +668,49 @@ export async function apiSetAgentAvailability(
     method: 'PATCH',
     body: JSON.stringify({ is_available: isAvailable }),
   });
+}
+
+// ── Admin: user management ────────────────────────────────────
+/**
+ * Every account, newest first. ADMIN only.
+ *
+ * A USER or AGENT calling this receives 403 and an unauthenticated caller 401 —
+ * hiding the navigation entry is a courtesy, not the control.
+ */
+export async function apiGetUsers(params?: {
+  role?: Role;
+  q?: string;
+}): Promise<AdminUser[]> {
+  const search = new URLSearchParams();
+  if (params?.role) search.set('role', params.role);
+  if (params?.q) search.set('q', params.q);
+  const qs = search.toString();
+  return apiFetch<AdminUser[]>(`/api/v1/admin/users${qs ? `?${qs}` : ''}`);
+}
+
+/** Grant a role to another user. ADMIN only; refused (409) for your own account. */
+export async function apiSetUserRole(userId: number, role: Role): Promise<AdminUser> {
+  return apiFetch<AdminUser>(`/api/v1/admin/users/${userId}/role`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role }),
+  });
+}
+
+/** Activate or deactivate an account. ADMIN only. */
+export async function apiSetUserActive(
+  userId: number,
+  isActive: boolean,
+): Promise<AdminUser> {
+  return apiFetch<AdminUser>(`/api/v1/admin/users/${userId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ is_active: isActive }),
+  });
+}
+
+/** Recent account/authorization events, newest first. ADMIN only. */
+export async function apiGetUserAudit(userId?: number): Promise<UserAuditEvent[]> {
+  const qs = userId ? `?user_id=${userId}` : '';
+  return apiFetch<UserAuditEvent[]>(`/api/v1/admin/audit${qs}`);
 }
 
 // ── Formatting helpers ────────────────────────────────────────

@@ -18,10 +18,14 @@ For role enforcement:
 Design decisions
 ----------------
 - Bearer token is extracted from the `Authorization` header.
-- Roles are embedded in the JWT payload so we avoid a DB lookup on every
-  request for simple role checks.  The full User object is still fetched
-  from the database so that the endpoint has access to all user fields.
+- The user row is loaded from the database on every authenticated request,
+  and every role check below reads `current_user.role` from THAT row.  The
+  `role` claim in the JWT is carried for the client's convenience only and is
+  never the basis of an authorization decision — so an admin promoting or
+  demoting someone takes effect on their very next request, and a token whose
+  claim disagrees with the database is powerless.
 - A missing or invalid token returns HTTP 401.
+- A token for a deleted or deactivated account returns HTTP 401.
 - A valid token for the wrong role returns HTTP 403.
 """
 
@@ -85,6 +89,15 @@ def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User account not found.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not user.is_active:
+        # Checked on every request, not just at login, so deactivating an
+        # account takes effect immediately rather than when its token happens
+        # to expire.
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This account has been deactivated.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user

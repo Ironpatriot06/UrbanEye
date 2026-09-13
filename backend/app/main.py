@@ -6,9 +6,10 @@ Application layout
   /               — root redirect to /docs
   /health         — liveness probe
   /health/db      — database connectivity probe
-  /api/v1/auth    — authentication (register, login, me)
+  /api/v1/auth    — authentication (register, login, me, Google sign-in)
   /api/v1/incidents   — incident CRUD (role-filtered, auth-required)
   /api/v1/agents  — agent management
+  /api/v1/admin   — admin user & role management
   /api/v1/        — image endpoints (mounted under incidents)
 
 Table creation
@@ -39,11 +40,13 @@ from app.models import incident as _incident_models  # noqa: F401
 from app.models import user as _user_models  # noqa: F401
 from app.models import image as _image_models  # noqa: F401
 from app.models import history as _history_models  # noqa: F401
+from app.models import user_audit as _user_audit_models  # noqa: F401
 
 from app.api.auth import router as auth_router
 from app.api.incidents import router as incidents_router
 from app.api.images import router as images_router
 from app.api.agents import router as agents_router
+from app.api.admin_users import router as admin_users_router
 
 settings = get_settings()
 
@@ -145,3 +148,4 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(incidents_router, prefix="/api/v1")
 app.include_router(images_router, prefix="/api/v1")
 app.include_router(agents_router, prefix="/api/v1")
+app.include_router(admin_users_router, prefix="/api/v1")

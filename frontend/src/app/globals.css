@@ -1082,3 +1082,135 @@ tbody tr.row-static { cursor: default; }
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   color: var(--text-primary);
 }
+
+/* ── Navbar links (admin sections) ────────────────────────── */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-width: 0;
+}
+.navbar-links { display: flex; align-items: center; gap: .25rem; flex-wrap: wrap; }
+.navbar-link {
+  padding: .35rem .7rem;
+  border-radius: var(--radius-sm);
+  font-size: .85rem;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: color var(--transition), background var(--transition),
+              border-color var(--transition);
+}
+.navbar-link:hover { color: var(--text-primary); background: var(--bg-card-2); }
+.navbar-link.is-active {
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border-color: rgba(59,130,246,.35);
+  font-weight: 600;
+}
+
+/* ── Google sign-in ───────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin: 1.25rem 0;
+  color: var(--text-muted);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Google's brand guidance asks for their mark on a white or near-black
+   surface; white keeps the four colours legible against this dark UI. */
+.btn-google {
+  background: #fff;
+  color: #1f1f1f;
+  border: 1px solid #dadce0;
+  gap: .6rem;
+  font-weight: 600;
+}
+.btn-google:hover:not(:disabled) { background: #f1f3f4; }
+
+.auth-note { margin-top: .75rem; text-align: center; }
+.form-hint--error { color: #fca5a5; }
+
+/* ── User management table ────────────────────────────────── */
+.filter-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: flex-end; }
+.user-name { font-weight: 500; }
+.cell-email {
+  color: var(--text-secondary);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+.row-actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.row-actions .form-select--compact { min-width: 7.5rem; }
+.ml-1 { margin-left: .5rem; }
+
+/*
+ * Below 760px the user table stops being a grid and becomes one card per
+ * account: each cell keeps its column name from the data-label attribute.
+ * Eight columns cannot stay readable on a phone, and a horizontally scrolling
+ * table hides the Actions column exactly when it is needed.
+ */
+@media (max-width: 760px) {
+  .user-table thead { display: none; }
+  .user-table,
+  .user-table tbody,
+  .user-table tr,
+  .user-table td { display: block; width: 100%; }
+  .user-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: .35rem 0;
+  }
+  .user-table tr:last-child { border-bottom: none; }
+  .user-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: none;
+    padding: .4rem 1rem;
+  }
+  .user-table td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .user-table td:last-child { padding-bottom: .8rem; }
+  .row-actions { justify-content: flex-end; }
+}
+
+/* ── Account audit list ───────────────────────────────────── */
+.audit-list { list-style: none; display: flex; flex-direction: column; gap: .9rem; }
+.audit-item {
+  border-left: 2px solid var(--border-light);
+  padding-left: .85rem;
+}
+.audit-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.audit-item__body {
+  font-size: .85rem;
+  color: var(--text-secondary);
+  margin-top: .2rem;
+  overflow-wrap: anywhere;
+}
+.audit-item__meta { font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }

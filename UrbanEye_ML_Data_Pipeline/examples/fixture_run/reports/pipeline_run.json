@@ -1,0 +1,143 @@
+{
+  "run_at_utc": "2026-09-13T17:29:52.233780+00:00",
+  "mode": "FIXTURES_SYNTHETIC",
+  "data_source_warning": "Outputs derive from SYNTHETIC test fixtures and are NOT real data.",
+  "raw_files_present": {
+    "sf311": false,
+    "boston311": false,
+    "chicago311": false,
+    "nyc311": false
+  },
+  "total_seconds": 13.83,
+  "steps": [
+    {
+      "phase": "1-verify",
+      "step": "dataset_status",
+      "command": "/usr/bin/python3 scripts/validation/dataset_status.py",
+      "returncode": 0,
+      "seconds": 0.58,
+      "status": "OK"
+    },
+    {
+      "phase": "1-verify",
+      "step": "validate_mappings",
+      "command": "/usr/bin/python3 scripts/validation/validate_mappings.py",
+      "returncode": 0,
+      "seconds": 0.61,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_sf311",
+      "command": "/usr/bin/python3 scripts/preprocess/preprocess_sf311.py --input tests/fixtures/sf311_cases.jsonl",
+      "returncode": 0,
+      "seconds": 0.79,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_chicago311",
+      "command": "/usr/bin/python3 scripts/preprocess/preprocess_chicago311.py --input tests/fixtures/chicago311.jsonl",
+      "returncode": 0,
+      "seconds": 0.67,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_nyc311",
+      "command": "/usr/bin/python3 scripts/preprocess/preprocess_nyc311.py --input tests/fixtures/nyc311_2010_2019.jsonl",
+      "returncode": 0,
+      "seconds": 0.71,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_boston311",
+      "command": "/usr/bin/python3 scripts/preprocess/preprocess_boston311.py --input-dir tests/fixtures",
+      "returncode": 0,
+      "seconds": 0.66,
+      "status": "OK"
+    },
+    {
+      "phase": "3-incidents",
+      "step": "build_incidents",
+      "command": "/usr/bin/python3 scripts/preprocess/build_incidents.py",
+      "returncode": 0,
+      "seconds": 0.63,
+      "status": "OK"
+    },
+    {
+      "phase": "4-geo",
+      "step": "build_geo_features",
+      "command": "/usr/bin/python3 scripts/preprocess/build_geo_features.py",
+      "returncode": 0,
+      "seconds": 0.71,
+      "status": "OK"
+    },
+    {
+      "phase": "5-priority",
+      "step": "build_priority_features",
+      "command": "/usr/bin/python3 scripts/preprocess/build_priority_features.py --accept-draft-config",
+      "returncode": 0,
+      "seconds": 0.78,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_resolution_dataset",
+      "command": "/usr/bin/python3 scripts/preprocess/build_resolution_dataset.py",
+      "returncode": 0,
+      "seconds": 0.62,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_hotspot_dataset",
+      "command": "/usr/bin/python3 scripts/preprocess/build_hotspot_dataset.py",
+      "returncode": 0,
+      "seconds": 3.33,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_duplicate_pairs",
+      "command": "/usr/bin/python3 scripts/preprocess/build_duplicate_pairs.py",
+      "returncode": 0,
+      "seconds": 1.13,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "data_quality_report",
+      "command": "/usr/bin/python3 scripts/validation/data_quality_report.py",
+      "returncode": 0,
+      "seconds": 0.68,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_provenance",
+      "command": "/usr/bin/python3 scripts/validation/validate_provenance.py",
+      "returncode": 0,
+      "seconds": 0.62,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_leakage",
+      "command": "/usr/bin/python3 scripts/validation/validate_leakage.py",
+      "returncode": 0,
+      "seconds": 0.69,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_outputs",
+      "command": "/usr/bin/python3 scripts/validation/validate_outputs.py",
+      "returncode": 0,
+      "seconds": 0.61,
+      "status": "OK"
+    }
+  ],
+  "failed_steps": []
+}

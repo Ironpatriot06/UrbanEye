@@ -1,0 +1,55 @@
+{
+  "sources_included": [
+    "sf311",
+    "chicago311",
+    "nyc311"
+  ],
+  "sources_missing": [
+    "boston311"
+  ],
+  "total_rows": 1900000,
+  "rows_by_source": {
+    "chicago311": 1600000,
+    "sf311": 200000,
+    "nyc311": 100000
+  },
+  "rows_by_city": {
+    "Chicago": 1600000,
+    "San Francisco": 200000,
+    "New York City": 100000
+  },
+  "category_distribution": {
+    "OUT_OF_SCOPE": 494011,
+    "UNMAPPED": 358838,
+    "GARBAGE_DUMPING": 178198,
+    "GRAFFITI_VISUAL_POLLUTION": 177920,
+    "STREETLIGHT_FAULT": 162330,
+    "POTHOLE": 157190,
+    "FALLEN_TREE": 115771,
+    "SIGNAGE_DAMAGE": 58179,
+    "DRAINAGE_SEWER": 49600,
+    "WATER_LEAKAGE_WATERLOGGING": 48031,
+    "TRAFFIC_SIGNAL_FAULT": 47234,
+    "FOOTPATH_DAMAGE": 20845,
+    "REVIEW_REQUIRED": 12107,
+    "ROAD_DAMAGE": 10266,
+    "PUBLIC_INFRASTRUCTURE_DAMAGE": 9480
+  },
+  "null_by_design": {
+    "severity": 0,
+    "occurred_at": 0,
+    "response_time_hours": 0,
+    "priority_label": 0,
+    "priority_label_source": 0
+  },
+  "coverage": {
+    "with_coordinates": 1870394,
+    "with_description": 299863,
+    "with_image_url": 84309,
+    "with_after_image_url": 0,
+    "with_sla_target": 22458,
+    "with_resolution_time": 1853828,
+    "with_parent_pointer": 241713
+  },
+  "note": "UNION of four independent city datasets. No cross-city entity resolution performed."
+}

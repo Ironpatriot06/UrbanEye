@@ -1,0 +1,783 @@
+{
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "coverage_gaps": 1,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "MAP-1",
+      "check": "all target categories are canonical or known sentinels",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "MAP-2",
+      "check": "no duplicate (source_dataset, source_category) rows",
+      "result": "PASS",
+      "detail": "0 duplicated rows"
+    },
+    {
+      "id": "MAP-3",
+      "check": "confidence values are valid",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "MAP-4",
+      "check": "low/none-confidence mappings are flagged REVIEW or sent to a sentinel",
+      "result": "PASS",
+      "detail": "0 unflagged: []"
+    },
+    {
+      "id": "MAP-5",
+      "check": "RDD2022 D50 is NOT mapped to OPEN_MANHOLE",
+      "result": "PASS",
+      "detail": "D50 -> REVIEW_REQUIRED (D50 marks an INTACT cover; mapping it to OPEN_MANHOLE would invert the label)"
+    },
+    {
+      "id": "MAP-6",
+      "check": "every canonical category is reachable from some source",
+      "result": "COVERAGE_GAP",
+      "detail": "no source vocabulary maps to: ['OPEN_MANHOLE', 'OTHER']. This is a real gap in the public data, not a mapping error. It is the primary justification for collecting UrbanEye+'s own Indian dataset."
+    }
+  ],
+  "mapping_rows": 119,
+  "by_source": {
+    "nyc311": 31,
+    "chicago311": 30,
+    "sf311": 28,
+    "boston311": 12,
+    "smartathon": 11,
+    "rdd2022": 7
+  },
+  "by_confidence": {
+    "high": 75,
+    "medium": 28,
+    "low": 12,
+    "none": 4
+  },
+  "targets_review_required": 9,
+  "targets_out_of_scope": 33,
+  "observed_incident_counts": {},
+  "observed_vision_counts": {},
+  "categories_with_no_incident_data": [
+    "OPEN_MANHOLE",
+    "OTHER"
+  ],
+  "categories_with_weak_incident_data_lt_100": {},
+  "unmapped_source_values_awaiting_review": [
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Alley Light Out Complaint",
+      "row_count": 42315
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Stray Animal Complaint",
+      "row_count": 17666
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Fly Dumping Complaint",
+      "row_count": 16272
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Check for Leak",
+      "row_count": 14410
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Yard Waste Pick-Up Request",
+      "row_count": 13764
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Recycling Pick Up",
+      "row_count": 13171
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Report an Injured Animal",
+      "row_count": 13055
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Inspect Public Way Request",
+      "row_count": 12110
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Tree Planting Request",
+      "row_count": 12049
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Vacant/Abandoned Building Complaint",
+      "row_count": 11491
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Business Complaints",
+      "row_count": 10551
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Buildings - Plumbing Violation",
+      "row_count": 10189
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Missed Garbage Pick-Up Complaint",
+      "row_count": 9863
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Vicious Animal Complaint",
+      "row_count": 9840
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "No Building Permit and Construction Violation",
+      "row_count": 8442
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Clean Vacant Lot Request",
+      "row_count": 8253
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Sign Repair Request - Stop Sign",
+      "row_count": 8210
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Nuisance Animal Complaint",
+      "row_count": 7504
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Water Lead Test Visit Request",
+      "row_count": 7215
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Cab Feedback",
+      "row_count": 7133
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Snow \u2013 Uncleared Sidewalk Complaint",
+      "row_count": 6921
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Street Light Pole Damage Complaint",
+      "row_count": 6869
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Restaurant Complaint",
+      "row_count": 6120
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Street Light On During Day Complaint",
+      "row_count": 4827
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "No Water Complaint",
+      "row_count": 4751
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Pet Wellness Check Request",
+      "row_count": 4463
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Sign Repair Request - One Way Sign",
+      "row_count": 4319
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Low Water Pressure Complaint",
+      "row_count": 3384
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Ice and Snow Removal Request",
+      "row_count": 3250
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Alley Sewer Inspection Request",
+      "row_count": 3121
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Consumer Fraud Complaint",
+      "row_count": 3082
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Coyote Interaction Complaint",
+      "row_count": 2963
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Shared Cost Sidewalk Program Request",
+      "row_count": 2929
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Vehicle Parked in Bike Lane Complaint",
+      "row_count": 2886
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "City Vehicle Sticker Violation",
+      "row_count": 2283
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Street Light Pole Door Missing Complaint",
+      "row_count": 1753
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Water Quality Concern",
+      "row_count": 1667
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Consumer Retail Business Complaint",
+      "row_count": 1461
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Wire Basket Request",
+      "row_count": 1457
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Bee/Wasp Removal",
+      "row_count": 1217
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Sign Repair Request - Do Not Enter Sign",
+      "row_count": 1187
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Bicycle Request/Complaint",
+      "row_count": 1179
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Viaduct Light Out Complaint",
+      "row_count": 997
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Cable TV Complaint",
+      "row_count": 877
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Porch Inspection Request",
+      "row_count": 856
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Home Buyer Program Info Request",
+      "row_count": 839
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Dead Bird",
+      "row_count": 773
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Commercial Fire Safety Inspection Request",
+      "row_count": 710
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Liquor Establishment Complaint",
+      "row_count": 608
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Animal In Trap Complaint",
+      "row_count": 594
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Paid Sick Leave Violation",
+      "row_count": 559
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Snow - Object/Dibs Removal Request",
+      "row_count": 533
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Recycling Inspection Request",
+      "row_count": 528
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Lead Inspection Request",
+      "row_count": 526
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Clean and Green Program Request",
+      "row_count": 490
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Ridesharing Complaint",
+      "row_count": 478
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Sidewalk Caf\u00e9/Outdoor Dining Complaint",
+      "row_count": 450
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Public Vehicle Complaint",
+      "row_count": 445
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "E-Scooter",
+      "row_count": 400
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Shared Housing/Vacation Rental Complaint",
+      "row_count": 359
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Tobacco - General Complaint",
+      "row_count": 332
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Pushcart Food Vendor Complaint",
+      "row_count": 284
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Tobacco - Sale to Minors Complaint",
+      "row_count": 218
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Inaccurate Fuel Pump Complaint",
+      "row_count": 212
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Wage Complaint",
+      "row_count": 177
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Bungalow/Vintage Home Information Request",
+      "row_count": 177
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Pavement Cave-In Inspection Request",
+      "row_count": 155
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "No Solicitation Complaint",
+      "row_count": 120
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Protected Bike Lane - Debris Removal",
+      "row_count": 101
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Renters and Foreclosure Complaint",
+      "row_count": 81
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Outdated Merchandise Complaint",
+      "row_count": 79
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Snow Removal - Protected Bike Lane or Bridge Sidewalk",
+      "row_count": 47
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Extreme Weather Notification",
+      "row_count": 35
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Divvy Bike Parking Complaint",
+      "row_count": 18
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Inaccurate Retail Scales Complaint",
+      "row_count": 8
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Licensed Pharmaceutical Representative Complaint",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Smokeless Tobacco at Sports Event Complaint",
+      "row_count": 6
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category": "Petcoke Dust Complaint",
+      "row_count": 4
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Homeless Concerns",
+      "row_count": 5205
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Sidewalk or Curb",
+      "row_count": 2375
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Temporary Sign Request",
+      "row_count": 2340
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Noise Report",
+      "row_count": 2095
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Blocked Street or SideWalk",
+      "row_count": 2084
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - PUC",
+      "row_count": 966
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - DPH",
+      "row_count": 855
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Residential Building Request",
+      "row_count": 752
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "SFHA Requests",
+      "row_count": 675
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - BUILDING INSPECTION",
+      "row_count": 518
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Color Curb",
+      "row_count": 455
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "311 External Request",
+      "row_count": 288
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - 311CUSTOMERSERVICECENTER",
+      "row_count": 284
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Construction Zone Permits",
+      "row_count": 259
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "Catch Basin Maintenance",
+      "row_count": 225
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ANIMAL CARE CONTROL",
+      "row_count": 223
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "DPW Volunteer Programs",
+      "row_count": 88
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - PLANNING",
+      "row_count": 69
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - RPD",
+      "row_count": 54
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - COUNTY CLERK",
+      "row_count": 42
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - FIRE DEPARTMENT",
+      "row_count": 34
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - PORT AUTHORITY",
+      "row_count": 20
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - SFPD",
+      "row_count": 19
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - HUMAN SERVICES AGENCY",
+      "row_count": 17
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - BOARD OF SUPERVISORS",
+      "row_count": 16
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - MONS",
+      "row_count": 16
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - DTIS",
+      "row_count": 15
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ENTERTAINMENT COMMISSION",
+      "row_count": 11
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CITY HALL",
+      "row_count": 10
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - MOH",
+      "row_count": 9
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - HSH",
+      "row_count": 8
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ENVIRONMENT",
+      "row_count": 8
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CONTRACT ADMINISTRATION",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CHILDSUPPORTSERVICES",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - RENT BOARD",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - LABOR STANDARDS ENFORCEMENT",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - MOD",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - MOCD",
+      "row_count": 7
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - HUMAN RESOURCES",
+      "row_count": 6
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ELECTIONS",
+      "row_count": 6
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - SMALL BUSINESS",
+      "row_count": 6
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - SHORT TERM RENTALS",
+      "row_count": 6
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - DISTRICT ATTORNEY",
+      "row_count": 5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - FILM COMMISSION",
+      "row_count": 5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CENTRAL SHOPS",
+      "row_count": 5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ART COMMISSION",
+      "row_count": 5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CITYADMINISTRATOR GSA",
+      "row_count": 5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CONTROLLER",
+      "row_count": 4
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - REAL ESTATE DEPARTMENT",
+      "row_count": 4
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - SHERIFF",
+      "row_count": 3
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ETHICS COMMISSION",
+      "row_count": 3
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - LIBRARY PUBLIC",
+      "row_count": 3
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ASSESSOR RECORDER",
+      "row_count": 3
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - OCC",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - AGING ADULT SERVICES",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CITY ATTORNEY",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - CHILDREN YOUTH FAMILIES",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - HUMAN RIGHTS COMMISSION",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ECONOMICS AND WORKFORCE DEVELOPMENT",
+      "row_count": 2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - AIRPORT SFO",
+      "row_count": 1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - TIDA",
+      "row_count": 1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - MEDICAL EXAMINER",
+      "row_count": 1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request -",
+      "row_count": 1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category": "General Request - ADULT PROBATION",
+      "row_count": 1
+    }
+  ],
+  "interpretation": "categories_with_no_incident_data is the direct input to the UrbanEye+ data-collection plan: civic issues the product must handle but for which no public source supplies a single training row."
+}

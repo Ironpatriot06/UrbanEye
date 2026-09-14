@@ -1,0 +1,78 @@
+{
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "coverage_gaps": 1,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "MAP-1",
+      "check": "all target categories are canonical or known sentinels",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "MAP-2",
+      "check": "no duplicate (source_dataset, source_category) rows",
+      "result": "PASS",
+      "detail": "0 duplicated rows"
+    },
+    {
+      "id": "MAP-3",
+      "check": "confidence values are valid",
+      "result": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "MAP-4",
+      "check": "low/none-confidence mappings are flagged REVIEW or sent to a sentinel",
+      "result": "PASS",
+      "detail": "0 unflagged: []"
+    },
+    {
+      "id": "MAP-5",
+      "check": "RDD2022 D50 is NOT mapped to OPEN_MANHOLE",
+      "result": "PASS",
+      "detail": "D50 -> REVIEW_REQUIRED (D50 marks an INTACT cover; mapping it to OPEN_MANHOLE would invert the label)"
+    },
+    {
+      "id": "MAP-6",
+      "check": "every canonical category is reachable from some source",
+      "result": "COVERAGE_GAP",
+      "detail": "no source vocabulary maps to: ['OPEN_MANHOLE', 'OTHER']. This is a real gap in the public data, not a mapping error. It is the primary justification for collecting UrbanEye+'s own Indian dataset."
+    }
+  ],
+  "mapping_rows": 119,
+  "by_source": {
+    "nyc311": 31,
+    "chicago311": 30,
+    "sf311": 28,
+    "boston311": 12,
+    "smartathon": 11,
+    "rdd2022": 7
+  },
+  "by_confidence": {
+    "high": 75,
+    "medium": 28,
+    "low": 12,
+    "none": 4
+  },
+  "targets_review_required": 9,
+  "targets_out_of_scope": 33,
+  "observed_incident_counts": {},
+  "observed_vision_counts": {},
+  "categories_with_no_incident_data": [
+    "OPEN_MANHOLE",
+    "OTHER"
+  ],
+  "categories_with_weak_incident_data_lt_100": {},
+  "unmapped_source_values_awaiting_review": [
+    {
+      "source_dataset": "sf311",
+      "source_category": "Totally Invented Category",
+      "row_count": 44
+    }
+  ],
+  "interpretation": "categories_with_no_incident_data is the direct input to the UrbanEye+ data-collection plan: civic issues the product must handle but for which no public source supplies a single training row."
+}

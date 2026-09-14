@@ -1,0 +1,26 @@
+{
+  "generated_at_utc": "2026-09-14T12:25:02.634771+00:00",
+  "unmapped_source_categories": 142,
+  "unmapped_rows_total": 358838,
+  "by_confidence": {
+    "high": {
+      "source_categories": 11,
+      "rows": 76306
+    },
+    "low": {
+      "source_categories": 28,
+      "rows": 51151
+    },
+    "medium": {
+      "source_categories": 53,
+      "rows": 60036
+    },
+    "none": {
+      "source_categories": 50,
+      "rows": 171345
+    }
+  },
+  "rows_recoverable_at_high_confidence": 76306,
+  "policy": "NOTHING IS APPLIED. Every row above is a proposal backed by an existing mapping, for a human to accept or reject in config/category_mapping.csv. Mapping a category changes which rows reach every model-ready table, so it is a taxonomy decision, not a data-cleaning one.",
+  "modelling_impact": "UNMAPPED and OUT_OF_SCOPE rows stay in all_incidents for auditability but never reach a model-ready table. Accepting the high-confidence proposals would move 76,306 rows into scope, changing the category prior every model sees and the density features of neighbouring incidents."
+}

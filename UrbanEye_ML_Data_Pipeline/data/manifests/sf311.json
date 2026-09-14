@@ -1,0 +1,51 @@
+[
+  {
+    "dataset": "sf311",
+    "file_name": "sf311_cases.jsonl",
+    "file_path": "data/raw/sf311/sf311_cases.jsonl",
+    "source_url": "https://data.sf.gov/resource/vw6y-z8j6.json",
+    "downloaded_at_utc": "2026-09-13T20:58:24.679162+00:00",
+    "file_size_bytes": 157801011,
+    "checksum": {
+      "algo": "sha256",
+      "value": "b34b9e50bb035517aa692dcc29ca8ad3ae6e959dd5fb917e429c4af9ed64910b",
+      "mode": "full"
+    },
+    "row_count": 200000,
+    "image_count": null,
+    "annotation_count": null,
+    "licence": {
+      "name": "Open Data Commons Public Domain Dedication and Licence (PDDL) 1.0",
+      "url": "http://opendatacommons.org/licenses/pddl/1.0/",
+      "decision": "INCLUDE"
+    },
+    "pipeline_version": "2.0.0",
+    "schema_version": "2.0.0",
+    "extra": {
+      "where": "requested_datetime >= '2018-01-01T00:00:00.000'",
+      "select": [
+        "service_request_id",
+        "requested_datetime",
+        "closed_date",
+        "updated_datetime",
+        "status_description",
+        "status_notes",
+        "agency_responsible",
+        "service_name",
+        "service_subtype",
+        "service_details",
+        "address",
+        "street",
+        "supervisor_district",
+        "neighborhoods_sffind_boundaries",
+        "analysis_neighborhood",
+        "police_district",
+        "lat",
+        "long",
+        "source",
+        "media_url"
+      ],
+      "socrata_reported_count": 6237695
+    }
+  }
+]

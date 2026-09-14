@@ -1,0 +1,22 @@
+{
+  "positives": 42,
+  "negatives": 31,
+  "negative_strategy_counts": {
+    "N1_same_category_far_apart": 10,
+    "N2_same_category_time_shifted": 10,
+    "N4_random_unrelated": 10,
+    "N3_different_category_nearby": 1
+  },
+  "positive_source": "Chicago 311 PARENT_SR_NUMBER (municipal duplicate determination)",
+  "orphaned_parent_pointers_excluded": 7,
+  "sf_weak_duplicates_not_usable_as_pairs": 18,
+  "sf_weak_note": "SF flags that a case WAS a duplicate but not of WHAT. No pair can be formed, so these are excluded from positives rather than guessed at.",
+  "text_similarity_null_reason": "Chicago 311 publishes no free-text description field.",
+  "image_similarity_null_reason": "Chicago 311 publishes no photographs. No public data can supervise this.",
+  "thresholds": {
+    "near_m": 200.0,
+    "far_m": 2000.0,
+    "time_shift_days": 90,
+    "co_located_days": 7
+  }
+}

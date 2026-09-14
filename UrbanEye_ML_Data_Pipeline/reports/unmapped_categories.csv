@@ -1,0 +1,143 @@
+source_dataset,source_category,row_count
+chicago311,Alley Light Out Complaint,42315
+chicago311,Stray Animal Complaint,17666
+chicago311,Fly Dumping Complaint,16272
+chicago311,Check for Leak,14410
+chicago311,Yard Waste Pick-Up Request,13764
+chicago311,Recycling Pick Up,13171
+chicago311,Report an Injured Animal,13055
+chicago311,Inspect Public Way Request,12110
+chicago311,Tree Planting Request,12049
+chicago311,Vacant/Abandoned Building Complaint,11491
+chicago311,Business Complaints,10551
+chicago311,Buildings - Plumbing Violation,10189
+chicago311,Missed Garbage Pick-Up Complaint,9863
+chicago311,Vicious Animal Complaint,9840
+chicago311,No Building Permit and Construction Violation,8442
+chicago311,Clean Vacant Lot Request,8253
+chicago311,Sign Repair Request - Stop Sign,8210
+chicago311,Nuisance Animal Complaint,7504
+chicago311,Water Lead Test Visit Request,7215
+chicago311,Cab Feedback,7133
+chicago311,Snow – Uncleared Sidewalk Complaint,6921
+chicago311,Street Light Pole Damage Complaint,6869
+chicago311,Restaurant Complaint,6120
+chicago311,Street Light On During Day Complaint,4827
+chicago311,No Water Complaint,4751
+chicago311,Pet Wellness Check Request,4463
+chicago311,Sign Repair Request - One Way Sign,4319
+chicago311,Low Water Pressure Complaint,3384
+chicago311,Ice and Snow Removal Request,3250
+chicago311,Alley Sewer Inspection Request,3121
+chicago311,Consumer Fraud Complaint,3082
+chicago311,Coyote Interaction Complaint,2963
+chicago311,Shared Cost Sidewalk Program Request,2929
+chicago311,Vehicle Parked in Bike Lane Complaint,2886
+chicago311,City Vehicle Sticker Violation,2283
+chicago311,Street Light Pole Door Missing Complaint,1753
+chicago311,Water Quality Concern,1667
+chicago311,Consumer Retail Business Complaint,1461
+chicago311,Wire Basket Request,1457
+chicago311,Bee/Wasp Removal,1217
+chicago311,Sign Repair Request - Do Not Enter Sign,1187
+chicago311,Bicycle Request/Complaint,1179
+chicago311,Viaduct Light Out Complaint,997
+chicago311,Cable TV Complaint,877
+chicago311,Porch Inspection Request,856
+chicago311,Home Buyer Program Info Request,839
+chicago311,Dead Bird,773
+chicago311,Commercial Fire Safety Inspection Request,710
+chicago311,Liquor Establishment Complaint,608
+chicago311,Animal In Trap Complaint,594
+chicago311,Paid Sick Leave Violation,559
+chicago311,Snow - Object/Dibs Removal Request,533
+chicago311,Recycling Inspection Request,528
+chicago311,Lead Inspection Request,526
+chicago311,Clean and Green Program Request,490
+chicago311,Ridesharing Complaint,478
+chicago311,Sidewalk Café/Outdoor Dining Complaint,450
+chicago311,Public Vehicle Complaint,445
+chicago311,E-Scooter,400
+chicago311,Shared Housing/Vacation Rental Complaint,359
+chicago311,Tobacco - General Complaint,332
+chicago311,Pushcart Food Vendor Complaint,284
+chicago311,Tobacco - Sale to Minors Complaint,218
+chicago311,Inaccurate Fuel Pump Complaint,212
+chicago311,Wage Complaint,177
+chicago311,Bungalow/Vintage Home Information Request,177
+chicago311,Pavement Cave-In Inspection Request,155
+chicago311,No Solicitation Complaint,120
+chicago311,Protected Bike Lane - Debris Removal,101
+chicago311,Renters and Foreclosure Complaint,81
+chicago311,Outdated Merchandise Complaint,79
+chicago311,Snow Removal - Protected Bike Lane or Bridge Sidewalk,47
+chicago311,Extreme Weather Notification,35
+chicago311,Divvy Bike Parking Complaint,18
+chicago311,Inaccurate Retail Scales Complaint,8
+chicago311,Licensed Pharmaceutical Representative Complaint,7
+chicago311,Smokeless Tobacco at Sports Event Complaint,6
+chicago311,Petcoke Dust Complaint,4
+sf311,Homeless Concerns,5205
+sf311,Sidewalk or Curb,2375
+sf311,Temporary Sign Request,2340
+sf311,Noise Report,2095
+sf311,Blocked Street or SideWalk,2084
+sf311,General Request - PUC,966
+sf311,General Request - DPH,855
+sf311,Residential Building Request,752
+sf311,SFHA Requests,675
+sf311,General Request - BUILDING INSPECTION,518
+sf311,Color Curb,455
+sf311,311 External Request,288
+sf311,General Request - 311CUSTOMERSERVICECENTER,284
+sf311,Construction Zone Permits,259
+sf311,Catch Basin Maintenance,225
+sf311,General Request - ANIMAL CARE CONTROL,223
+sf311,DPW Volunteer Programs,88
+sf311,General Request - PLANNING,69
+sf311,General Request - RPD,54
+sf311,General Request - COUNTY CLERK,42
+sf311,General Request - FIRE DEPARTMENT,34
+sf311,General Request - PORT AUTHORITY,20
+sf311,General Request - SFPD,19
+sf311,General Request - HUMAN SERVICES AGENCY,17
+sf311,General Request - BOARD OF SUPERVISORS,16
+sf311,General Request - MONS,16
+sf311,General Request - DTIS,15
+sf311,General Request - ENTERTAINMENT COMMISSION,11
+sf311,General Request - CITY HALL,10
+sf311,General Request - MOH,9
+sf311,General Request - HSH,8
+sf311,General Request - ENVIRONMENT,8
+sf311,General Request - CONTRACT ADMINISTRATION,7
+sf311,General Request - CHILDSUPPORTSERVICES,7
+sf311,General Request - RENT BOARD,7
+sf311,General Request - LABOR STANDARDS ENFORCEMENT,7
+sf311,General Request - MOD,7
+sf311,General Request - MOCD,7
+sf311,General Request - HUMAN RESOURCES,6
+sf311,General Request - ELECTIONS,6
+sf311,General Request - SMALL BUSINESS,6
+sf311,General Request - SHORT TERM RENTALS,6
+sf311,General Request - DISTRICT ATTORNEY,5
+sf311,General Request - FILM COMMISSION,5
+sf311,General Request - CENTRAL SHOPS,5
+sf311,General Request - ART COMMISSION,5
+sf311,General Request - CITYADMINISTRATOR GSA,5
+sf311,General Request - CONTROLLER,4
+sf311,General Request - REAL ESTATE DEPARTMENT,4
+sf311,General Request - SHERIFF,3
+sf311,General Request - ETHICS COMMISSION,3
+sf311,General Request - LIBRARY PUBLIC,3
+sf311,General Request - ASSESSOR RECORDER,3
+sf311,General Request - OCC,2
+sf311,General Request - AGING ADULT SERVICES,2
+sf311,General Request - CITY ATTORNEY,2
+sf311,General Request - CHILDREN YOUTH FAMILIES,2
+sf311,General Request - HUMAN RIGHTS COMMISSION,2
+sf311,General Request - ECONOMICS AND WORKFORCE DEVELOPMENT,2
+sf311,General Request - AIRPORT SFO,1
+sf311,General Request - TIDA,1
+sf311,General Request - MEDICAL EXAMINER,1
+sf311,General Request -,1
+sf311,General Request - ADULT PROBATION,1

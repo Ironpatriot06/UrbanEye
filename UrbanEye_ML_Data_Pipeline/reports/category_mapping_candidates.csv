@@ -1,0 +1,143 @@
+source_dataset,source_category,row_count,share_of_unmapped,proposed_category,confidence,shared_tokens,evidence,alternatives,decision
+chicago311,Alley Light Out Complaint,42315,0.1179,STREETLIGHT_FAULT,high,light out,resembles already-mapped chicago311:Street Light Out Complaint,POTHOLE(0.31); TRAFFIC_SIGNAL_FAULT(0.25),REVIEW — not applied by any script
+chicago311,Stray Animal Complaint,17666,0.0492,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Fly Dumping Complaint,16272,0.0453,GARBAGE_DUMPING,medium,dumping,resembles already-mapped nyc311:Illegal Dumping,,REVIEW — not applied by any script
+chicago311,Check for Leak,14410,0.0402,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Yard Waste Pick-Up Request,13764,0.0384,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Recycling Pick Up,13171,0.0367,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Report an Injured Animal,13055,0.0364,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Inspect Public Way Request,12110,0.0337,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Tree Planting Request,12049,0.0336,FALLEN_TREE,medium,tree,resembles already-mapped chicago311:Tree Emergency,,REVIEW — not applied by any script
+chicago311,Vacant/Abandoned Building Complaint,11491,0.032,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Business Complaints,10551,0.0294,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Buildings - Plumbing Violation,10189,0.0284,GARBAGE_DUMPING,low,violation,resembles already-mapped chicago311:Sanitation Code Violation; weak overlap,,REVIEW — not applied by any script
+chicago311,Missed Garbage Pick-Up Complaint,9863,0.0275,GARBAGE_DUMPING,medium,garbage,resembles already-mapped smartathon:GARBAGE,,REVIEW — not applied by any script
+chicago311,Vicious Animal Complaint,9840,0.0274,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,No Building Permit and Construction Violation,8442,0.0235,GARBAGE_DUMPING,low,violation,resembles already-mapped chicago311:Sanitation Code Violation; ambiguous — runner-up CONSTRUCTION_OBSTRUCTION scores 0.20 vs 0.21,CONSTRUCTION_OBSTRUCTION(0.20),REVIEW — not applied by any script
+chicago311,Clean Vacant Lot Request,8253,0.023,FALLEN_TREE,low,clean,resembles already-mapped chicago311:Tree Debris Clean-Up Request; weak overlap,,REVIEW — not applied by any script
+chicago311,Sign Repair Request - Stop Sign,8210,0.0229,SIGNAGE_DAMAGE,high,repair sign,resembles already-mapped sf311:Sign Repair,ROAD_DAMAGE(0.25),REVIEW — not applied by any script
+chicago311,Nuisance Animal Complaint,7504,0.0209,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Water Lead Test Visit Request,7215,0.0201,WATER_LEAKAGE_WATERLOGGING,low,water,resembles already-mapped chicago311:Water in Basement Complaint; weak overlap,,REVIEW — not applied by any script
+chicago311,Cab Feedback,7133,0.0199,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Snow – Uncleared Sidewalk Complaint,6921,0.0193,FOOTPATH_DAMAGE,medium,sidewalk,resembles already-mapped chicago311:Sidewalk Inspection Request,,REVIEW — not applied by any script
+chicago311,Street Light Pole Damage Complaint,6869,0.0191,STREETLIGHT_FAULT,high,light street,resembles already-mapped chicago311:Street Light Out Complaint,WATER_LEAKAGE_WATERLOGGING(0.25); ROAD_DAMAGE(0.25); POTHOLE(0.25),REVIEW — not applied by any script
+chicago311,Restaurant Complaint,6120,0.0171,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,Homeless Concerns,5205,0.0145,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Street Light On During Day Complaint,4827,0.0135,STREETLIGHT_FAULT,high,light street,resembles already-mapped chicago311:Street Light Out Complaint,WATER_LEAKAGE_WATERLOGGING(0.25); ROAD_DAMAGE(0.25); POTHOLE(0.25),REVIEW — not applied by any script
+chicago311,No Water Complaint,4751,0.0132,WATER_LEAKAGE_WATERLOGGING,high,water,resembles already-mapped chicago311:Water in Basement Complaint,,REVIEW — not applied by any script
+chicago311,Pet Wellness Check Request,4463,0.0124,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Sign Repair Request - One Way Sign,4319,0.012,SIGNAGE_DAMAGE,high,repair sign,resembles already-mapped sf311:Sign Repair,ROAD_DAMAGE(0.21),REVIEW — not applied by any script
+chicago311,Low Water Pressure Complaint,3384,0.0094,WATER_LEAKAGE_WATERLOGGING,medium,water,resembles already-mapped chicago311:Water in Basement Complaint,,REVIEW — not applied by any script
+chicago311,Ice and Snow Removal Request,3250,0.0091,GRAFFITI_VISUAL_POLLUTION,low,removal,resembles already-mapped chicago311:Graffiti Removal Request; ambiguous — runner-up FALLEN_TREE scores 0.31 vs 0.31,FALLEN_TREE(0.31),REVIEW — not applied by any script
+chicago311,Alley Sewer Inspection Request,3121,0.0087,DRAINAGE_SEWER,low,sewer,resembles already-mapped sf311:Sewer Issues; ambiguous — runner-up POTHOLE scores 0.42 vs 0.50,POTHOLE(0.42),REVIEW — not applied by any script
+chicago311,Consumer Fraud Complaint,3082,0.0086,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Coyote Interaction Complaint,2963,0.0083,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Shared Cost Sidewalk Program Request,2929,0.0082,FOOTPATH_DAMAGE,medium,sidewalk,resembles already-mapped chicago311:Sidewalk Inspection Request,,REVIEW — not applied by any script
+chicago311,Vehicle Parked in Bike Lane Complaint,2886,0.008,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,Sidewalk or Curb,2375,0.0066,FOOTPATH_DAMAGE,high,sidewalk,resembles already-mapped chicago311:Sidewalk Inspection Request,,REVIEW — not applied by any script
+sf311,Temporary Sign Request,2340,0.0065,SIGNAGE_DAMAGE,medium,sign,resembles already-mapped sf311:Sign Repair,,REVIEW — not applied by any script
+chicago311,City Vehicle Sticker Violation,2283,0.0064,GARBAGE_DUMPING,low,violation,resembles already-mapped chicago311:Sanitation Code Violation; weak overlap,,REVIEW — not applied by any script
+sf311,Noise Report,2095,0.0058,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,Blocked Street or SideWalk,2084,0.0058,ROAD_DAMAGE,low,street,resembles already-mapped nyc311:Street Condition; ambiguous — runner-up FOOTPATH_DAMAGE scores 0.33 vs 0.33,FOOTPATH_DAMAGE(0.33); WATER_LEAKAGE_WATERLOGGING(0.25); STREETLIGHT_FAULT(0.25),REVIEW — not applied by any script
+chicago311,Street Light Pole Door Missing Complaint,1753,0.0049,STREETLIGHT_FAULT,low,light street,resembles already-mapped chicago311:Street Light Out Complaint; ambiguous — runner-up SIGNAGE_DAMAGE scores 0.33 vs 0.42,SIGNAGE_DAMAGE(0.33); WATER_LEAKAGE_WATERLOGGING(0.21); POTHOLE(0.21),REVIEW — not applied by any script
+chicago311,Water Quality Concern,1667,0.0046,WATER_LEAKAGE_WATERLOGGING,medium,water,resembles already-mapped chicago311:Water in Basement Complaint,,REVIEW — not applied by any script
+chicago311,Consumer Retail Business Complaint,1461,0.0041,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Wire Basket Request,1457,0.0041,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Bee/Wasp Removal,1217,0.0034,GRAFFITI_VISUAL_POLLUTION,low,removal,resembles already-mapped chicago311:Graffiti Removal Request; ambiguous — runner-up FALLEN_TREE scores 0.31 vs 0.31,FALLEN_TREE(0.31),REVIEW — not applied by any script
+chicago311,Sign Repair Request - Do Not Enter Sign,1187,0.0033,SIGNAGE_DAMAGE,high,repair sign,resembles already-mapped sf311:Sign Repair,ROAD_DAMAGE(0.25),REVIEW — not applied by any script
+chicago311,Bicycle Request/Complaint,1179,0.0033,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Viaduct Light Out Complaint,997,0.0028,STREETLIGHT_FAULT,high,light out,resembles already-mapped chicago311:Street Light Out Complaint,TRAFFIC_SIGNAL_FAULT(0.25),REVIEW — not applied by any script
+sf311,General Request - PUC,966,0.0027,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Cable TV Complaint,877,0.0024,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Porch Inspection Request,856,0.0024,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - DPH,855,0.0024,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Home Buyer Program Info Request,839,0.0023,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Dead Bird,773,0.0022,FALLEN_TREE,medium,dead,resembles already-mapped nyc311:Dead Tree,,REVIEW — not applied by any script
+sf311,Residential Building Request,752,0.0021,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Commercial Fire Safety Inspection Request,710,0.002,WATER_LEAKAGE_WATERLOGGING,low,fire,resembles already-mapped chicago311:Open Fire Hydrant Complaint; weak overlap,,REVIEW — not applied by any script
+sf311,SFHA Requests,675,0.0019,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Liquor Establishment Complaint,608,0.0017,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Animal In Trap Complaint,594,0.0017,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Paid Sick Leave Violation,559,0.0016,GARBAGE_DUMPING,low,violation,resembles already-mapped chicago311:Sanitation Code Violation; weak overlap,,REVIEW — not applied by any script
+chicago311,Snow - Object/Dibs Removal Request,533,0.0015,GRAFFITI_VISUAL_POLLUTION,low,removal,resembles already-mapped chicago311:Graffiti Removal Request; ambiguous — runner-up FALLEN_TREE scores 0.25 vs 0.25,FALLEN_TREE(0.25),REVIEW — not applied by any script
+chicago311,Recycling Inspection Request,528,0.0015,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Lead Inspection Request,526,0.0015,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - BUILDING INSPECTION,518,0.0014,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Clean and Green Program Request,490,0.0014,FALLEN_TREE,low,clean,resembles already-mapped chicago311:Tree Debris Clean-Up Request; weak overlap,,REVIEW — not applied by any script
+chicago311,Ridesharing Complaint,478,0.0013,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,Color Curb,455,0.0013,FOOTPATH_DAMAGE,high,curb,resembles already-mapped nyc311:Curb Condition,,REVIEW — not applied by any script
+chicago311,Sidewalk Café/Outdoor Dining Complaint,450,0.0013,FOOTPATH_DAMAGE,medium,sidewalk,resembles already-mapped chicago311:Sidewalk Inspection Request,,REVIEW — not applied by any script
+chicago311,Public Vehicle Complaint,445,0.0012,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,E-Scooter,400,0.0011,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Shared Housing/Vacation Rental Complaint,359,0.001,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Tobacco - General Complaint,332,0.0009,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,311 External Request,288,0.0008,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - 311CUSTOMERSERVICECENTER,284,0.0008,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Pushcart Food Vendor Complaint,284,0.0008,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,Construction Zone Permits,259,0.0007,CONSTRUCTION_OBSTRUCTION,low,construction,resembles already-mapped smartathon:CONSTRUCTION_ROAD; weak overlap,,REVIEW — not applied by any script
+sf311,Catch Basin Maintenance,225,0.0006,FALLEN_TREE,low,maintenance,resembles already-mapped sf311:Tree Maintenance; ambiguous — runner-up ROAD_DAMAGE scores 0.25 vs 0.31,ROAD_DAMAGE(0.25); GARBAGE_DUMPING(0.20),REVIEW — not applied by any script
+sf311,General Request - ANIMAL CARE CONTROL,223,0.0006,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+chicago311,Tobacco - Sale to Minors Complaint,218,0.0006,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Inaccurate Fuel Pump Complaint,212,0.0006,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Wage Complaint,177,0.0005,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Bungalow/Vintage Home Information Request,177,0.0005,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Pavement Cave-In Inspection Request,155,0.0004,DRAINAGE_SEWER,low,cave,resembles already-mapped chicago311:Sewer Cave-In Inspection Request; ambiguous — runner-up POTHOLE scores 0.33 vs 0.42,POTHOLE(0.33); ROAD_DAMAGE(0.31),REVIEW — not applied by any script
+chicago311,No Solicitation Complaint,120,0.0003,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Protected Bike Lane - Debris Removal,101,0.0003,GRAFFITI_VISUAL_POLLUTION,low,removal,resembles already-mapped chicago311:Graffiti Removal Request; ambiguous — runner-up FALLEN_TREE scores 0.21 vs 0.21,FALLEN_TREE(0.21); GARBAGE_DUMPING(0.17),REVIEW — not applied by any script
+sf311,DPW Volunteer Programs,88,0.0002,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Renters and Foreclosure Complaint,81,0.0002,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Outdated Merchandise Complaint,79,0.0002,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - PLANNING,69,0.0002,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - RPD,54,0.0002,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Snow Removal - Protected Bike Lane or Bridge Sidewalk,47,0.0001,FOOTPATH_DAMAGE,low,sidewalk,resembles already-mapped chicago311:Sidewalk Inspection Request; ambiguous — runner-up GRAFFITI_VISUAL_POLLUTION scores 0.16 vs 0.18,GRAFFITI_VISUAL_POLLUTION(0.16); FALLEN_TREE(0.16); PUBLIC_INFRASTRUCTURE_DAMAGE(0.14),REVIEW — not applied by any script
+sf311,General Request - COUNTY CLERK,42,0.0001,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Extreme Weather Notification,35,0.0001,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - FIRE DEPARTMENT,34,0.0001,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,WATER_LEAKAGE_WATERLOGGING(0.20),REVIEW — not applied by any script
+sf311,General Request - PORT AUTHORITY,20,0.0001,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - SFPD,19,0.0001,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Divvy Bike Parking Complaint,18,0.0001,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - HUMAN SERVICES AGENCY,17,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - BOARD OF SUPERVISORS,16,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - MONS,16,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - DTIS,15,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ENTERTAINMENT COMMISSION,11,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - CITY HALL,10,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - MOH,9,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ENVIRONMENT,8,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - HSH,8,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Inaccurate Retail Scales Complaint,8,0.0,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+chicago311,Licensed Pharmaceutical Representative Complaint,7,0.0,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - CONTRACT ADMINISTRATION,7,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - CHILDSUPPORTSERVICES,7,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - RENT BOARD,7,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - LABOR STANDARDS ENFORCEMENT,7,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - MOD,7,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - MOCD,7,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ELECTIONS,6,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - SHORT TERM RENTALS,6,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - SMALL BUSINESS,6,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - HUMAN RESOURCES,6,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+chicago311,Smokeless Tobacco at Sports Event Complaint,6,0.0,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - DISTRICT ATTORNEY,5,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - FILM COMMISSION,5,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - CENTRAL SHOPS,5,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ART COMMISSION,5,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - CITYADMINISTRATOR GSA,5,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - REAL ESTATE DEPARTMENT,4,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+chicago311,Petcoke Dust Complaint,4,0.0,,none,,no token overlap with any existing mapping,,REVIEW — not applied by any script
+sf311,General Request - CONTROLLER,4,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - SHERIFF,3,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ETHICS COMMISSION,3,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - LIBRARY PUBLIC,3,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ASSESSOR RECORDER,3,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - OCC,2,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - AGING ADULT SERVICES,2,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - CITY ATTORNEY,2,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - CHILDREN YOUTH FAMILIES,2,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - HUMAN RIGHTS COMMISSION,2,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - ECONOMICS AND WORKFORCE DEVELOPMENT,2,0.0,GARBAGE_DUMPING,low,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning; weak overlap,,REVIEW — not applied by any script
+sf311,General Request - AIRPORT SFO,1,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - TIDA,1,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - MEDICAL EXAMINER,1,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request -,1,0.0,GARBAGE_DUMPING,high,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script
+sf311,General Request - ADULT PROBATION,1,0.0,GARBAGE_DUMPING,medium,general,resembles already-mapped sf311:Street and Sidewalk Cleaning|General Cleaning,,REVIEW — not applied by any script

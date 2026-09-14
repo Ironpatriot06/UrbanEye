@@ -1,0 +1,643 @@
+{
+  "generated_at_utc": "2026-09-14T12:40:44.874942+00:00",
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "PASSIVE-occurred_at",
+      "check": "`occurred_at` is entirely NULL in all_incidents",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "PASSIVE-priority_label",
+      "check": "`priority_label` is entirely NULL in all_incidents",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "PASSIVE-priority_label_source",
+      "check": "`priority_label_source` is entirely NULL in all_incidents",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "PASSIVE-response_time_hours",
+      "check": "`response_time_hours` is entirely NULL in all_incidents",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "PASSIVE-severity",
+      "check": "`severity` is entirely NULL in all_incidents",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "PASSIVE-image_similarity",
+      "check": "`image_similarity` is NULL in duplicate_pairs",
+      "result": "PASS",
+      "detail": "non-null=0 (Chicago, the only labelled source, has no photographs)"
+    },
+    {
+      "id": "ACTIVE-1",
+      "check": "guard REJECTS severity derived from RDD damage type",
+      "result": "PASS",
+      "detail": "constant grade 3 on POTHOLE rows; blocked 157190 rows"
+    },
+    {
+      "id": "ACTIVE-2",
+      "check": "guard REJECTS occurred_at derived from reported_at",
+      "result": "PASS",
+      "detail": "blocked 1900000 rows"
+    },
+    {
+      "id": "ACTIVE-3",
+      "check": "guard REJECTS response_time derived from resolution_time",
+      "result": "PASS",
+      "detail": "blocked 1853828 rows"
+    },
+    {
+      "id": "ACTIVE-5",
+      "check": "guard REJECTS priority_label copied from priority_baseline",
+      "result": "PASS",
+      "detail": "- priority_label_source has 1,900,000 non-null values \u2014 provenance of a genuine label. Always NULL until real labels exist."
+    },
+    {
+      "id": "ACTIVE-4",
+      "check": "no vision output is present in this tabular-only pipeline",
+      "result": "PASS",
+      "detail": "no vision output present"
+    }
+  ],
+  "null_by_design_fields": [
+    "occurred_at",
+    "priority_label",
+    "priority_label_source",
+    "response_time_hours",
+    "severity"
+  ],
+  "field_provenance": {
+    "incidents": [
+      {
+        "field": "incident_id",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "f'{source_dataset}:{source_incident_id}' \u2014 globally unique"
+      },
+      {
+        "field": "source_dataset",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "which publisher this row came from"
+      },
+      {
+        "field": "source_incident_id",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "CaseID / CASE_ENQUIRY_ID / SR_NUMBER / Unique Key"
+      },
+      {
+        "field": "city",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "publisher's city \u2014 never rewritten to an Indian city"
+      },
+      {
+        "field": "category",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "source category mapped via config/category_mapping.csv"
+      },
+      {
+        "field": "subcategory",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "publisher's second-level label; NULL for Chicago"
+      },
+      {
+        "field": "source_category_raw",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "retained so mapping decisions stay auditable"
+      },
+      {
+        "field": "description",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "AGENCY-written text (resolution notes / case titles). NOT citizen text. Forbidden as a report-time feature."
+      },
+      {
+        "field": "latitude",
+        "dtype": "float64",
+        "provenance": "SOURCE",
+        "note": "publisher WGS84. US coordinates stay US coordinates."
+      },
+      {
+        "field": "longitude",
+        "dtype": "float64",
+        "provenance": "SOURCE",
+        "note": ""
+      },
+      {
+        "field": "address",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": ""
+      },
+      {
+        "field": "zone_id",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "ward / community area / analysis neighbourhood / community board. A US admin unit, NOT an Indian zone."
+      },
+      {
+        "field": "zone_type",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "names which administrative unit zone_id refers to"
+      },
+      {
+        "field": "reported_at",
+        "dtype": "datetime64[ns, UTC]",
+        "provenance": "SOURCE",
+        "note": "when the citizen reported it"
+      },
+      {
+        "field": "occurred_at",
+        "dtype": "datetime64[ns, UTC]",
+        "provenance": "NULL",
+        "note": "NO configured source records when the problem began. Always NULL. Never derived from reported_at."
+      },
+      {
+        "field": "closed_at",
+        "dtype": "datetime64[ns, UTC]",
+        "provenance": "SOURCE",
+        "note": "POST-RESOLUTION. Never a feature."
+      },
+      {
+        "field": "status",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "normalised open/closed/cancelled/other. POST-RESOLUTION."
+      },
+      {
+        "field": "department",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "responsible agency / owner department"
+      },
+      {
+        "field": "priority_baseline",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "P1-P4 from the weighted engine in config/priority_config.yaml. NOT ground truth."
+      },
+      {
+        "field": "priority_score",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "normalised 0-1 score behind priority_baseline"
+      },
+      {
+        "field": "priority_reasons",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "pipe-separated explanation of the top contributing features"
+      },
+      {
+        "field": "priority_confidence",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "HIGH/MEDIUM/LOW \u2014 a deterministic tier over how much of the policy was evaluable, per priority_config.confidence_tiers. Not a probability."
+      },
+      {
+        "field": "priority_features_available",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "how many weighted inputs were non-null for this row"
+      },
+      {
+        "field": "priority_feature_coverage",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "share of TOTAL policy weight those inputs carry, 0-1. Published so priority_confidence can always be audited."
+      },
+      {
+        "field": "priority_method",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "priority_config.yaml@<config_version>"
+      },
+      {
+        "field": "priority_label",
+        "dtype": "string",
+        "provenance": "NULL",
+        "note": "GENUINE operational priority. No public 311 dataset provides one. Always NULL here."
+      },
+      {
+        "field": "priority_label_source",
+        "dtype": "string",
+        "provenance": "NULL",
+        "note": "provenance of a genuine label. Always NULL until real labels exist."
+      },
+      {
+        "field": "is_ground_truth",
+        "dtype": "boolean",
+        "provenance": "DERIVED",
+        "note": "always False for priority in this pipeline"
+      },
+      {
+        "field": "sla_target_hours",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "Boston TARGET_DT-OPEN_DT; NYC Due Date-Created Date; NULL for SF/Chicago"
+      },
+      {
+        "field": "sla_met",
+        "dtype": "boolean",
+        "provenance": "DERIVED",
+        "note": "resolution_time_hours <= sla_target_hours, only when both valid. POST-RESOLUTION."
+      },
+      {
+        "field": "sla_hours_policy",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "UrbanEye+ business-rule SLA for priority_baseline, from priority_config.sla_hours. Product config, not evidence."
+      },
+      {
+        "field": "response_time_hours",
+        "dtype": "float64",
+        "provenance": "NULL",
+        "note": "NO configured source records a first-response timestamp. Always NULL."
+      },
+      {
+        "field": "resolution_time_hours",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "closed_at - reported_at. NULL when still open. POST-RESOLUTION \u2014 target only, never a feature."
+      },
+      {
+        "field": "is_duplicate",
+        "dtype": "boolean",
+        "provenance": "SOURCE",
+        "note": "Chicago DUPLICATE flag; weak text signal from SF Status Notes; NULL elsewhere"
+      },
+      {
+        "field": "parent_incident_id",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "Chicago PARENT_SR_NUMBER only"
+      },
+      {
+        "field": "report_channel",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "phone / web / mobile / social / other"
+      },
+      {
+        "field": "image_url",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "SF Media URL or Boston SubmittedPhoto. METADATA ONLY \u2014 no image is ever downloaded."
+      },
+      {
+        "field": "image_url_after",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "Boston ClosedPhoto only. Metadata only."
+      },
+      {
+        "field": "severity",
+        "dtype": "Int64",
+        "provenance": "NULL",
+        "note": "Out of current product scope AND unavailable. No public source provides a defensible grade. Always NULL."
+      },
+      {
+        "field": "coord_outside_city_bbox",
+        "dtype": "boolean",
+        "provenance": "DERIVED",
+        "note": "QA flag, not a filter"
+      }
+    ],
+    "vision_samples": [
+      {
+        "field": "incident_id",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "join key to incidents"
+      },
+      {
+        "field": "near_school",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_school_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_hospital",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_hospital_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_metro",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_metro_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_rail_station",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_rail_station_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_public_transport",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_public_transport_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_fire_station",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_fire_station_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_police_station",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_police_station_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_government_building",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_government_building_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_major_road",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_major_road_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "road_class",
+        "dtype": "string",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "near_intersection",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "distance_to_nearest_intersection_m",
+        "dtype": "float64",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "metro_city",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "urban_area",
+        "dtype": "boolean",
+        "provenance": "SYSTEM",
+        "note": "REQUIRES EXTERNAL GEOSPATIAL DATA. NULL for US 311 rows. Populated at runtime by the India PostGIS layer."
+      },
+      {
+        "field": "nearby_similar_incidents_24h",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "computed from 311 history (DERIVED)"
+      },
+      {
+        "field": "nearby_similar_incidents_7d",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "computed from 311 history (DERIVED)"
+      },
+      {
+        "field": "nearby_similar_incidents_30d",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "computed from 311 history (DERIVED)"
+      },
+      {
+        "field": "local_incident_density",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "computed from 311 history (DERIVED)"
+      },
+      {
+        "field": "category_incident_density",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "local_incident_density restricted to this category, as a share"
+      },
+      {
+        "field": "hours_since_previous_similar_incident",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "Hours between this report and the most recent EARLIER report of the same category within radius_m. NULL when there was none inside window_hours. Small values mean the same problem is being re-reported at the same place right now, which the count features cannot express: 5 reports spread over a month and 5 reports in the last hour give the same 30-day count.\n"
+      },
+      {
+        "field": "geo_provider",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "which provider produced this row, e.g. 'null_provider' or 'india_postgis'"
+      },
+      {
+        "field": "geo_features_available",
+        "dtype": "Int64",
+        "provenance": "DERIVED",
+        "note": "count of non-null geospatial features"
+      }
+    ],
+    "duplicate_pairs": [
+      {
+        "field": "incident_a",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "parent incident_id"
+      },
+      {
+        "field": "incident_b",
+        "dtype": "string",
+        "provenance": "SOURCE",
+        "note": "child incident_id"
+      },
+      {
+        "field": "same_incident",
+        "dtype": "boolean",
+        "provenance": "SOURCE",
+        "note": "TRUE from Chicago PARENT_SR_NUMBER; FALSE from documented negative sampling"
+      },
+      {
+        "field": "distance_meters",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "haversine; NULL if either coordinate is missing"
+      },
+      {
+        "field": "time_difference_hours",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": ""
+      },
+      {
+        "field": "category_match",
+        "dtype": "boolean",
+        "provenance": "DERIVED",
+        "note": ""
+      },
+      {
+        "field": "text_similarity",
+        "dtype": "float64",
+        "provenance": "DERIVED",
+        "note": "NULL for Chicago \u2014 Chicago publishes no free-text description"
+      },
+      {
+        "field": "source_dataset",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": ""
+      },
+      {
+        "field": "image_similarity",
+        "dtype": "float64",
+        "provenance": "NULL",
+        "note": "NULL. The labelled source (Chicago) has no photographs."
+      },
+      {
+        "field": "negative_strategy",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "which negative-sampling rule produced a FALSE pair; NULL for positives"
+      },
+      {
+        "field": "split",
+        "dtype": "string",
+        "provenance": "DERIVED",
+        "note": "group-aware; a duplicate group never spans splits"
+      }
+    ]
+  },
+  "genuine_vs_derived": {
+    "GENUINE (from publisher)": [
+      "category (normalised from source vocabulary)",
+      "subcategory",
+      "description",
+      "latitude",
+      "longitude",
+      "address",
+      "zone_id",
+      "reported_at",
+      "status",
+      "department",
+      "report_channel",
+      "image_path",
+      "image_path_after",
+      "is_duplicate (Chicago)",
+      "parent_incident_id (Chicago)"
+    ],
+    "DERIVED (computed here)": [
+      "incident_id",
+      "resolution_time_hours",
+      "sla_target_hours",
+      "sla_met",
+      "priority_baseline",
+      "priority_score",
+      "priority_reasons",
+      "priority_confidence",
+      "priority_features_available",
+      "priority_method",
+      "is_ground_truth",
+      "sla_hours_policy",
+      "zone_type",
+      "coord_outside_city_bbox"
+    ],
+    "SYSTEM (Indian PostGIS, at runtime)": [
+      "near_school",
+      "near_hospital",
+      "near_metro",
+      "near_railway",
+      "near_major_road",
+      "road_class",
+      "is_major_city",
+      "nearby_incident_count",
+      "distance_to_*_m"
+    ],
+    "NULL (genuinely unavailable)": [
+      "occurred_at",
+      "priority_label",
+      "priority_label_source",
+      "response_time_hours",
+      "severity",
+      "image_similarity"
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "OUT-1",
+      "check": "priority_dataset present",
+      "result": "PASS",
+      "detail": "Priority (features; target NULL by design): 1,445 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "resolution_dataset present",
+      "result": "PASS",
+      "detail": "Resolution time / SLA risk: 1,115 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "hotspot_dataset present",
+      "result": "PASS",
+      "detail": "Hotspot / incident risk: 783 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "duplicate_pairs present",
+      "result": "PASS",
+      "detail": "Duplicate detection: 73 rows"
+    },
+    {
+      "id": "OUT-3",
+      "check": "priority_dataset chronological splits do not overlap",
+      "result": "PASS",
+      "detail": "train: 2021-03-01..2022-12-28; val: 2022-12-31..2023-12-29; test: 2023-12-31..2024-12-27"
+    },
+    {
+      "id": "OUT-3",
+      "check": "resolution_dataset chronological splits do not overlap",
+      "result": "PASS",
+      "detail": "train: 2021-03-09..2022-12-28; val: 2022-12-31..2023-12-29; test: 2024-01-01..2024-12-24"
+    },
+    {
+      "id": "OUT-4",
+      "check": "no duplicate group spans multiple splits",
+      "result": "PASS",
+      "detail": "0 groups span splits"
+    },
+    {
+      "id": "OUT-4b",
+      "check": "duplicate_pairs contains both positives and negatives",
+      "result": "PASS",
+      "detail": "positives=42 negatives=31"
+    },
+    {
+      "id": "OUT-7",
+      "check": "resolution target has no negative or missing values",
+      "result": "PASS",
+      "detail": "negative=0 nan=0"
+    },
+    {
+      "id": "OUT-7b",
+      "check": "resolution_dataset EXCLUDES sla_met (it is derived from the target)",
+      "result": "PASS",
+      "detail": "sla_breach is provided instead as a separate, explicitly-declared target"
+    },
+    {
+      "id": "OUT-8",
+      "check": "priority_dataset is_ground_truth is False everywhere",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "OUT-8b",
+      "check": "POI/road/area columns requiring external geospatial data are NULL",
+      "result": "PASS",
+      "detail": "23 SYSTEM-provenance columns present and empty (await India PostGIS)"
+    },
+    {
+      "id": "OUT-8c",
+      "check": "backward-looking density features ARE computed from 311 history",
+      "result": "PASS",
+      "detail": "populated: ['nearby_similar_incidents_24h', 'nearby_similar_incidents_7d', 'nearby_similar_incidents_30d', 'local_incident_density', 'category_incident_density']"
+    },
+    {
+      "id": "OUT-9",
+      "check": "no joinable key between vision and incident outputs",
+      "result": "PASS",
+      "detail": "vision output empty; join impossible by construction"
+    },
+    {
+      "id": "OUT-10",
+      "check": "hotspot lag features are shift(1) \u2014 no period sees itself",
+      "result": "PASS",
+      "detail": "0 rows disagree with a recomputed shift(1)"
+    }
+  ],
+  "outputs": {
+    "priority_dataset": {
+      "rows": 1445,
+      "columns": 55
+    },
+    "resolution_dataset": {
+      "rows": 1115,
+      "columns": 25
+    },
+    "hotspot_dataset": {
+      "rows": 783,
+      "columns": 17
+    },
+    "duplicate_pairs": {
+      "rows": 73,
+      "columns": 11
+    }
+  },
+  "no_model_trained": true
+}

@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "id": "LEAK-1/priority_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-1/resolution_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-1/hotspot_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-7",
+      "description": "resolution_dataset excludes sla_met (derived from the target)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-2",
+      "description": "hotspot previous_period_count equals the independently re-derived t-1 count",
+      "result": "PASS",
+      "detail": "mismatches=0 of 520 comparable"
+    },
+    {
+      "id": "LEAK-2b",
+      "description": "previous_period_count never equals the current week where t-1 differs",
+      "result": "PASS",
+      "detail": "suspicious_rows=0"
+    },
+    {
+      "id": "LEAK-3",
+      "description": "hotspot target is the next period, independently re-derived",
+      "result": "PASS",
+      "detail": "mismatches=0"
+    },
+    {
+      "id": "LEAK-4",
+      "description": "nearby_similar_incidents_30d re-derives exactly with reported_at < t",
+      "result": "PASS",
+      "detail": "mismatches=0 of 150 resampled rows"
+    },
+    {
+      "id": "LEAK-5/priority_dataset",
+      "description": "chronological splits do not overlap in time",
+      "result": "PASS",
+      "detail": "train_max=2022-12-28 20:38:55+00:00 val_min=2022-12-31 03:14:18+00:00; val_max=2023-12-29 01:56:14+00:00 test_min=2023-12-31 14:07:24+00:00"
+    },
+    {
+      "id": "LEAK-5/hotspot_dataset",
+      "description": "chronological splits do not overlap in time",
+      "result": "PASS",
+      "detail": "train_max=2022-12-26 00:00:00+00:00 val_min=2023-01-02 00:00:00+00:00; val_max=2023-12-25 00:00:00+00:00 test_min=2024-01-01 00:00:00+00:00"
+    },
+    {
+      "id": "LEAK-6",
+      "description": "no duplicate group spans multiple splits",
+      "result": "PASS",
+      "detail": "groups_spanning=0"
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0
+  },
+  "forbidden_feature_list": [
+    "closed_at",
+    "status",
+    "sla_met",
+    "description",
+    "resolution_description",
+    "closure_reason",
+    "status_notes"
+  ],
+  "note": "LEAK-2, LEAK-3 and LEAK-4 independently re-derive the value rather than trusting the builder that produced it."
+}

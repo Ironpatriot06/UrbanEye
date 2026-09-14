@@ -1,0 +1,54 @@
+[
+  {
+    "dataset": "nyc311",
+    "file_name": "nyc311_2010_2019.jsonl",
+    "file_path": "data/raw/nyc311/nyc311_2010_2019.jsonl",
+    "source_url": "https://data.cityofnewyork.us/resource/76ig-c548.json",
+    "downloaded_at_utc": "2026-09-13T21:30:57.139494+00:00",
+    "file_size_bytes": 75495490,
+    "checksum": {
+      "algo": "sha256",
+      "value": "21f4dfeb513105d174027ecfc7296e368e9f83d153453126c5faf9469b5cfe9c",
+      "mode": "full"
+    },
+    "row_count": 100000,
+    "image_count": null,
+    "annotation_count": null,
+    "licence": {
+      "name": "NYC Open Data Terms of Use",
+      "url": "https://opendata.cityofnewyork.us/overview/",
+      "decision": "INCLUDE"
+    },
+    "pipeline_version": "2.0.0",
+    "schema_version": "2.0.0",
+    "extra": {
+      "where": "complaint_type in('Street Condition','Street Light Condition','Traffic Signal Condition','Sewer','Water System','Dirty Conditions','Sidewalk Condition','Damaged Tree','Overgrown Tree/Branches','Dead Tree','Root/Sewer/Sidewalk Condition','Highway Condition','Bridge Condition','Curb Condition','Sweeping/Missed','Missed Collection (All Materials)','Illegal Dumping','Derelict Vehicles','Graffiti','Street Sign - Damaged','Street Sign - Missing','Street Sign - Dangling','Broken Muni Meter','Sewer Backup (Use Comments)')",
+      "filtered_complaint_types": [
+        "Street Condition",
+        "Street Light Condition",
+        "Traffic Signal Condition",
+        "Sewer",
+        "Water System",
+        "Dirty Conditions",
+        "Sidewalk Condition",
+        "Damaged Tree",
+        "Overgrown Tree/Branches",
+        "Dead Tree",
+        "Root/Sewer/Sidewalk Condition",
+        "Highway Condition",
+        "Bridge Condition",
+        "Curb Condition",
+        "Sweeping/Missed",
+        "Missed Collection (All Materials)",
+        "Illegal Dumping",
+        "Derelict Vehicles",
+        "Graffiti",
+        "Street Sign - Damaged",
+        "Street Sign - Missing",
+        "Street Sign - Dangling",
+        "Broken Muni Meter",
+        "Sewer Backup (Use Comments)"
+      ]
+    }
+  }
+]

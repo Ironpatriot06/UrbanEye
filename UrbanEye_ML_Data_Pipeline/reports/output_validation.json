@@ -1,0 +1,118 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "OUT-1",
+      "check": "priority_dataset present",
+      "result": "PASS",
+      "detail": "Priority (features; target NULL by design): 1,900,000 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "resolution_dataset present",
+      "result": "PASS",
+      "detail": "Resolution time / SLA risk: 1,026,596 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "hotspot_dataset present",
+      "result": "PASS",
+      "detail": "Hotspot / incident risk: 67,092 rows"
+    },
+    {
+      "id": "OUT-1",
+      "check": "duplicate_pairs present",
+      "result": "PASS",
+      "detail": "Duplicate detection: 455,460 rows"
+    },
+    {
+      "id": "OUT-3",
+      "check": "priority_dataset chronological splits do not overlap within each source",
+      "result": "PASS",
+      "detail": "chicago311: train 2018-07-01..2020-03-18, val 2020-03-18..2020-06-24, test 2020-06-24..2020-08-28 | nyc311: train 2010-01-01..2010-02-19, val 2010-02-19..2010-03-01, test 2010-03-01..2010-03-09 | sf311: train 2018-01-01..2018-04-06, val 2018-04-06..2018-04-24, test 2018-04-24..2018-05-10"
+    },
+    {
+      "id": "OUT-3",
+      "check": "resolution_dataset chronological splits do not overlap within each source",
+      "result": "PASS",
+      "detail": "chicago311: train 2018-07-01..2020-03-26, val 2020-03-26..2020-06-23, test 2020-06-23..2020-08-28 | nyc311: train 2010-01-01..2010-02-20, val 2010-02-20..2010-03-01, test 2010-03-01..2010-03-09 | sf311: train 2018-01-01..2018-04-03, val 2018-04-03..2018-04-21, test 2018-04-21..2018-05-10"
+    },
+    {
+      "id": "OUT-4",
+      "check": "no duplicate group spans multiple splits",
+      "result": "PASS",
+      "detail": "0 groups span splits"
+    },
+    {
+      "id": "OUT-4b",
+      "check": "duplicate_pairs contains both positives and negatives",
+      "result": "PASS",
+      "detail": "positives=231955 negatives=223505"
+    },
+    {
+      "id": "OUT-7",
+      "check": "resolution target has no negative or missing values",
+      "result": "PASS",
+      "detail": "negative=0 nan=0"
+    },
+    {
+      "id": "OUT-7b",
+      "check": "resolution_dataset EXCLUDES sla_met (it is derived from the target)",
+      "result": "PASS",
+      "detail": "sla_breach is provided instead as a separate, explicitly-declared target"
+    },
+    {
+      "id": "OUT-8",
+      "check": "priority_dataset is_ground_truth is False everywhere",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "OUT-8b",
+      "check": "POI/road/area columns requiring external geospatial data are NULL",
+      "result": "PASS",
+      "detail": "23 SYSTEM-provenance columns present and empty (await India PostGIS)"
+    },
+    {
+      "id": "OUT-8c",
+      "check": "backward-looking density features ARE computed from 311 history",
+      "result": "PASS",
+      "detail": "populated: ['nearby_similar_incidents_24h', 'nearby_similar_incidents_7d', 'nearby_similar_incidents_30d', 'local_incident_density', 'category_incident_density', 'hours_since_previous_similar_incident']"
+    },
+    {
+      "id": "OUT-9",
+      "check": "no joinable key between vision and incident outputs",
+      "result": "PASS",
+      "detail": "vision output empty; join impossible by construction"
+    },
+    {
+      "id": "OUT-10",
+      "check": "hotspot lag features are shift(1) \u2014 no period sees itself",
+      "result": "PASS",
+      "detail": "0 rows disagree with a recomputed shift(1)"
+    }
+  ],
+  "outputs": {
+    "priority_dataset": {
+      "rows": 1900000,
+      "columns": 64
+    },
+    "resolution_dataset": {
+      "rows": 1026596,
+      "columns": 27
+    },
+    "hotspot_dataset": {
+      "rows": 67092,
+      "columns": 17
+    },
+    "duplicate_pairs": {
+      "rows": 455460,
+      "columns": 11
+    }
+  },
+  "no_model_trained": true
+}

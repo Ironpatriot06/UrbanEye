@@ -1,0 +1,51 @@
+{
+  "positives": 231955,
+  "negatives": 223505,
+  "negative_strategy_counts": {
+    "N1_same_category_far_apart": 57987,
+    "N4_random_unrelated": 57987,
+    "N3_different_category_nearby": 57937,
+    "N2_same_category_time_shifted": 49594
+  },
+  "positive_source": "Chicago 311 PARENT_SR_NUMBER (municipal duplicate determination)",
+  "orphaned_parent_pointers_excluded": 9758,
+  "sf_weak_duplicates_not_usable_as_pairs": 23150,
+  "sf_weak_note": "SF flags that a case WAS a duplicate but not of WHAT. No pair can be formed, so these are excluded from positives rather than guessed at.",
+  "text_similarity_null_reason": "Chicago 311 publishes no free-text description field.",
+  "image_similarity_null_reason": "Chicago 311 publishes no photographs. No public data can supervise this.",
+  "thresholds": {
+    "near_m": 200.0,
+    "far_m": 2000.0,
+    "time_shift_days": 90,
+    "co_located_days": 7
+  },
+  "split": {
+    "strategy": "connected_component_chronological",
+    "group_key": "connected component of the positive-pair graph",
+    "cut_mode": "quantile_fallback",
+    "train_end": "2019-12-31 15:46:33+00:00",
+    "val_end": "2020-05-18 14:00:12.800000+00:00",
+    "components": 1368045,
+    "note": "Negatives are sampled INSIDE each split, so no pair crosses a split boundary and none has to be discarded after the fact."
+  },
+  "split_counts": {
+    "train": 324501,
+    "val": 69276,
+    "test": 61683
+  },
+  "class_balance_per_split": {
+    "test": {
+      "positive": 34794,
+      "negative": 26889
+    },
+    "train": {
+      "positive": 162370,
+      "negative": 162131
+    },
+    "val": {
+      "positive": 34791,
+      "negative": 34485
+    }
+  },
+  "evaluation_warning": "The negatives are CONSTRUCTED, so the 1:1 class balance here is a design choice, not the deployment prevalence \u2014 in production the overwhelming majority of candidate pairs are not duplicates. Worse, the sampling rules themselves correlate with the label: N1 negatives are >2 km apart and N2 negatives are >90 days apart by construction, so distance and time difference separate the classes partly by fiat. Report metrics per negative_strategy and treat any pooled PR-AUC as an upper bound."
+}

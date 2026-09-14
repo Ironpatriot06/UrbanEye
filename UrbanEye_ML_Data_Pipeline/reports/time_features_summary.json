@@ -1,0 +1,164 @@
+{
+  "rows": 1900000,
+  "source": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/all_incidents.parquet",
+  "columns": [
+    "reported_at_local",
+    "local_timezone",
+    "hour",
+    "day_of_week",
+    "month",
+    "year",
+    "is_weekend",
+    "is_night",
+    "hour_utc",
+    "date_local"
+  ],
+  "model_features": [
+    "hour",
+    "day_of_week",
+    "month",
+    "year",
+    "is_weekend",
+    "is_night"
+  ],
+  "timezone_policy": {
+    "timestamps_stored_as": "UTC",
+    "features_derived_in": "source city local time",
+    "mapping": {
+      "sf311": "America/Los_Angeles",
+      "boston311": "America/New_York",
+      "chicago311": "America/Chicago",
+      "nyc311": "America/New_York"
+    },
+    "night_window_local": "22:00-06:00"
+  },
+  "null_counts": {
+    "reported_at_local": 0,
+    "local_timezone": 0,
+    "hour": 0,
+    "day_of_week": 0,
+    "month": 0,
+    "year": 0,
+    "is_weekend": 0,
+    "is_night": 0,
+    "hour_utc": 0,
+    "date_local": 0
+  },
+  "by_source": {
+    "chicago311": {
+      "rows": 1600000,
+      "timezone": "America/Chicago",
+      "utc_offset_hours_observed": [
+        -6.0,
+        -5.0
+      ],
+      "hour_min": 0,
+      "hour_max": 23,
+      "night_share": 0.0658,
+      "weekend_share": 0.1411,
+      "hour_histogram": {
+        "0": 13134,
+        "1": 8066,
+        "2": 5281,
+        "3": 4660,
+        "4": 6153,
+        "5": 12042,
+        "6": 31804,
+        "7": 60142,
+        "8": 97976,
+        "9": 135361,
+        "10": 148581,
+        "11": 146521,
+        "12": 137362,
+        "13": 136485,
+        "14": 125938,
+        "15": 110884,
+        "16": 89677,
+        "17": 68413,
+        "18": 55955,
+        "19": 51403,
+        "20": 49502,
+        "21": 48644,
+        "22": 35198,
+        "23": 20818
+      }
+    },
+    "nyc311": {
+      "rows": 100000,
+      "timezone": "America/New_York",
+      "utc_offset_hours_observed": [
+        -5.0
+      ],
+      "hour_min": 0,
+      "hour_max": 23,
+      "night_share": 0.0595,
+      "weekend_share": 0.1436,
+      "hour_histogram": {
+        "0": 870,
+        "1": 597,
+        "2": 385,
+        "3": 328,
+        "4": 339,
+        "5": 521,
+        "6": 1087,
+        "7": 3471,
+        "8": 5276,
+        "9": 8749,
+        "10": 10198,
+        "11": 9637,
+        "12": 8642,
+        "13": 9187,
+        "14": 9427,
+        "15": 5832,
+        "16": 4709,
+        "17": 3649,
+        "18": 5547,
+        "19": 4585,
+        "20": 2214,
+        "21": 1842,
+        "22": 1518,
+        "23": 1390
+      }
+    },
+    "sf311": {
+      "rows": 200000,
+      "timezone": "America/Los_Angeles",
+      "utc_offset_hours_observed": [
+        -8.0,
+        -7.0
+      ],
+      "hour_min": 0,
+      "hour_max": 23,
+      "night_share": 0.0555,
+      "weekend_share": 0.2163,
+      "hour_histogram": {
+        "0": 1187,
+        "1": 740,
+        "2": 479,
+        "3": 406,
+        "4": 656,
+        "5": 1404,
+        "6": 3864,
+        "7": 11400,
+        "8": 16866,
+        "9": 18273,
+        "10": 17613,
+        "11": 15948,
+        "12": 14739,
+        "13": 13985,
+        "14": 13460,
+        "15": 13184,
+        "16": 12713,
+        "17": 11539,
+        "18": 8363,
+        "19": 6870,
+        "20": 5247,
+        "21": 4829,
+        "22": 3941,
+        "23": 2294
+      }
+    }
+  },
+  "sources_without_timezone_mapping": [],
+  "leakage_note": "Every column is a pure function of the row's own reported_at, which is known at report time. No future information is used."
+}

@@ -1,0 +1,221 @@
+# UrbanEye+ feature configuration
+#
+# This file is the contract between the data pipeline and the future PostGIS
+# enrichment layer. Every feature declares:
+#
+#   provider   : who is capable of producing it
+#                  SOURCE_311  - present in the public 311 data
+#                  DERIVED     - computed by this pipeline from 311 data
+#                  POSTGIS     - requires an external geospatial reference layer
+#                  URBANEYE    - requires UrbanEye+'s own operational data
+#   available_from_public_us_data : true/false
+#   leakage    : none | post_resolution | future_information
+#
+# The point of declaring availability explicitly: build_geo_features.py emits a
+# correctly-typed, correctly-named column for EVERY feature below, and fills it
+# with NULL when available_from_public_us_data is false. The schema is therefore
+# complete and stable from day one, while the values stay honest. Nothing here
+# is fabricated for US coordinates.
+
+feature_config_version: "1.0.0"
+
+# ---------------------------------------------------------------------------
+# Report-time features. These are the ONLY features a priority model may use,
+# because they are the only things known when the citizen presses submit.
+# ---------------------------------------------------------------------------
+temporal_features:
+  hour:          {provider: DERIVED, available_from_public_us_data: true,  dtype: Int64,   leakage: none, note: "hour of day in the source city's LOCAL time, not UTC"}
+  day_of_week:   {provider: DERIVED, available_from_public_us_data: true,  dtype: Int64,   leakage: none, note: "Monday=0, local time"}
+  month:         {provider: DERIVED, available_from_public_us_data: true,  dtype: Int64,   leakage: none, note: "local time"}
+  year:          {provider: DERIVED, available_from_public_us_data: true,  dtype: Int64,   leakage: none, note: "local time"}
+  is_weekend:    {provider: DERIVED, available_from_public_us_data: true,  dtype: boolean, leakage: none, note: "Saturday/Sunday in local time"}
+  is_night:      {provider: DERIVED, available_from_public_us_data: true,  dtype: boolean, leakage: none, note: "temporal_policy night window, local time"}
+  hour_utc:      {provider: DERIVED, available_from_public_us_data: true,  dtype: Int64,   leakage: none, note: "audit column: the UTC hour the local hour was converted from"}
+
+# How the block above is derived. reported_at is stored in UTC; every temporal
+# feature is computed AFTER converting it to the source city's own timezone,
+# using the single mapping in
+#   dataset_config.yaml -> cleaning.timestamps.source_timezones
+# Deriving hour/is_night straight from UTC would encode the city's longitude as
+# if it were a time-of-day effect. See scripts/utils/timefeatures.py.
+temporal_policy:
+  timezone: local_city
+  timezone_source: "dataset_config.yaml: cleaning.timestamps.source_timezones"
+  night_start_hour: 22
+  night_end_hour: 6
+  metadata_columns: [reported_at_local, local_timezone, date_local]
+
+categorical_features:
+  category:        {provider: SOURCE_311, available_from_public_us_data: true, leakage: none, note: "citizen-supplied in production"}
+  city:            {provider: SOURCE_311, available_from_public_us_data: true, leakage: none}
+  report_channel:  {provider: SOURCE_311, available_from_public_us_data: true, leakage: none}
+  zone_id:         {provider: SOURCE_311, available_from_public_us_data: true, leakage: none, note: "US administrative unit. NOT an Indian zone. Do not transfer."}
+  zone_type:       {provider: DERIVED,    available_from_public_us_data: true, leakage: none}
+
+# ---------------------------------------------------------------------------
+# Which geospatial provider fills the POI / road / area block.
+#   null_provider   (default) every column emitted, every value NULL — correct
+#                   for US 311 data, where no reference layer exists
+#   reference_layer nearest-POI distances from local files declared in
+#                   data/external/reference_layers.yaml; layers that are absent
+#                   stay NULL and are named in the run report
+#   india_postgis   documented stub; refuses to run until a DSN is configured
+# Override per run with build_geo_features.py --provider <name>.
+# See scripts/preprocess/geo_providers.py and GEOSPATIAL_FEATURES.md.
+# ---------------------------------------------------------------------------
+geo_provider:
+  name: null_provider
+
+# ---------------------------------------------------------------------------
+# POI proximity. NONE of this exists in the 311 data. All NULL until an Indian
+# geospatial layer is plugged in. See GEOSPATIAL_FEATURES.md.
+# ---------------------------------------------------------------------------
+poi_proximity_features:
+  near_school:                            {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_school_m:           {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_hospital:                          {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_hospital_m:         {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_metro:                             {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_metro_m:            {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_rail_station:                      {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_rail_station_m:     {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_public_transport:                  {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_public_transport_m: {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_fire_station:                      {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_fire_station_m:     {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_police_station:                    {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_police_station_m:   {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  near_government_building:               {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_government_building_m: {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+
+road_network_features:
+  near_major_road:                  {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_major_road_m:         {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+  road_class:                       {provider: POSTGIS, available_from_public_us_data: false, dtype: string,  leakage: none, note: "OSM highway=* or municipal road hierarchy"}
+  near_intersection:                {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+  distance_to_nearest_intersection_m: {provider: POSTGIS, available_from_public_us_data: false, dtype: float64, leakage: none}
+
+area_context_features:
+  metro_city:  {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none, note: "India: Census/MoHUA metropolitan classification"}
+  urban_area:  {provider: POSTGIS, available_from_public_us_data: false, dtype: boolean, leakage: none}
+
+# ---------------------------------------------------------------------------
+# Historical density. These CAN be computed from 311 data — they need only past
+# incidents, not an external POI layer. They are the one geospatial-ish family
+# that is genuinely available now.
+#
+# LEAKAGE WARNING: each must be computed using a STRICTLY BACKWARD-LOOKING
+# window relative to the row's own reported_at. build_geo_features.py enforces
+# this; validate_leakage.py verifies it independently.
+# ---------------------------------------------------------------------------
+historical_density_features:
+  nearby_similar_incidents_24h:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: Int64
+    leakage: none
+    window_hours: 24
+    radius_m: 250
+    same_category_only: true
+    strictly_backward: true
+  nearby_similar_incidents_7d:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: Int64
+    leakage: none
+    window_hours: 168
+    radius_m: 250
+    same_category_only: true
+    strictly_backward: true
+  nearby_similar_incidents_30d:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: Int64
+    leakage: none
+    window_hours: 720
+    radius_m: 250
+    same_category_only: true
+    strictly_backward: true
+  local_incident_density:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: Int64
+    leakage: none
+    window_hours: 720
+    radius_m: 250
+    same_category_only: false
+    strictly_backward: true
+  category_incident_density:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: float64
+    leakage: none
+    note: "local_incident_density restricted to this category, as a share"
+    strictly_backward: true
+
+# ---------------------------------------------------------------------------
+# Historical RECENCY. Same backward-looking contract as the density block: for a
+# row reported at t, only reports strictly before t are visible. NULL means "no
+# qualifying earlier report inside the window" — it is NOT zero and NOT infinity,
+# and must not be imputed as either.
+# ---------------------------------------------------------------------------
+historical_recency_features:
+  hours_since_previous_similar_incident:
+    provider: DERIVED
+    available_from_public_us_data: true
+    dtype: float64
+    leakage: none
+    window_hours: 720
+    radius_m: 250
+    same_category_only: true
+    strictly_backward: true
+    note: >
+      Hours between this report and the most recent EARLIER report of the same
+      category within radius_m. NULL when there was none inside window_hours.
+      Small values mean the same problem is being re-reported at the same place
+      right now, which the count features cannot express: 5 reports spread over
+      a month and 5 reports in the last hour give the same 30-day count.
+
+# Grid used to make the backward-looking neighbour search tractable.
+#
+# The candidate block around a cell is NOT a fixed 3x3. At 0.0025 degrees a cell
+# is ~277 m tall but only ~207 m wide at Chicago's latitude, so a 250 m radius
+# reaches two cells out in longitude and one in latitude. build_geo_features.py
+# derives the ring per axis from radius_m and the cell's own latitude
+# (required_rings()); min_neighbour_ring is only a floor. A fixed ring of 1 —
+# which is what this file used to specify — silently undercounts every neighbour
+# sitting between one and two cells away.
+density_grid:
+  cell_degrees: 0.0025
+  neighbour_ring: auto
+  min_neighbour_ring: 1
+
+# ---------------------------------------------------------------------------
+# FORBIDDEN AS FEATURES. Known only after the incident is resolved. Listed here
+# so validate_leakage.py can assert they never appear in a model-ready feature
+# set, whatever a future contributor adds.
+# ---------------------------------------------------------------------------
+forbidden_features:
+  post_resolution:
+    - closed_at
+    - resolution_time_hours
+    - sla_met
+    - status
+    - description          # agency-written resolution text, not citizen text
+    - resolution_description
+  future_information:
+    - future_incident_count
+    - subsequent_duplicate_count
+  reason: >
+    None of these is known at report time. Using them for priority or
+    resolution-time prediction produces a model that cannot run in production
+    and whose offline scores are meaningless.
+
+# Per-task allowances: resolution_time_hours is forbidden as a FEATURE but is of
+# course the TARGET of the resolution model.
+task_targets:
+  priority:   {target: priority_label, currently_available: false, note: "NULL in all public data"}
+  resolution: {target: resolution_time_hours, currently_available: true}
+  sla_risk:   {target: sla_breach, currently_available: true, note: "requires sla_target_hours: Boston + NYC only"}
+  hotspot:    {target: future_incident_count, currently_available: true}
+  duplicate:  {target: same_incident, currently_available: true, note: "Chicago only"}

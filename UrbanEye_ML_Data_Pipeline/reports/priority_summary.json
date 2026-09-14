@@ -1,0 +1,248 @@
+{
+  "config_version": "0.1.0-draft",
+  "config_status": "DRAFT",
+  "rows": 1900000,
+  "inputs": {
+    "incidents": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/all_incidents.parquet",
+    "time_features": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/features/incident_time_features.parquet",
+    "geo_features": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/geo_features/incident_geo_features.parquet"
+  },
+  "priority_baseline_distribution": {
+    "P3": 1341213,
+    "P2": 261410,
+    "P4": 252963,
+    "P1": 44414
+  },
+  "priority_confidence_distribution": {
+    "MEDIUM": 1870394,
+    "LOW": 29606
+  },
+  "priority_features_available_distribution": {
+    "3": 1870394,
+    "1": 29606
+  },
+  "priority_feature_coverage": {
+    "min": 0.3,
+    "median": 0.36,
+    "max": 0.36,
+    "weighted_inputs_declared": 14
+  },
+  "priority_score_distribution": {
+    "p05": 0.1972,
+    "p25": 0.3406,
+    "p50": 0.4,
+    "p75": 0.4583,
+    "p95": 0.6889
+  },
+  "priority_label_non_null": 0,
+  "is_ground_truth": false,
+  "target": {
+    "priority": {
+      "target_column": "priority_label",
+      "available": false,
+      "rows_with_target": 0,
+      "status": "NO_PRIORITY_GROUND_TRUTH_AVAILABLE",
+      "strategy": "policy_baseline_only",
+      "explanation": "No public 311 dataset records an operational priority, urgency, severity or risk grade, so there is nothing to learn from. priority_baseline is a deterministic function of config/priority_config.yaml: training on it would reproduce the YAML, and reporting that accuracy as model performance would be circular. priority_baseline is therefore published as POLICY METADATA, never as a label, and is_ground_truth is False on every row. What would unblock a real target is operator-assigned priorities from UrbanEye+'s own console \u2014 see PRIORITY_METHODOLOGY.md section 6.",
+      "searched_for": [
+        "status",
+        "closed_at",
+        "resolved_at",
+        "completed_at",
+        "response_time",
+        "resolution_time",
+        "sla breach",
+        "escalation",
+        "severity",
+        "priority",
+        "urgency",
+        "risk"
+      ],
+      "found": "status / closed_at / resolution_time_hours exist but are POST-RESOLUTION outcomes, not priorities; sla_target_hours exists for NYC (Due Date) and Boston (TARGET_DT) only and encodes that city's own staffing policy."
+    },
+    "observable_targets_that_do_exist": {
+      "resolution_time_hours": {
+        "available": true,
+        "rows_with_target": 1853828,
+        "built_by": "scripts/preprocess/build_resolution_dataset.py"
+      },
+      "sla_breach": {
+        "available": true,
+        "rows_with_target": 22458,
+        "note": "requires sla_target_hours: NYC and Boston only",
+        "built_by": "scripts/preprocess/build_resolution_dataset.py"
+      },
+      "future_incident_count": {
+        "available": true,
+        "built_by": "scripts/preprocess/build_hotspot_dataset.py"
+      },
+      "same_incident": {
+        "available": true,
+        "note": "Chicago parent pointers only",
+        "built_by": "scripts/preprocess/build_duplicate_pairs.py"
+      }
+    }
+  },
+  "sla_hours_policy": {
+    "P1": 30,
+    "P2": 50,
+    "P3": 72,
+    "P4": 90
+  },
+  "geo_feature_availability": {
+    "near_school": 0,
+    "distance_to_nearest_school_m": 0,
+    "near_hospital": 0,
+    "distance_to_nearest_hospital_m": 0,
+    "near_metro": 0,
+    "distance_to_nearest_metro_m": 0,
+    "near_rail_station": 0,
+    "distance_to_nearest_rail_station_m": 0,
+    "near_public_transport": 0,
+    "distance_to_nearest_public_transport_m": 0,
+    "near_fire_station": 0,
+    "distance_to_nearest_fire_station_m": 0,
+    "near_police_station": 0,
+    "distance_to_nearest_police_station_m": 0,
+    "near_government_building": 0,
+    "distance_to_nearest_government_building_m": 0,
+    "near_major_road": 0,
+    "distance_to_major_road_m": 0,
+    "road_class": 0,
+    "near_intersection": 0,
+    "distance_to_nearest_intersection_m": 0,
+    "metro_city": 0,
+    "urban_area": 0,
+    "nearby_similar_incidents_24h": 1870394,
+    "nearby_similar_incidents_7d": 1870394,
+    "nearby_similar_incidents_30d": 1870394,
+    "local_incident_density": 1870394,
+    "category_incident_density": 1870394,
+    "hours_since_previous_similar_incident": 1702522
+  },
+  "time_feature_availability": {
+    "hour": 1900000,
+    "day_of_week": 1900000,
+    "month": 1900000,
+    "year": 1900000,
+    "is_weekend": 1900000,
+    "is_night": 1900000,
+    "hour_utc": 1900000,
+    "reported_at_local": 1900000,
+    "local_timezone": 1900000,
+    "date_local": 1900000
+  },
+  "split": {
+    "strategy": "chronological",
+    "per_source": true,
+    "ts_column": "reported_at",
+    "groups": {
+      "chicago311": {
+        "cut_mode": "quantile_fallback",
+        "train_end": "2020-03-18 21:48:50.100000+00:00",
+        "val_end": "2020-06-24 22:29:31.349999872+00:00",
+        "counts": {
+          "train": 1120000,
+          "val": 240000,
+          "test": 240000
+        },
+        "date_range": {
+          "min": "2018-07-01 08:42:31+00:00",
+          "max": "2020-08-28 12:52:21+00:00"
+        }
+      },
+      "nyc311": {
+        "cut_mode": "quantile_fallback",
+        "train_end": "2010-02-19 18:41:14.600000+00:00",
+        "val_end": "2010-03-01 13:38:00+00:00",
+        "counts": {
+          "train": 70000,
+          "val": 15001,
+          "test": 14999
+        },
+        "date_range": {
+          "min": "2010-01-01 05:38:00+00:00",
+          "max": "2010-03-09 05:55:45+00:00"
+        }
+      },
+      "sf311": {
+        "cut_mode": "quantile_fallback",
+        "train_end": "2018-04-06 15:53:00+00:00",
+        "val_end": "2018-04-24 16:18:09+00:00",
+        "counts": {
+          "train": 140004,
+          "test": 30000,
+          "val": 29996
+        },
+        "date_range": {
+          "min": "2018-01-01 08:25:00+00:00",
+          "max": "2018-05-10 19:47:00+00:00"
+        }
+      }
+    },
+    "counts": {
+      "train": 1330004,
+      "test": 284999,
+      "val": 284997
+    }
+  },
+  "split_counts": {
+    "train": 1330004,
+    "test": 284999,
+    "val": 284997
+  },
+  "split_profile": {
+    "test": {
+      "rows": 284999,
+      "date_range": {
+        "min": "2010-03-01 13:38:53+00:00",
+        "max": "2020-08-28 12:52:21+00:00"
+      },
+      "by_source": {
+        "chicago311": 240000,
+        "sf311": 30000,
+        "nyc311": 14999
+      },
+      "by_city": {
+        "Chicago": 240000,
+        "San Francisco": 30000,
+        "New York City": 14999
+      }
+    },
+    "train": {
+      "rows": 1330004,
+      "date_range": {
+        "min": "2010-01-01 05:38:00+00:00",
+        "max": "2020-03-18 21:48:33+00:00"
+      },
+      "by_source": {
+        "chicago311": 1120000,
+        "sf311": 140004,
+        "nyc311": 70000
+      },
+      "by_city": {
+        "Chicago": 1120000,
+        "San Francisco": 140004,
+        "New York City": 70000
+      }
+    },
+    "val": {
+      "rows": 284997,
+      "date_range": {
+        "min": "2010-02-19 18:41:16+00:00",
+        "max": "2020-06-24 22:29:30+00:00"
+      },
+      "by_source": {
+        "chicago311": 240000,
+        "sf311": 29996,
+        "nyc311": 15001
+      },
+      "by_city": {
+        "Chicago": 240000,
+        "San Francisco": 29996,
+        "New York City": 15001
+      }
+    }
+  },
+  "interpretation": "priority_baseline is a deterministic function of config/priority_config.yaml. It is NOT ground truth and must not be used as an ML target \u2014 a model trained on it would simply re-learn the YAML. priority_label is NULL for every row because no public 311 dataset contains a genuine operational priority. POI, road-network and area-context inputs are NULL on US data, so the score rests on the category term plus the two backward-looking density terms; priority_confidence and priority_feature_coverage report exactly that."
+}

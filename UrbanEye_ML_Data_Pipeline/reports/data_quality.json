@@ -1,0 +1,672 @@
+{
+  "generated_at_utc": "2026-09-14T12:39:57.811332+00:00",
+  "pipeline_version": "2.0.0",
+  "schema_version": "2.0.0",
+  "datasets": {
+    "sf311": {
+      "label": "sf311",
+      "rows": 200000,
+      "columns": 40,
+      "missing_pct": {
+        "incident_id": 0.0,
+        "source_dataset": 0.0,
+        "source_incident_id": 0.0,
+        "city": 0.0,
+        "category": 0.0,
+        "subcategory": 0.0,
+        "source_category_raw": 0.0,
+        "description": 0.02,
+        "latitude": 3.14,
+        "longitude": 3.14,
+        "address": 0.0,
+        "zone_id": 3.19,
+        "zone_type": 0.0,
+        "reported_at": 0.0,
+        "occurred_at": 100.0,
+        "closed_at": 0.1,
+        "status": 0.0,
+        "department": 0.0,
+        "priority_baseline": 100.0,
+        "priority_score": 100.0,
+        "priority_reasons": 100.0,
+        "priority_confidence": 100.0,
+        "priority_features_available": 100.0,
+        "priority_feature_coverage": 100.0,
+        "priority_method": 100.0,
+        "priority_label": 100.0,
+        "priority_label_source": 100.0,
+        "is_ground_truth": 100.0,
+        "sla_target_hours": 100.0,
+        "sla_met": 100.0,
+        "sla_hours_policy": 100.0,
+        "response_time_hours": 100.0,
+        "resolution_time_hours": 0.1,
+        "is_duplicate": 0.0,
+        "parent_incident_id": 100.0,
+        "report_channel": 0.0,
+        "image_url": 57.85,
+        "image_url_after": 100.0,
+        "severity": 100.0,
+        "coord_outside_city_bbox": 0.0
+      },
+      "date_range": {
+        "min": "2018-01-01 08:25:00+00:00",
+        "max": "2018-05-10 19:47:00+00:00"
+      },
+      "category_distribution": {
+        "GARBAGE_DUMPING": 59112,
+        "OUT_OF_SCOPE": 53974,
+        "GRAFFITI_VISUAL_POLLUTION": 33193,
+        "UNMAPPED": 20163,
+        "REVIEW_REQUIRED": 11310,
+        "PUBLIC_INFRASTRUCTURE_DAMAGE": 7162,
+        "FALLEN_TREE": 3631,
+        "DRAINAGE_SEWER": 3531,
+        "POTHOLE": 2850,
+        "STREETLIGHT_FAULT": 2423,
+        "SIGNAGE_DAMAGE": 2281,
+        "ROAD_DAMAGE": 370
+      },
+      "status_distribution": {
+        "closed": 199805,
+        "open": 195
+      },
+      "coordinate_validity": {
+        "non_null": 193724,
+        "null": 6276,
+        "outside_city_bbox_flagged": 0
+      },
+      "duplicate_incident_ids": 0,
+      "resolution_time_hours": {
+        "count": 199795,
+        "min": 0.0,
+        "p25": 2.207777777777778,
+        "median": 24.836944444444445,
+        "p75": 141.8,
+        "p90": 1331.7733333333356,
+        "max": 56083.889444444445,
+        "negative_count": 0
+      },
+      "sla_target_hours": {
+        "count": 0,
+        "note": "no non-null values"
+      },
+      "image_url_present": 84309,
+      "after_image_url_present": 0,
+      "text_present": 199967,
+      "parent_pointer_present": 0
+    },
+    "boston311": {
+      "status": "NOT PRESENT",
+      "note": "raw download and/or preprocessing has not been run"
+    },
+    "chicago311": {
+      "label": "chicago311",
+      "rows": 1600000,
+      "columns": 40,
+      "missing_pct": {
+        "incident_id": 0.0,
+        "source_dataset": 0.0,
+        "source_incident_id": 0.0,
+        "city": 0.0,
+        "category": 0.0,
+        "subcategory": 100.0,
+        "source_category_raw": 0.0,
+        "description": 100.0,
+        "latitude": 0.43,
+        "longitude": 0.43,
+        "address": 0.32,
+        "zone_id": 0.51,
+        "zone_type": 0.0,
+        "reported_at": 0.0,
+        "occurred_at": 100.0,
+        "closed_at": 2.38,
+        "status": 0.0,
+        "department": 0.0,
+        "priority_baseline": 100.0,
+        "priority_score": 100.0,
+        "priority_reasons": 100.0,
+        "priority_confidence": 100.0,
+        "priority_features_available": 100.0,
+        "priority_feature_coverage": 100.0,
+        "priority_method": 100.0,
+        "priority_label": 100.0,
+        "priority_label_source": 100.0,
+        "is_ground_truth": 100.0,
+        "sla_target_hours": 100.0,
+        "sla_met": 100.0,
+        "sla_hours_policy": 100.0,
+        "response_time_hours": 100.0,
+        "resolution_time_hours": 2.38,
+        "is_duplicate": 0.0,
+        "parent_incident_id": 84.89,
+        "report_channel": 0.0,
+        "image_url": 100.0,
+        "image_url_after": 100.0,
+        "severity": 100.0,
+        "coord_outside_city_bbox": 0.0
+      },
+      "date_range": {
+        "min": "2018-07-01 08:42:31+00:00",
+        "max": "2020-08-28 12:52:21+00:00"
+      },
+      "category_distribution": {
+        "OUT_OF_SCOPE": 434388,
+        "UNMAPPED": 338675,
+        "GRAFFITI_VISUAL_POLLUTION": 140766,
+        "STREETLIGHT_FAULT": 140211,
+        "POTHOLE": 138255,
+        "GARBAGE_DUMPING": 113867,
+        "FALLEN_TREE": 107855,
+        "SIGNAGE_DAMAGE": 53143,
+        "WATER_LEAKAGE_WATERLOGGING": 39639,
+        "DRAINAGE_SEWER": 38724,
+        "TRAFFIC_SIGNAL_FAULT": 36186,
+        "FOOTPATH_DAMAGE": 18291
+      },
+      "status_distribution": {
+        "closed": 1510839,
+        "cancelled": 51086,
+        "open": 38075
+      },
+      "coordinate_validity": {
+        "non_null": 1593148,
+        "null": 6852,
+        "outside_city_bbox_flagged": 0
+      },
+      "duplicate_incident_ids": 0,
+      "resolution_time_hours": {
+        "count": 1561893,
+        "min": 0.0,
+        "p25": 18.57611111111111,
+        "median": 152.28222222222223,
+        "p75": 1088.1408333333334,
+        "p90": 4442.051944444444,
+        "max": 71015.38416666667,
+        "negative_count": 0
+      },
+      "sla_target_hours": {
+        "count": 0,
+        "note": "no non-null values"
+      },
+      "image_url_present": 0,
+      "after_image_url_present": 0,
+      "text_present": 0,
+      "parent_pointer_present": 241713
+    },
+    "nyc311": {
+      "label": "nyc311",
+      "rows": 100000,
+      "columns": 40,
+      "missing_pct": {
+        "incident_id": 0.0,
+        "source_dataset": 0.0,
+        "source_incident_id": 0.0,
+        "city": 0.0,
+        "category": 0.0,
+        "subcategory": 0.0,
+        "source_category_raw": 0.0,
+        "description": 0.1,
+        "latitude": 16.48,
+        "longitude": 16.48,
+        "address": 47.63,
+        "zone_id": 0.01,
+        "zone_type": 0.0,
+        "reported_at": 0.0,
+        "occurred_at": 100.0,
+        "closed_at": 1.91,
+        "status": 0.0,
+        "department": 0.0,
+        "priority_baseline": 100.0,
+        "priority_score": 100.0,
+        "priority_reasons": 100.0,
+        "priority_confidence": 100.0,
+        "priority_features_available": 100.0,
+        "priority_feature_coverage": 100.0,
+        "priority_method": 100.0,
+        "priority_label": 100.0,
+        "priority_label_source": 100.0,
+        "is_ground_truth": 100.0,
+        "sla_target_hours": 77.54,
+        "sla_met": 79.18,
+        "sla_hours_policy": 100.0,
+        "response_time_hours": 100.0,
+        "resolution_time_hours": 7.86,
+        "is_duplicate": 100.0,
+        "parent_incident_id": 100.0,
+        "report_channel": 0.0,
+        "image_url": 100.0,
+        "image_url_after": 100.0,
+        "severity": 100.0,
+        "coord_outside_city_bbox": 0.0
+      },
+      "date_range": {
+        "min": "2010-01-01 05:38:00+00:00",
+        "max": "2010-03-09 05:55:45+00:00"
+      },
+      "category_distribution": {
+        "STREETLIGHT_FAULT": 19696,
+        "POTHOLE": 16085,
+        "TRAFFIC_SIGNAL_FAULT": 11048,
+        "ROAD_DAMAGE": 9896,
+        "WATER_LEAKAGE_WATERLOGGING": 8392,
+        "DRAINAGE_SEWER": 7345,
+        "OUT_OF_SCOPE": 5649,
+        "GARBAGE_DUMPING": 5219,
+        "FALLEN_TREE": 4285,
+        "GRAFFITI_VISUAL_POLLUTION": 3961,
+        "SIGNAGE_DAMAGE": 2755,
+        "FOOTPATH_DAMAGE": 2554,
+        "PUBLIC_INFRASTRUCTURE_DAMAGE": 2318,
+        "REVIEW_REQUIRED": 797
+      },
+      "status_distribution": {
+        "closed": 92229,
+        "open": 7767,
+        "other": 4
+      },
+      "coordinate_validity": {
+        "non_null": 83522,
+        "null": 16478,
+        "outside_city_bbox_flagged": 0
+      },
+      "duplicate_incident_ids": 0,
+      "resolution_time_hours": {
+        "count": 92140,
+        "min": 0.0,
+        "p25": 3.2,
+        "median": 26.772916666666667,
+        "p75": 141.608125,
+        "p90": 479.3024166666668,
+        "max": 58789.86666666667,
+        "negative_count": 0
+      },
+      "sla_target_hours": {
+        "count": 22458,
+        "min": 8.0,
+        "p25": 240.0,
+        "median": 240.0,
+        "p75": 690.5661805555555,
+        "p90": 1129.8178888888888,
+        "max": 109573.56722222222,
+        "negative_count": 0
+      },
+      "image_url_present": 0,
+      "after_image_url_present": 0,
+      "text_present": 99896,
+      "parent_pointer_present": 0
+    },
+    "ALL": {
+      "label": "all_incidents",
+      "rows": 1900000,
+      "columns": 40,
+      "missing_pct": {
+        "incident_id": 0.0,
+        "source_dataset": 0.0,
+        "source_incident_id": 0.0,
+        "city": 0.0,
+        "category": 0.0,
+        "subcategory": 84.21,
+        "source_category_raw": 0.0,
+        "description": 84.22,
+        "latitude": 1.56,
+        "longitude": 1.56,
+        "address": 2.78,
+        "zone_id": 0.77,
+        "zone_type": 0.0,
+        "reported_at": 0.0,
+        "occurred_at": 100.0,
+        "closed_at": 2.12,
+        "status": 0.0,
+        "department": 0.0,
+        "priority_baseline": 0.0,
+        "priority_score": 0.0,
+        "priority_reasons": 0.0,
+        "priority_confidence": 0.0,
+        "priority_features_available": 0.0,
+        "priority_feature_coverage": 0.0,
+        "priority_method": 0.0,
+        "priority_label": 100.0,
+        "priority_label_source": 100.0,
+        "is_ground_truth": 0.0,
+        "sla_target_hours": 98.82,
+        "sla_met": 98.9,
+        "sla_hours_policy": 0.0,
+        "response_time_hours": 100.0,
+        "resolution_time_hours": 2.43,
+        "is_duplicate": 5.26,
+        "parent_incident_id": 87.28,
+        "report_channel": 0.0,
+        "image_url": 95.56,
+        "image_url_after": 100.0,
+        "severity": 100.0,
+        "coord_outside_city_bbox": 0.0
+      },
+      "date_range": {
+        "min": "2010-01-01 05:38:00+00:00",
+        "max": "2020-08-28 12:52:21+00:00"
+      },
+      "category_distribution": {
+        "OUT_OF_SCOPE": 494011,
+        "UNMAPPED": 358838,
+        "GARBAGE_DUMPING": 178198,
+        "GRAFFITI_VISUAL_POLLUTION": 177920,
+        "STREETLIGHT_FAULT": 162330,
+        "POTHOLE": 157190,
+        "FALLEN_TREE": 115771,
+        "SIGNAGE_DAMAGE": 58179,
+        "DRAINAGE_SEWER": 49600,
+        "WATER_LEAKAGE_WATERLOGGING": 48031,
+        "TRAFFIC_SIGNAL_FAULT": 47234,
+        "FOOTPATH_DAMAGE": 20845,
+        "REVIEW_REQUIRED": 12107,
+        "ROAD_DAMAGE": 10266,
+        "PUBLIC_INFRASTRUCTURE_DAMAGE": 9480
+      },
+      "status_distribution": {
+        "closed": 1802873,
+        "cancelled": 51086,
+        "open": 46037,
+        "other": 4
+      },
+      "coordinate_validity": {
+        "non_null": 1870394,
+        "null": 29606,
+        "outside_city_bbox_flagged": 0
+      },
+      "duplicate_incident_ids": 0,
+      "resolution_time_hours": {
+        "count": 1853828,
+        "min": 0.0,
+        "p25": 13.172152777777779,
+        "median": 113.96277777777777,
+        "p75": 862.8838888888889,
+        "p90": 4104.646472222223,
+        "max": 71015.38416666667,
+        "negative_count": 0
+      },
+      "sla_target_hours": {
+        "count": 22458,
+        "min": 8.0,
+        "p25": 240.0,
+        "median": 240.0,
+        "p75": 690.5661805555555,
+        "p90": 1129.8178888888888,
+        "max": 109573.56722222222,
+        "negative_count": 0
+      },
+      "image_url_present": 84309,
+      "after_image_url_present": 0,
+      "text_present": 299863,
+      "parent_pointer_present": 241713
+    }
+  },
+  "vision": {},
+  "ml_ready": {
+    "resolution_dataset": {
+      "rows": 1026596,
+      "columns": [
+        "incident_id",
+        "source_dataset",
+        "reported_at",
+        "category",
+        "subcategory",
+        "city",
+        "department",
+        "zone_id",
+        "zone_type",
+        "report_channel",
+        "hour",
+        "day_of_week",
+        "month",
+        "year",
+        "is_weekend",
+        "is_night",
+        "hour_utc",
+        "nearby_similar_incidents_24h",
+        "nearby_similar_incidents_7d",
+        "nearby_similar_incidents_30d",
+        "local_incident_density",
+        "category_incident_density",
+        "hours_since_previous_similar_incident",
+        "sla_target_hours",
+        "resolution_time_hours",
+        "sla_breach",
+        "split"
+      ],
+      "location": "data/processed/resolution",
+      "split_counts": {
+        "train": 718627,
+        "test": 153989,
+        "val": 153980
+      }
+    },
+    "hotspot_dataset": {
+      "rows": 67092,
+      "columns": [
+        "city",
+        "zone_type",
+        "zone_id",
+        "category",
+        "week",
+        "incident_count",
+        "previous_period_count",
+        "rolling_4w_count",
+        "rolling_12w_count",
+        "rolling_4w_mean",
+        "trend_4w",
+        "future_incident_count",
+        "future_incident_flag",
+        "week_start",
+        "month",
+        "year",
+        "split"
+      ],
+      "location": "data/processed/hotspot",
+      "split_counts": {
+        "train": 47694,
+        "val": 9949,
+        "test": 9449
+      }
+    },
+    "duplicate_pairs": {
+      "rows": 455460,
+      "columns": [
+        "incident_a",
+        "incident_b",
+        "same_incident",
+        "distance_meters",
+        "time_difference_hours",
+        "category_match",
+        "text_similarity",
+        "source_dataset",
+        "image_similarity",
+        "negative_strategy",
+        "split"
+      ],
+      "location": "data/processed/duplicates",
+      "split_counts": {
+        "train": 324501,
+        "val": 69276,
+        "test": 61683
+      }
+    }
+  },
+  "licences": {
+    "sf311": {
+      "source": "https://data.sf.gov/d/vw6y-z8j6",
+      "licence": "Open Data Commons Public Domain Dedication and Licence (PDDL) 1.0",
+      "licence_url": "http://opendatacommons.org/licenses/pddl/1.0/",
+      "commercial_use": true,
+      "modification": true,
+      "redistribution": true,
+      "attribution_required": false,
+      "urbaneye_compatible": null,
+      "decision": "INCLUDE"
+    },
+    "boston311": {
+      "source": "https://data.boston.gov/dataset/311-service-requests",
+      "licence": "Open Data Commons Public Domain Dedication and Licence (PDDL)",
+      "licence_url": "http://www.opendefinition.org/licenses/odc-pddl",
+      "commercial_use": true,
+      "modification": true,
+      "redistribution": true,
+      "attribution_required": false,
+      "urbaneye_compatible": null,
+      "decision": "INCLUDE"
+    },
+    "chicago311": {
+      "source": "https://data.cityofchicago.org/d/v6vf-nfxy",
+      "licence": "City of Chicago Open Data Terms of Use",
+      "licence_url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+      "commercial_use": true,
+      "modification": true,
+      "redistribution": true,
+      "attribution_required": true,
+      "urbaneye_compatible": null,
+      "decision": "INCLUDE"
+    },
+    "nyc311": {
+      "source": "https://data.cityofnewyork.us/d/76ig-c548",
+      "licence": "NYC Open Data Terms of Use",
+      "licence_url": "https://opendata.cityofnewyork.us/overview/",
+      "commercial_use": true,
+      "modification": true,
+      "redistribution": true,
+      "attribution_required": false,
+      "urbaneye_compatible": null,
+      "decision": "INCLUDE"
+    }
+  },
+  "cleaning": {
+    "chicago311": {
+      "dataset": "chicago311",
+      "rows_in": 1600000,
+      "rows_out": 1600000,
+      "rows_removed_total": 0,
+      "removed_by_rule": {},
+      "flagged_by_rule": {
+        "chicago_duplicate_true": 242069,
+        "chicago_parent_pointer_present": 241713
+      },
+      "nulled_by_rule": {
+        "resolution_time_negative": 8
+      },
+      "output_parquet": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/chicago311.parquet",
+      "sla_available": false,
+      "text_available": false,
+      "text_note": "Chicago 311 has no free-text description column; description is NULL by design.",
+      "duplicate_signal": "strong (PARENT_SR_NUMBER pointer)"
+    },
+    "nyc311": {
+      "dataset": "nyc311",
+      "rows_in": 100000,
+      "rows_out": 100000,
+      "rows_removed_total": 0,
+      "removed_by_rule": {},
+      "flagged_by_rule": {},
+      "nulled_by_rule": {
+        "timestamp_out_of_range___target": 339,
+        "resolution_time_negative": 5904,
+        "resolution_time_exceeds_cap": 46,
+        "sla_target_negative": 2
+      },
+      "output_parquet": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/nyc311.parquet",
+      "sla_available": true,
+      "sla_derivation": "sla_target_hours = Due Date - Created Date (DERIVED; not a priority label)",
+      "rows_with_sla_target": 22458,
+      "note": "Publisher documents Due Date as based on complaint type and internal SLAs."
+    },
+    "sf311": {
+      "dataset": "sf311",
+      "rows_in": 200000,
+      "rows_out": 200000,
+      "rows_removed_total": 0,
+      "removed_by_rule": {},
+      "flagged_by_rule": {
+        "sf_weak_duplicate_flagged": 23150
+      },
+      "nulled_by_rule": {
+        "resolution_time_negative": 10,
+        "coordinates_null_island_0_0": 6276
+      },
+      "output_parquet": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/sf311.parquet",
+      "sla_available": false,
+      "sla_note": "SF 311 publishes no target/due timestamp; sla_target_hours is NULL for all rows.",
+      "duplicate_signal": "weak (Status Notes text match); no parent pointer available"
+    }
+  },
+  "integrity_checks": [
+    {
+      "id": "INT-1",
+      "description": "severity is entirely NULL (no source provides it)",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "INT-2",
+      "description": "occurred_at is entirely NULL (no source provides it)",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "INT-3",
+      "description": "response_time_hours is entirely NULL (no first-response timestamp exists)",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "INT-4",
+      "description": "priority_baseline is never marked ground truth",
+      "result": "PASS",
+      "detail": "is_ground_truth true rows=0"
+    },
+    {
+      "id": "INT-4b",
+      "description": "priority_label is entirely NULL (no genuine public label exists)",
+      "result": "PASS",
+      "detail": "non-null=0"
+    },
+    {
+      "id": "INT-5",
+      "description": "sla_target_hours present only for Boston and NYC",
+      "result": "PASS",
+      "detail": "sources with SLA=['nyc311']"
+    },
+    {
+      "id": "INT-6",
+      "description": "no negative resolution times",
+      "result": "PASS",
+      "detail": "negative=0"
+    },
+    {
+      "id": "INT-7",
+      "description": "coordinates are inside their own city's bbox or NULL",
+      "result": "PASS",
+      "detail": "violations=0 (flagged, not dropped \u2014 see coord_outside_city_bbox)"
+    },
+    {
+      "id": "INT-8",
+      "description": "no incident_id is shared across source datasets",
+      "result": "PASS",
+      "detail": "shared_ids=0"
+    },
+    {
+      "id": "INT-9",
+      "description": "no duplicate group spans multiple splits",
+      "result": "PASS",
+      "detail": "groups_spanning=0"
+    },
+    {
+      "id": "INT-9b",
+      "description": "image_similarity is NULL (no images exist for labelled pairs)",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "integrity_summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  }
+}

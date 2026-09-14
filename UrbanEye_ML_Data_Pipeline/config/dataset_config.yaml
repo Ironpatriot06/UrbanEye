@@ -1,0 +1,441 @@
+# UrbanEye+ ML data pipeline — dataset configuration
+#
+# SCOPE NOTE (changed from the earlier research phase):
+# The citizen selects the category in the UrbanEye+ app, so image->category and
+# image->severity models are out of scope. This pipeline is TABULAR + GEOSPATIAL
+# only. RDD2022 and Smartathon are documented in DATASET_SOURCES.md and their
+# scripts kept under optional_future_vision/, but they are NOT part of the core
+# pipeline and you do not need to download them.
+#
+# Provenance legend used throughout:
+#   SOURCE  - taken verbatim (or normalised) from the publisher
+#   DERIVED - computed by this pipeline from SOURCE fields
+#   SYSTEM  - produced at runtime by the UrbanEye+ backend (India PostGIS). NOT here.
+#   NULL    - genuinely unavailable; deliberately left empty
+
+pipeline_version: "2.0.0"
+schema_version: "2.0.0"
+scope: "tabular_geospatial_only"
+
+paths:
+  raw: data/raw
+  processed: data/processed
+  manifests: data/manifests
+  external: data/external
+  reports: reports
+
+datasets:
+
+  sf311:
+    name: "SF 311 Cases"
+    kind: tabular
+    city: "San Francisco"
+    country: "USA"
+    role: "incident history, resolution time, temporal/geographic patterns, weak duplicate signal"
+    landing_page: "https://data.sf.gov/d/vw6y-z8j6"
+    download:
+      recommendation: "SUBSET"
+      recommendation_reason: >
+        The full asset is ~8.9M rows across ~52 columns, most of which are legacy
+        'DELETE - ...' georegion columns. The Socrata API lets you project ~20
+        columns and floor the date, cutting the transfer by roughly 70%.
+      bulk_csv_url: "https://data.sf.gov/api/v3/views/vw6y-z8j6/export.csv?accessType=DOWNLOAD"
+      api_url: "https://data.sf.gov/resource/vw6y-z8j6.json"
+      expected_raw_filenames: ["sf311_cases.jsonl", "sf311_bulk_export.csv"]
+      raw_dir: "data/raw/sf311"
+    socrata:
+      domain: "data.sf.gov"
+      dataset_id: "vw6y-z8j6"
+      resource_url: "https://data.sf.gov/resource/vw6y-z8j6.json"
+      page_size: 50000
+      order_by: "service_request_id"
+      select:
+        - service_request_id
+        - requested_datetime
+        - closed_date
+        - updated_datetime
+        - status_description
+        - status_notes
+        - agency_responsible
+        - service_name
+        - service_subtype
+        - service_details
+        - address
+        - street
+        - supervisor_district
+        - neighborhoods_sffind_boundaries
+        - analysis_neighborhood
+        - police_district
+        - lat
+        - long
+        - source
+        - media_url
+      min_requested_datetime: "2018-01-01"
+    expected:
+      approx_rows_full: 8909991
+      approx_rows_since_2018: 3500000
+      date_range: "2008-07-01 .. present"
+      verified_on: "2026-09-13 against live Socrata column metadata"
+    licence:
+      name: "Open Data Commons Public Domain Dedication and Licence (PDDL) 1.0"
+      url: "http://opendatacommons.org/licenses/pddl/1.0/"
+      commercial_use: true
+      modification: true
+      redistribution: true
+      attribution_required: false
+      research_use: true
+      restrictions: "None. Public domain dedication."
+      decision: INCLUDE
+
+  boston311:
+    name: "Boston 311 Service Requests"
+    kind: tabular
+    city: "Boston"
+    country: "USA"
+    role: "SLA signal (TARGET_DT), resolution time, temporal/geographic patterns"
+    landing_page: "https://data.boston.gov/dataset/311-service-requests"
+    download:
+      recommendation: "SUBSET"
+      recommendation_reason: >
+        Download the yearly CSVs for 2011-2024 only. 2025+ uses a new 311 backend
+        with a different schema; mixing them silently corrupts the SLA series.
+      expected_raw_filenames: ["boston311_<YEAR>.csv"]
+      raw_dir: "data/raw/boston311"
+    ckan:
+      package_api: "https://data.boston.gov/api/3/action/package_show?id=311-service-requests"
+      dataset_package_id: "8048697b-ad64-4bfc-b090-ee00169f2323"
+      year_resources:
+        2011: "94b499d9-712a-4d2a-b790-7ceec5c9c4b1"
+        2012: "382e10d9-1864-40ba-bef6-4eea3c75463c"
+        2013: "407c5cd0-f764-4a41-adf8-054ff535049e"
+        2014: "bdae89c8-d4ce-40e9-a6e1-a5203953a2e0"
+        2015: "c9509ab4-6f6d-4b97-979a-0cf2a10c922b"
+        2016: "b7ea6b1b-3ca4-4c5b-9713-6dc1db52379a"
+        2017: "30022137-709d-465e-baae-ca155b51927d"
+        2018: "2be28d90-3a90-4af1-a3f6-f28c1e25880a"
+        2019: "ea2e4696-4a2d-429c-9807-d02eb92e0222"
+        2020: "6ff6a6fd-3141-4440-a880-6f60a37fe789"
+        2021: "f53ebccd-bc61-49f9-83db-625f209c95f5"
+        2022: "81a7b022-f8fc-4da5-80e4-b160058ca207"
+        2023: "e6013a93-1321-4f2a-bf91-8d8a02f1e62f"
+        2024: "dff4d804-5031-443a-8409-8344efd0e5c8"
+    years: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    expected:
+      approx_rows_per_year: 270000
+      note: "2021 file independently verified at 273,951 rows / 29 columns"
+    licence:
+      name: "Open Data Commons Public Domain Dedication and Licence (PDDL)"
+      url: "http://www.opendefinition.org/licenses/odc-pddl"
+      commercial_use: true
+      modification: true
+      redistribution: true
+      attribution_required: false
+      research_use: true
+      restrictions: "None."
+      decision: INCLUDE
+
+  chicago311:
+    name: "Chicago 311 Service Requests"
+    kind: tabular
+    city: "Chicago"
+    country: "USA"
+    role: "duplicate supervision (PARENT_SR_NUMBER), hotspot/temporal panel, resolution time"
+    landing_page: "https://data.cityofchicago.org/d/v6vf-nfxy"
+    download:
+      recommendation: "SUBSET"
+      recommendation_reason: >
+        Two SR types account for 7.3M of 13.8M rows and have no civic-incident
+        meaning ('311 INFORMATION ONLY CALL', 'Aircraft Noise Complaint').
+        Exclude them server-side in the SoQL $where and you download half as much.
+      bulk_csv_url: "https://data.cityofchicago.org/api/v3/views/v6vf-nfxy/export.csv?accessType=DOWNLOAD"
+      api_url: "https://data.cityofchicago.org/resource/v6vf-nfxy.json"
+      expected_raw_filenames: ["chicago311.jsonl", "chicago311_bulk_export.csv"]
+      raw_dir: "data/raw/chicago311"
+    socrata:
+      domain: "data.cityofchicago.org"
+      dataset_id: "v6vf-nfxy"
+      resource_url: "https://data.cityofchicago.org/resource/v6vf-nfxy.json"
+      page_size: 50000
+      order_by: "sr_number"
+      select:
+        - sr_number
+        - sr_type
+        - sr_short_code
+        - owner_department
+        - status
+        - origin
+        - created_date
+        - last_modified_date
+        - closed_date
+        - street_address
+        - city
+        - zip_code
+        - duplicate
+        - parent_sr_number
+        - community_area
+        - ward
+        - police_district
+        - created_hour
+        - created_day_of_week
+        - created_month
+        - latitude
+        - longitude
+      exclude_sr_types:
+        - "311 INFORMATION ONLY CALL"
+        - "Aircraft Noise Complaint"
+    expected:
+      approx_rows: 13796455
+      approx_rows_after_exclusions: 6486000
+      duplicate_true_rows: 707269
+      parent_sr_number_non_null: 706730
+    licence:
+      name: "City of Chicago Open Data Terms of Use"
+      url: "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html"
+      commercial_use: true
+      modification: true
+      redistribution: true
+      attribution_required: true
+      research_use: true
+      restrictions: "Attribution to the City of Chicago. No warranty of accuracy."
+      decision: INCLUDE
+
+  nyc311:
+    name: "NYC 311 Service Requests 2010-2019"
+    kind: tabular
+    city: "New York City"
+    country: "USA"
+    role: "second independent SLA source (Due Date), description text, resolution time"
+    landing_page: "https://data.cityofnewyork.us/d/76ig-c548"
+    download:
+      recommendation: "SUBSET"
+      recommendation_reason: >
+        22.6M rows, of which roughly 70% is housing/noise/parking and irrelevant
+        to UrbanEye+. Filter complaint_type server-side (list below) and the
+        download drops to roughly 4M rows.
+      bulk_csv_url: "https://data.cityofnewyork.us/api/v3/views/76ig-c548/export.csv?accessType=DOWNLOAD"
+      api_url: "https://data.cityofnewyork.us/resource/76ig-c548.json"
+      expected_raw_filenames: ["nyc311_2010_2019.jsonl", "nyc311_bulk_export.csv"]
+      raw_dir: "data/raw/nyc311"
+    socrata:
+      domain: "data.cityofnewyork.us"
+      dataset_id: "76ig-c548"
+      resource_url: "https://data.cityofnewyork.us/resource/76ig-c548.json"
+      page_size: 50000
+      order_by: "unique_key"
+      select:
+        - unique_key
+        - created_date
+        - closed_date
+        - agency
+        - agency_name
+        - complaint_type
+        - descriptor
+        - descriptor_2
+        - location_type
+        - incident_zip
+        - incident_address
+        - status
+        - due_date
+        - resolution_description
+        - resolution_action_updated_date
+        - community_board
+        - council_district
+        - borough
+        - latitude
+        - longitude
+        - open_data_channel_type
+      include_complaint_types:
+        - "Street Condition"
+        - "Street Light Condition"
+        - "Traffic Signal Condition"
+        - "Sewer"
+        - "Water System"
+        - "Dirty Conditions"
+        - "Sidewalk Condition"
+        - "Damaged Tree"
+        - "Overgrown Tree/Branches"
+        - "Dead Tree"
+        - "Root/Sewer/Sidewalk Condition"
+        - "Highway Condition"
+        - "Bridge Condition"
+        - "Curb Condition"
+        - "Sweeping/Missed"
+        - "Missed Collection (All Materials)"
+        - "Illegal Dumping"
+        - "Derelict Vehicles"
+        - "Graffiti"
+        - "Street Sign - Damaged"
+        - "Street Sign - Missing"
+        - "Street Sign - Dangling"
+        - "Broken Muni Meter"
+        - "Sewer Backup (Use Comments)"
+    expected:
+      approx_rows_total: 22613917
+      approx_rows_after_filter: 4000000
+      due_date_non_null: 8663794
+      note: "2020-present is a separate asset (erm2-nwe9), not used here."
+    licence:
+      name: "NYC Open Data Terms of Use"
+      url: "https://opendata.cityofnewyork.us/overview/"
+      commercial_use: true
+      modification: true
+      redistribution: true
+      attribution_required: false
+      research_use: true
+      restrictions: "Provided as-is, no warranty. Non-federal dataset."
+      decision: INCLUDE
+
+# ---------------------------------------------------------------------------
+# NOT REQUIRED for the current ML scope. Documented for future work only.
+# Do NOT download these now. See DATASET_SOURCES.md section "Optional / future".
+# ---------------------------------------------------------------------------
+optional_future_datasets:
+  rdd2022:
+    name: "RDD2022 Road Damage Dataset"
+    url: "https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547"
+    licence: "Read from the Figshare record at download time — UNVERIFIED here"
+    required_now: false
+    future_purpose: "image -> road damage detection, if UrbanEye+ ever auto-detects category from a photo"
+    why_not_now: "The citizen selects the category in the app, so image->category is out of scope."
+  smartathon:
+    name: "SDAIA Smartathon Theme 1 (Visual Pollution)"
+    url: "https://smartathon.hackerearth.com/"
+    licence: "UNVERIFIED at original source; Roboflow mirror declares CC BY 4.0"
+    required_now: false
+    future_purpose: "multi-class civic image detection"
+    why_not_now: "Out of ML scope, and the original licence could not be confirmed."
+  taco:
+    name: "TACO - Trash Annotations in Context"
+    url: "http://tacodataset.org/"
+    licence: "Per-image CC BY 4.0 or ODbL"
+    required_now: false
+    future_purpose: "litter segmentation"
+    why_not_now: "Item-level litter granularity; no tabular/geospatial value."
+  mapillary_vistas:
+    name: "Mapillary Vistas v2.0"
+    url: "https://research.mapillary.com/publication/iccv17a/"
+    licence: "CC BY-NC-SA"
+    required_now: false
+    future_purpose: "street-scene pretraining"
+    why_not_now: "NonCommercial clause is incompatible with a deployed product."
+  civic_issue_dataset:
+    name: "Civic Issue Detection Dataset (IIT-K / IBM Research India)"
+    url: "https://github.com/Sshanu/civic_issue_dataset"
+    licence: "NONE STATED"
+    required_now: false
+    future_purpose: "Indian civic imagery incl. manholes"
+    why_not_now: "Licence could not be verified. Do not use until the authors grant terms."
+
+# ---------------------------------------------------------------------------
+# CLEANING - every rule is applied and counted in reports/data_quality.json
+# ---------------------------------------------------------------------------
+cleaning:
+  coordinates:
+    reject_zero_island: true          # SF has 551,131 rows at exactly 0,0
+    zero_tolerance_deg: 0.0001
+    lat_min: -90.0
+    lat_max: 90.0
+    lon_min: -180.0
+    lon_max: 180.0
+    city_bbox:
+      "San Francisco": {lat_min: 37.60, lat_max: 37.95, lon_min: -123.20, lon_max: -122.28}
+      "Boston":        {lat_min: 42.20, lat_max: 42.45, lon_min: -71.25,  lon_max: -70.90}
+      "Chicago":       {lat_min: 41.60, lat_max: 42.10, lon_min: -88.00,  lon_max: -87.50}
+      "New York City": {lat_min: 40.45, lat_max: 40.95, lon_min: -74.30,  lon_max: -73.65}
+  timestamps:
+    valid_min: "2008-01-01"
+    valid_max_offset_days: 1
+    timezone_policy: "convert_to_utc"
+    source_timezones:
+      sf311: "America/Los_Angeles"
+      boston311: "America/New_York"
+      chicago311: "America/Chicago"
+      nyc311: "America/New_York"
+  resolution_time:
+    reject_negative: true
+    max_hours: 87600                  # 10 years
+  text:
+    lowercase: false
+    strip_html: true
+    collapse_whitespace: true
+    max_length: 4000
+  quarantine:
+    enabled: true
+    dir: "data/processed/quarantine"
+
+# ---------------------------------------------------------------------------
+# IMAGES - no image is downloaded by this pipeline, ever.
+# ---------------------------------------------------------------------------
+images:
+  download_images: false
+  policy: >
+    The current ML scope has no image task. SF Media URL and Boston photo URLs
+    are retained as metadata/provenance in incidents.image_url only. The probe
+    script checks a sample of URLs for availability; it never bulk-downloads.
+  url_probe:
+    sample_size: 200
+    timeout_seconds: 15
+    max_workers: 8
+    method: "HEAD"
+    user_agent: "UrbanEyePlus-DataPipeline/2.0 (academic research)"
+
+# ---------------------------------------------------------------------------
+# HOTSPOT PANEL
+# ---------------------------------------------------------------------------
+hotspot:
+  # complete_grid : reindex onto a full calendar-week grid so that a week with
+  #                 no report is a real zero, shift(1) is genuinely week t-1 and
+  #                 the target is genuinely week t+1.
+  # observed_only : the old behaviour — rows only for weeks that had incidents.
+  #                 shift() then skips quiet weeks and the target can never be
+  #                 zero, which made future_incident_flag constant True.
+  panel: complete_grid
+  drop_partial_boundary_weeks: true
+  note: >
+    Zeros are observed, not imputed: each city's extract is contiguous in the
+    publisher's own id order, so within its date window it is complete for the
+    complaint types it covers. Series are created only for zone x category
+    combinations that occur at least once in that city.
+
+# ---------------------------------------------------------------------------
+# SPLITS
+# ---------------------------------------------------------------------------
+splits:
+  tabular:
+    strategy: chronological
+    # Preferred ABSOLUTE cut dates. They are used only when they actually fall
+    # inside the corpus being split. The subset currently on disk ends in
+    # August 2020, so these two dates would put 100% of rows in train and leave
+    # val and test empty — which is exactly what happened before this was fixed.
+    train_end: "2022-12-31"
+    val_end: "2023-12-31"
+    # What to do when the absolute cuts do not produce a usable val AND test:
+    # fall back to quantile cuts on the corpus's own timeline. The chosen cut
+    # timestamps are recorded in every split report, so a run stays reproducible
+    # and auditable whichever branch was taken.
+    cut_selection: auto              # auto | absolute | quantile
+    fractions: {train: 0.70, val: 0.15, test: 0.15}
+    # Split each source_dataset on its OWN timeline.
+    #
+    # The three cities in this corpus occupy disjoint time windows (NYC Jan-Mar
+    # 2010, SF Jan-May 2018, Chicago Jul 2018-Aug 2020). One global chronological
+    # cut therefore yields a validation and test set containing Chicago and
+    # nothing else, so `city` could never be evaluated. Splitting per source
+    # keeps every city present in every split while preserving the property that
+    # matters for leakage: within a city, train strictly precedes val strictly
+    # precedes test. Backward-looking features are computed per row against
+    # earlier reports only, and no cross-city feature exists (the density radius
+    # is 250 m), so a later row in one city cannot inform an earlier row in
+    # another.
+    per_source: true
+    min_rows_per_split: 1
+    note: >
+      Random splitting would leak future municipal behaviour into the past and
+      make the resolution model look far better than it is.
+  duplicates:
+    strategy: group_chronological
+    group_key: incident_a
+    note: "A duplicate group is never split across train/val/test."
+  hotspot:
+    strategy: chronological_by_week
+    note: "Lag features are shift(1); the current week never sees itself."

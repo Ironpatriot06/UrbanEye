@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "id": "LEAK-1/priority_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-1/resolution_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-1/hotspot_dataset",
+      "description": "no forbidden post-resolution columns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-7",
+      "description": "resolution_dataset excludes sla_met (derived from the target)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-2",
+      "description": "hotspot previous_period_count equals the independently re-derived t-1 count",
+      "result": "PASS",
+      "detail": "mismatches=0 of 65506 comparable"
+    },
+    {
+      "id": "LEAK-2b",
+      "description": "previous_period_count never equals the current week where t-1 differs",
+      "result": "PASS",
+      "detail": "suspicious_rows=0"
+    },
+    {
+      "id": "LEAK-3",
+      "description": "hotspot target is the next period, independently re-derived",
+      "result": "PASS",
+      "detail": "mismatches=0"
+    },
+    {
+      "id": "LEAK-4",
+      "description": "nearby_similar_incidents_30d re-derives exactly with reported_at < t",
+      "result": "PASS",
+      "detail": "mismatches=0 of 150 resampled rows"
+    },
+    {
+      "id": "LEAK-5/priority_dataset",
+      "description": "chronological splits do not overlap in time (within each source_dataset)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-5/hotspot_dataset",
+      "description": "chronological splits do not overlap in time (within each city)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "LEAK-6",
+      "description": "no duplicate group spans multiple splits",
+      "result": "PASS",
+      "detail": "groups_spanning=0"
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0
+  },
+  "forbidden_feature_list": [
+    "closed_at",
+    "status",
+    "sla_met",
+    "description",
+    "resolution_description",
+    "closure_reason",
+    "status_notes"
+  ],
+  "note": "LEAK-2, LEAK-3 and LEAK-4 independently re-derive the value rather than trusting the builder that produced it."
+}

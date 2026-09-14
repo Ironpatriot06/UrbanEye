@@ -1,0 +1,85 @@
+{
+  "generated_at_utc": "2026-09-14T12:16:21.430275+00:00",
+  "fixture_outputs_present": false,
+  "datasets": {
+    "sf311": {
+      "landing_page": "https://data.sf.gov/d/vw6y-z8j6",
+      "acquisition": "AVAILABLE LOCALLY",
+      "raw_dir": "data/raw/sf311",
+      "raw_files_found": [
+        "sf311_cases.jsonl"
+      ],
+      "licence": {
+        "name": "Open Data Commons Public Domain Dedication and Licence (PDDL) 1.0",
+        "url": "http://opendatacommons.org/licenses/pddl/1.0/",
+        "commercial_use": true,
+        "modification": true,
+        "redistribution": true,
+        "attribution_required": false,
+        "research_use": true,
+        "restrictions": "None. Public domain dedication.",
+        "decision": "INCLUDE"
+      },
+      "licence_status": "VERIFIED"
+    },
+    "boston311": {
+      "landing_page": "https://data.boston.gov/dataset/311-service-requests",
+      "acquisition": "NOT DOWNLOADED",
+      "raw_dir": "data/raw/boston311",
+      "raw_files_found": [],
+      "licence": {
+        "name": "Open Data Commons Public Domain Dedication and Licence (PDDL)",
+        "url": "http://www.opendefinition.org/licenses/odc-pddl",
+        "commercial_use": true,
+        "modification": true,
+        "redistribution": true,
+        "attribution_required": false,
+        "research_use": true,
+        "restrictions": "None.",
+        "decision": "INCLUDE"
+      },
+      "licence_status": "VERIFIED"
+    },
+    "chicago311": {
+      "landing_page": "https://data.cityofchicago.org/d/v6vf-nfxy",
+      "acquisition": "AVAILABLE LOCALLY",
+      "raw_dir": "data/raw/chicago311",
+      "raw_files_found": [
+        "chicago311.jsonl"
+      ],
+      "licence": {
+        "name": "City of Chicago Open Data Terms of Use",
+        "url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+        "commercial_use": true,
+        "modification": true,
+        "redistribution": true,
+        "attribution_required": true,
+        "research_use": true,
+        "restrictions": "Attribution to the City of Chicago. No warranty of accuracy.",
+        "decision": "INCLUDE"
+      },
+      "licence_status": "VERIFIED"
+    },
+    "nyc311": {
+      "landing_page": "https://data.cityofnewyork.us/d/76ig-c548",
+      "acquisition": "AVAILABLE LOCALLY",
+      "raw_dir": "data/raw/nyc311",
+      "raw_files_found": [
+        "nyc311_2010_2019.jsonl"
+      ],
+      "licence": {
+        "name": "NYC Open Data Terms of Use",
+        "url": "https://opendata.cityofnewyork.us/overview/",
+        "commercial_use": true,
+        "modification": true,
+        "redistribution": true,
+        "attribution_required": false,
+        "research_use": true,
+        "restrictions": "Provided as-is, no warranty. Non-federal dataset.",
+        "decision": "INCLUDE"
+      },
+      "licence_status": "VERIFIED"
+    }
+  },
+  "excluded": []
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "dataset": "boston311",
+    "status": "FAILED",
+    "source_url": "https://data.boston.gov/dataset/8048697b-ad64-4bfc-b090-ee00169f2323/resource/94b499d9-712a-4d2a-b790-7ceec5c9c4b1/download/lagan_311_open_data_2011_rvsd2.csv",
+    "method": "GET",
+    "error": "Failed after 5 attempts: https://data.boston.gov/dataset/8048697b-ad64-4bfc-b090-ee00169f2323/resource/94b499d9-712a-4d2a-b790-7ceec5c9c4b1/download/lagan_311_open_data_2011_rvsd2.csv (403 Client Error: Forbidden for url: https://s3.amazonaws.com:443/og-production-open-data-bostonma-892364687672/resources/94b499d9-712a-4d2a-b790-7ceec5c9c4b1/lagan_311_open_data_2011_rvsd2.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJJIENTAPKHZMIPXQ%2F20260913%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260913T210444Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=b9626c8f4e31dd9d59f78f98b855d9902ea677e3b7fd22b9c07607f6a5a2afe4)",
+    "attempted_at_utc": "2026-09-13T21:04:45.622627+00:00"
+  },
+  {
+    "dataset": "boston311",
+    "status": "FAILED",
+    "source_url": "https://data.boston.gov/dataset/8048697b-ad64-4bfc-b090-ee00169f2323/resource/dff4d804-5031-443a-8409-8344efd0e5c8/download/lagan_311_open_data_2024_rvsd.csv",
+    "method": "GET",
+    "error": "Failed after 5 attempts: https://data.boston.gov/dataset/8048697b-ad64-4bfc-b090-ee00169f2323/resource/dff4d804-5031-443a-8409-8344efd0e5c8/download/lagan_311_open_data_2024_rvsd.csv (403 Client Error: Forbidden for url: https://s3.amazonaws.com:443/og-production-open-data-bostonma-892364687672/resources/dff4d804-5031-443a-8409-8344efd0e5c8/lagan_311_open_data_2024_rvsd.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJJIENTAPKHZMIPXQ%2F20260913%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260913T212528Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=cb0e8768c9f5320c867d1843649d9eb1bfc65be710a2ffcbe436159b2914e1b9)",
+    "attempted_at_utc": "2026-09-13T21:25:30.081067+00:00"
+  }
+]

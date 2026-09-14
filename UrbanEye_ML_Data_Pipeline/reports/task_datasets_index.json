@@ -1,0 +1,45 @@
+{
+  "generated_at_utc": "2026-09-14T12:37:04.005678+00:00",
+  "tasks": {
+    "resolution": {
+      "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/resolution_ml.parquet",
+      "rows": 1026596,
+      "unit": "one incident",
+      "target": "resolution_time_hours",
+      "target_available": true,
+      "split_strategy": "per-source chronological"
+    },
+    "sla": {
+      "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/sla_ml.parquet",
+      "rows": 20224,
+      "unit": "one incident",
+      "target": "sla_breach",
+      "target_available": true,
+      "split_strategy": "per-source chronological"
+    },
+    "hotspot": {
+      "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/hotspot_ml.parquet",
+      "rows": 67092,
+      "unit": "city x zone x category x ISO week",
+      "target": "future_incident_count",
+      "target_available": true,
+      "split_strategy": "per-city chronological on week_start"
+    },
+    "duplicate": {
+      "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/duplicate_ml.parquet",
+      "rows": 455460,
+      "unit": "one ordered pair of incidents",
+      "target": "same_incident",
+      "target_available": true,
+      "split_strategy": "connected-component chronological"
+    },
+    "priority": {
+      "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/priority_features.parquet",
+      "rows": 1900000,
+      "unit": "one incident",
+      "target": null,
+      "target_available": false,
+      "split_strategy": "per-source chronological"
+    }
+  }
+}

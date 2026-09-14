@@ -1,0 +1,57 @@
+{
+  "config_version": "0.1.0-draft",
+  "config_status": "DRAFT",
+  "rows": 1445,
+  "priority_baseline_distribution": {
+    "P4": 622,
+    "P3": 489,
+    "P2": 334
+  },
+  "priority_confidence_distribution": {
+    "LOW": 1445
+  },
+  "priority_label_non_null": 0,
+  "is_ground_truth": false,
+  "sla_hours_policy": {
+    "P1": 30,
+    "P2": 50,
+    "P3": 72,
+    "P4": 90
+  },
+  "geo_feature_availability": {
+    "near_school": 0,
+    "distance_to_nearest_school_m": 0,
+    "near_hospital": 0,
+    "distance_to_nearest_hospital_m": 0,
+    "near_metro": 0,
+    "distance_to_nearest_metro_m": 0,
+    "near_rail_station": 0,
+    "distance_to_nearest_rail_station_m": 0,
+    "near_public_transport": 0,
+    "distance_to_nearest_public_transport_m": 0,
+    "near_fire_station": 0,
+    "distance_to_nearest_fire_station_m": 0,
+    "near_police_station": 0,
+    "distance_to_nearest_police_station_m": 0,
+    "near_government_building": 0,
+    "distance_to_nearest_government_building_m": 0,
+    "near_major_road": 0,
+    "distance_to_major_road_m": 0,
+    "road_class": 0,
+    "near_intersection": 0,
+    "distance_to_nearest_intersection_m": 0,
+    "metro_city": 0,
+    "urban_area": 0,
+    "nearby_similar_incidents_24h": 1421,
+    "nearby_similar_incidents_7d": 1421,
+    "nearby_similar_incidents_30d": 1421,
+    "local_incident_density": 1421,
+    "category_incident_density": 1421
+  },
+  "split_counts": {
+    "train": 683,
+    "val": 388,
+    "test": 374
+  },
+  "interpretation": "priority_baseline is a deterministic function of config/priority_config.yaml. It is NOT ground truth and must not be used as an ML target \u2014 a model trained on it would simply re-learn the YAML. priority_label is NULL for every row because no public 311 dataset contains a genuine operational priority. On US data all POI features are NULL, so the score reduces to the category term and confidence is LOW throughout; that is expected, not a defect."
+}

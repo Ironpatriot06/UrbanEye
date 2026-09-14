@@ -2,7 +2,6 @@
 .env
 .env.example
 
-
 # Python
 __pycache__/
 *.py[cod]
@@ -15,15 +14,27 @@ node_modules/
 .next/
 out/
 
-# ML
+# ML models
 *.pt
 *.pth
 *.onnx
-# Anchored to the repo root: an unanchored "models/" matches a directory of
-# that name at ANY depth, which silently excluded backend/app/models/ (the
-# SQLAlchemy ORM package) from version control.
 /models/
-datasets/
+/datasets/
+
+# UrbanEye ML pipeline data — datasets stay on disk, never in Git.
+# '/**' (not '/*') so files at every depth are ignored; the '!**/' rule
+# re-includes the directories themselves so Git still descends into them
+# and the .gitkeep structure markers survive.
+# data/manifests/ is deliberately NOT ignored: those files record the
+# source URL, checksum and row count of each download — provenance, not data.
+UrbanEye_ML_Data_Pipeline/data/raw/**
+UrbanEye_ML_Data_Pipeline/data/processed/**
+
+# Keep directory structure
+!UrbanEye_ML_Data_Pipeline/data/raw/**/
+!UrbanEye_ML_Data_Pipeline/data/raw/**/.gitkeep
+!UrbanEye_ML_Data_Pipeline/data/processed/**/
+!UrbanEye_ML_Data_Pipeline/data/processed/**/.gitkeep
 
 # OS
 .DS_Store

@@ -1,0 +1,1441 @@
+{
+  "generated_at_utc": "2026-09-14T12:38:52.167417+00:00",
+  "summary": {
+    "total": 80,
+    "passed": 78,
+    "failed": 0,
+    "skipped": 2
+  },
+  "checks": [
+    {
+      "id": "TASK-1",
+      "task": "resolution_ml",
+      "check": "every declared predictor exists in the table",
+      "result": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "TASK-2",
+      "task": "resolution_ml",
+      "check": "no declared predictor is constant",
+      "result": "PASS",
+      "detail": "constant=[]"
+    },
+    {
+      "id": "TASK-3",
+      "task": "resolution_ml",
+      "check": "the target is declared",
+      "result": "PASS",
+      "detail": "target=resolution_time_hours"
+    },
+    {
+      "id": "TASK-4",
+      "task": "resolution_ml",
+      "check": "the target column exists and has values",
+      "result": "PASS",
+      "detail": "rows_with_target=1026596"
+    },
+    {
+      "id": "TL-6",
+      "task": "resolution_ml",
+      "check": "every predictor states when its value becomes known",
+      "result": "PASS",
+      "detail": "undeclared=[]"
+    },
+    {
+      "id": "TL-1",
+      "task": "resolution_ml",
+      "check": "no predictor is the target or a derivative of it",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-2",
+      "task": "resolution_ml",
+      "check": "no post-resolution column is a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-12",
+      "task": "resolution_ml",
+      "check": "target-support columns are not offered to the wrong task",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-3",
+      "task": "resolution_ml",
+      "check": "the priority policy output is not a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-4",
+      "task": "resolution_ml",
+      "check": "raw coordinates are not predictors",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-5",
+      "task": "resolution_ml",
+      "check": "no predictor is a global frequency/target encoding",
+      "result": "PASS",
+      "detail": "named=[] detected=[]; structural co-linearity (not leakage): ['year is constant within subcategory (4 values / 248 levels)']"
+    },
+    {
+      "id": "TL-7",
+      "task": "resolution_ml",
+      "check": "joined history features match the feature table exactly",
+      "result": "PASS",
+      "detail": "mismatched=[] over 50,000 sampled rows"
+    },
+    {
+      "id": "TL-11",
+      "task": "resolution_ml",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "id": "TL-8",
+      "task": "resolution_ml",
+      "check": "no entity appears in more than one split",
+      "result": "PASS",
+      "detail": "entities_in_two_splits=0"
+    },
+    {
+      "id": "TL-11b",
+      "task": "resolution_ml",
+      "check": "splits are chronological within each source_dataset",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "TL-10",
+      "task": "resolution_ml",
+      "check": "source-specific columns carry a documented caveat",
+      "result": "PASS",
+      "detail": "undocumented=[]"
+    },
+    {
+      "id": "TASK-1",
+      "task": "sla_ml",
+      "check": "every declared predictor exists in the table",
+      "result": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "TASK-2",
+      "task": "sla_ml",
+      "check": "no declared predictor is constant",
+      "result": "PASS",
+      "detail": "constant=[]"
+    },
+    {
+      "id": "TASK-3",
+      "task": "sla_ml",
+      "check": "the target is declared",
+      "result": "PASS",
+      "detail": "target=sla_breach"
+    },
+    {
+      "id": "TASK-4",
+      "task": "sla_ml",
+      "check": "the target column exists and has values",
+      "result": "PASS",
+      "detail": "rows_with_target=20224"
+    },
+    {
+      "id": "TL-6",
+      "task": "sla_ml",
+      "check": "every predictor states when its value becomes known",
+      "result": "PASS",
+      "detail": "undeclared=[]"
+    },
+    {
+      "id": "TL-1",
+      "task": "sla_ml",
+      "check": "no predictor is the target or a derivative of it",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-2",
+      "task": "sla_ml",
+      "check": "no post-resolution column is a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-12",
+      "task": "sla_ml",
+      "check": "target-support columns are not offered to the wrong task",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-3",
+      "task": "sla_ml",
+      "check": "the priority policy output is not a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-4",
+      "task": "sla_ml",
+      "check": "raw coordinates are not predictors",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-5",
+      "task": "sla_ml",
+      "check": "no predictor is a global frequency/target encoding",
+      "result": "PASS",
+      "detail": "named=[] detected=[]"
+    },
+    {
+      "id": "TL-7",
+      "task": "sla_ml",
+      "check": "joined history features match the feature table exactly",
+      "result": "PASS",
+      "detail": "mismatched=[] over 20,224 sampled rows"
+    },
+    {
+      "id": "TL-11",
+      "task": "sla_ml",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "id": "TL-8",
+      "task": "sla_ml",
+      "check": "no entity appears in more than one split",
+      "result": "PASS",
+      "detail": "entities_in_two_splits=0"
+    },
+    {
+      "id": "TL-11b",
+      "task": "sla_ml",
+      "check": "splits are chronological within each source_dataset",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "TL-10",
+      "task": "sla_ml",
+      "check": "source-specific columns carry a documented caveat",
+      "result": "PASS",
+      "detail": "undocumented=[]"
+    },
+    {
+      "id": "TASK-1",
+      "task": "hotspot_ml",
+      "check": "every declared predictor exists in the table",
+      "result": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "TASK-2",
+      "task": "hotspot_ml",
+      "check": "no declared predictor is constant",
+      "result": "PASS",
+      "detail": "constant=[]"
+    },
+    {
+      "id": "TASK-3",
+      "task": "hotspot_ml",
+      "check": "the target is declared",
+      "result": "PASS",
+      "detail": "target=future_incident_count"
+    },
+    {
+      "id": "TASK-4",
+      "task": "hotspot_ml",
+      "check": "the target column exists and has values",
+      "result": "PASS",
+      "detail": "rows_with_target=67092"
+    },
+    {
+      "id": "TL-6",
+      "task": "hotspot_ml",
+      "check": "every predictor states when its value becomes known",
+      "result": "PASS",
+      "detail": "undeclared=[]"
+    },
+    {
+      "id": "TL-1",
+      "task": "hotspot_ml",
+      "check": "no predictor is the target or a derivative of it",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-2",
+      "task": "hotspot_ml",
+      "check": "no post-resolution column is a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-12",
+      "task": "hotspot_ml",
+      "check": "target-support columns are not offered to the wrong task",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-3",
+      "task": "hotspot_ml",
+      "check": "the priority policy output is not a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-4",
+      "task": "hotspot_ml",
+      "check": "raw coordinates are not predictors",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-5",
+      "task": "hotspot_ml",
+      "check": "no predictor is a global frequency/target encoding",
+      "result": "PASS",
+      "detail": "named=[] detected=[]"
+    },
+    {
+      "id": "TL-7",
+      "task": "hotspot_ml",
+      "check": "joined history features match the feature table exactly",
+      "result": "SKIP",
+      "detail": "no joinable history columns"
+    },
+    {
+      "id": "TL-11",
+      "task": "hotspot_ml",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "id": "TL-11b",
+      "task": "hotspot_ml",
+      "check": "splits are chronological within each city",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "TL-10",
+      "task": "hotspot_ml",
+      "check": "source-specific columns carry a documented caveat",
+      "result": "PASS",
+      "detail": "undocumented=[]"
+    },
+    {
+      "id": "TASK-1",
+      "task": "duplicate_ml",
+      "check": "every declared predictor exists in the table",
+      "result": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "TASK-2",
+      "task": "duplicate_ml",
+      "check": "no declared predictor is constant",
+      "result": "PASS",
+      "detail": "constant=[]"
+    },
+    {
+      "id": "TASK-3",
+      "task": "duplicate_ml",
+      "check": "the target is declared",
+      "result": "PASS",
+      "detail": "target=same_incident"
+    },
+    {
+      "id": "TASK-4",
+      "task": "duplicate_ml",
+      "check": "the target column exists and has values",
+      "result": "PASS",
+      "detail": "rows_with_target=455460"
+    },
+    {
+      "id": "TL-6",
+      "task": "duplicate_ml",
+      "check": "every predictor states when its value becomes known",
+      "result": "PASS",
+      "detail": "undeclared=[]"
+    },
+    {
+      "id": "TL-1",
+      "task": "duplicate_ml",
+      "check": "no predictor is the target or a derivative of it",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-2",
+      "task": "duplicate_ml",
+      "check": "no post-resolution column is a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-12",
+      "task": "duplicate_ml",
+      "check": "target-support columns are not offered to the wrong task",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-3",
+      "task": "duplicate_ml",
+      "check": "the priority policy output is not a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-4",
+      "task": "duplicate_ml",
+      "check": "raw coordinates are not predictors",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-5",
+      "task": "duplicate_ml",
+      "check": "no predictor is a global frequency/target encoding",
+      "result": "PASS",
+      "detail": "named=[] detected=[]"
+    },
+    {
+      "id": "TL-7",
+      "task": "duplicate_ml",
+      "check": "joined history features match the feature table exactly",
+      "result": "SKIP",
+      "detail": "no joinable history columns"
+    },
+    {
+      "id": "TL-11",
+      "task": "duplicate_ml",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "id": "TL-8",
+      "task": "duplicate_ml",
+      "check": "no entity appears in more than one split",
+      "result": "PASS",
+      "detail": "entities_in_two_splits=0"
+    },
+    {
+      "id": "TASK-1",
+      "task": "priority_features",
+      "check": "every declared predictor exists in the table",
+      "result": "PASS",
+      "detail": "missing=[]"
+    },
+    {
+      "id": "TASK-2",
+      "task": "priority_features",
+      "check": "no declared predictor is constant",
+      "result": "PASS",
+      "detail": "constant=[]"
+    },
+    {
+      "id": "TASK-3",
+      "task": "priority_features",
+      "check": "the target is declared",
+      "result": "PASS",
+      "detail": "target=None"
+    },
+    {
+      "id": "TL-6",
+      "task": "priority_features",
+      "check": "every predictor states when its value becomes known",
+      "result": "PASS",
+      "detail": "undeclared=[]"
+    },
+    {
+      "id": "TL-1",
+      "task": "priority_features",
+      "check": "no predictor is the target or a derivative of it",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-2",
+      "task": "priority_features",
+      "check": "no post-resolution column is a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-12",
+      "task": "priority_features",
+      "check": "target-support columns are not offered to the wrong task",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-3",
+      "task": "priority_features",
+      "check": "the priority policy output is not a predictor",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-4",
+      "task": "priority_features",
+      "check": "raw coordinates are not predictors",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "id": "TL-5",
+      "task": "priority_features",
+      "check": "no predictor is a global frequency/target encoding",
+      "result": "PASS",
+      "detail": "named=[] detected=[]"
+    },
+    {
+      "id": "TL-7",
+      "task": "priority_features",
+      "check": "joined history features match the feature table exactly",
+      "result": "PASS",
+      "detail": "mismatched=[] over 50,000 sampled rows"
+    },
+    {
+      "id": "TL-11",
+      "task": "priority_features",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "id": "TL-8",
+      "task": "priority_features",
+      "check": "no entity appears in more than one split",
+      "result": "PASS",
+      "detail": "entities_in_two_splits=0"
+    },
+    {
+      "id": "TL-11b",
+      "task": "priority_features",
+      "check": "splits are chronological within each source_dataset",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "TL-10",
+      "task": "priority_features",
+      "check": "source-specific columns carry a documented caveat",
+      "result": "PASS",
+      "detail": "undocumented=[]"
+    },
+    {
+      "id": "TL-9",
+      "task": "hotspot_ml",
+      "check": "every consecutive panel row is exactly one calendar week apart",
+      "result": "PASS",
+      "detail": "non_adjacent_rows=0 of 65,506"
+    },
+    {
+      "id": "TL-9b",
+      "task": "hotspot_ml",
+      "check": "the target can express a quiet week (it contains zeros)",
+      "result": "PASS",
+      "detail": "zero_share=0.1997"
+    },
+    {
+      "id": "TL-9c",
+      "task": "hotspot_ml",
+      "check": "the binary target is not constant",
+      "result": "PASS",
+      "detail": "distinct=2"
+    },
+    {
+      "id": "TL-13",
+      "task": "priority_features",
+      "check": "priority has no supervised target",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "feature_target_audit": [
+    {
+      "task": "resolution_ml",
+      "column": "category",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 12,
+      "available_at_prediction_time": true,
+      "when_known": "citizen selects it in the app at submission",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "subcategory",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 80.48,
+      "n_unique": 344,
+      "available_at_prediction_time": true,
+      "when_known": "publisher's second-level label, assigned at intake",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "city",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "known from the coordinate / the deployment",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "source_dataset",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "known: which system the report arrived through",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "department",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 121,
+      "available_at_prediction_time": true,
+      "when_known": "assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for that source.",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "zone_key",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.544,
+      "n_unique": 168,
+      "available_at_prediction_time": true,
+      "when_known": "administrative unit of the report location, resolved at intake",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "zone_type",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "names which administrative unit zone_key refers to",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "report_channel",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 7,
+      "available_at_prediction_time": true,
+      "when_known": "the channel the citizen used, known at submission",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "hour",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 24,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "day_of_week",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 7,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "month",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 12,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "year",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 4,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "is_weekend",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "is_night",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "nearby_similar_incidents_24h",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.719,
+      "n_unique": 111,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "nearby_similar_incidents_7d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.719,
+      "n_unique": 319,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "nearby_similar_incidents_30d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.719,
+      "n_unique": 626,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "resolution_ml",
+      "column": "local_incident_density",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.719,
+      "n_unique": 1317,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "resolution_ml",
+      "column": "category_incident_density",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 1.719,
+      "n_unique": 8409,
+      "available_at_prediction_time": true,
+      "when_known": "ratio of two strictly-backward counts",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "resolution_ml",
+      "column": "hours_since_previous_similar_incident",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 15.542,
+      "n_unique": 420424,
+      "available_at_prediction_time": true,
+      "when_known": "gap to the most recent strictly earlier report",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "resolution_ml",
+      "column": "resolution_time_hours",
+      "role": "target",
+      "dtype": null,
+      "null_pct": null,
+      "n_unique": null,
+      "available_at_prediction_time": false,
+      "when_known": "observed only after the fact \u2014 this is the label",
+      "warning": "closed_at - reported_at. The distribution is extremely right-skewed (p50 around 4 days, max over 8 years), so fit on log1p and report errors in hours, or use a model with an appropriate loss."
+    },
+    {
+      "task": "sla_ml",
+      "column": "category",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 6,
+      "available_at_prediction_time": true,
+      "when_known": "citizen selects it in the app at submission",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "subcategory",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 90,
+      "available_at_prediction_time": true,
+      "when_known": "publisher's second-level label, assigned at intake",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "department",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 4,
+      "available_at_prediction_time": true,
+      "when_known": "assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for that source.",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "zone_key",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 75,
+      "available_at_prediction_time": true,
+      "when_known": "administrative unit of the report location, resolved at intake",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "report_channel",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "the channel the citizen used, known at submission",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "hour",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 24,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "day_of_week",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 7,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "month",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "is_weekend",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "is_night",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "sla_target_hours",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 0.0,
+      "n_unique": 4318,
+      "available_at_prediction_time": true,
+      "when_known": "the deadline, set by the publisher at intake. Only legitimate for the SLA task, where the question is whether this known deadline will be missed.",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "sla_ml",
+      "column": "nearby_similar_incidents_24h",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 4.193,
+      "n_unique": 22,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "nearby_similar_incidents_7d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 4.193,
+      "n_unique": 34,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "nearby_similar_incidents_30d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 4.193,
+      "n_unique": 46,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "local_incident_density",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 4.193,
+      "n_unique": 173,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "category_incident_density",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 4.193,
+      "n_unique": 890,
+      "available_at_prediction_time": true,
+      "when_known": "ratio of two strictly-backward counts",
+      "warning": null
+    },
+    {
+      "task": "sla_ml",
+      "column": "hours_since_previous_similar_incident",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 37.816,
+      "n_unique": 10992,
+      "available_at_prediction_time": true,
+      "when_known": "gap to the most recent strictly earlier report",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "sla_ml",
+      "column": "sla_breach",
+      "role": "target",
+      "dtype": null,
+      "null_pct": null,
+      "n_unique": null,
+      "available_at_prediction_time": false,
+      "when_known": "observed only after the fact \u2014 this is the label",
+      "warning": "resolution_time_hours > sla_target_hours"
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "city",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "known from the coordinate / the deployment",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "zone_key",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 168,
+      "available_at_prediction_time": true,
+      "when_known": "administrative unit of the report location, resolved at intake",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "zone_type",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "names which administrative unit zone_key refers to",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "category",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 12,
+      "available_at_prediction_time": true,
+      "when_known": "citizen selects it in the app at submission",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "month",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 12,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "year",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 4,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "week_of_year",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 52,
+      "available_at_prediction_time": true,
+      "when_known": "function of the period being forecast",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "incident_count",
+      "role": "predictor",
+      "dtype": "int64",
+      "null_pct": 0.0,
+      "n_unique": 331,
+      "available_at_prediction_time": true,
+      "when_known": "the CURRENT week's own count. Legitimate ONLY under the stated deployment assumption that the forecast for week t+1 is produced at the end of week t, when week t is complete.",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "previous_period_count",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 2.364,
+      "n_unique": 300,
+      "available_at_prediction_time": true,
+      "when_known": "count in week t-1; shift(1) before any rolling",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "rolling_4w_count",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 2.364,
+      "n_unique": 720,
+      "available_at_prediction_time": true,
+      "when_known": "weeks t-4..t-1",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "rolling_12w_count",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 2.364,
+      "n_unique": 1475,
+      "available_at_prediction_time": true,
+      "when_known": "weeks t-12..t-1",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "rolling_4w_mean",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 2.364,
+      "n_unique": 852,
+      "available_at_prediction_time": true,
+      "when_known": "weeks t-4..t-1",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "trend_4w",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 2.364,
+      "n_unique": 841,
+      "available_at_prediction_time": true,
+      "when_known": "difference of two backward windows",
+      "warning": null
+    },
+    {
+      "task": "hotspot_ml",
+      "column": "future_incident_count",
+      "role": "target",
+      "dtype": null,
+      "null_pct": null,
+      "n_unique": null,
+      "available_at_prediction_time": false,
+      "when_known": "observed only after the fact \u2014 this is the label",
+      "warning": "count in week t+1 for the same zone x category"
+    },
+    {
+      "task": "duplicate_ml",
+      "column": "distance_meters",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 0.233,
+      "n_unique": 295057,
+      "available_at_prediction_time": true,
+      "when_known": "computed from the two reports being compared",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "duplicate_ml",
+      "column": "time_difference_hours",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 0.0,
+      "n_unique": 385513,
+      "available_at_prediction_time": true,
+      "when_known": "computed from the two reports being compared",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "duplicate_ml",
+      "column": "category_match",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "computed from the two reports being compared",
+      "warning": null
+    },
+    {
+      "task": "duplicate_ml",
+      "column": "same_incident",
+      "role": "target",
+      "dtype": null,
+      "null_pct": null,
+      "n_unique": null,
+      "available_at_prediction_time": false,
+      "when_known": "observed only after the fact \u2014 this is the label",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "category",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 15,
+      "available_at_prediction_time": true,
+      "when_known": "citizen selects it in the app at submission",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "subcategory",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 84.211,
+      "n_unique": 584,
+      "available_at_prediction_time": true,
+      "when_known": "publisher's second-level label, assigned at intake",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "city",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "known from the coordinate / the deployment",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "source_dataset",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "known: which system the report arrived through",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "zone_key",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.766,
+      "n_unique": 169,
+      "available_at_prediction_time": true,
+      "when_known": "administrative unit of the report location, resolved at intake",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "zone_type",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 3,
+      "available_at_prediction_time": true,
+      "when_known": "names which administrative unit zone_key refers to",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "report_channel",
+      "role": "predictor",
+      "dtype": "string",
+      "null_pct": 0.0,
+      "n_unique": 7,
+      "available_at_prediction_time": true,
+      "when_known": "the channel the citizen used, known at submission",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "hour",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 24,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "day_of_week",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 7,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "month",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 12,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "year",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 0.0,
+      "n_unique": 4,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "is_weekend",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "is_night",
+      "role": "predictor",
+      "dtype": "boolean",
+      "null_pct": 0.0,
+      "n_unique": 2,
+      "available_at_prediction_time": true,
+      "when_known": "function of reported_at alone",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "nearby_similar_incidents_24h",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.558,
+      "n_unique": 190,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "nearby_similar_incidents_7d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.558,
+      "n_unique": 524,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "nearby_similar_incidents_30d",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.558,
+      "n_unique": 824,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": null
+    },
+    {
+      "task": "priority_features",
+      "column": "local_incident_density",
+      "role": "predictor",
+      "dtype": "Int64",
+      "null_pct": 1.558,
+      "n_unique": 1555,
+      "available_at_prediction_time": true,
+      "when_known": "counts only reports strictly earlier than this one",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "priority_features",
+      "column": "category_incident_density",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 1.558,
+      "n_unique": 9046,
+      "available_at_prediction_time": true,
+      "when_known": "ratio of two strictly-backward counts",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    },
+    {
+      "task": "priority_features",
+      "column": "hours_since_previous_similar_incident",
+      "role": "predictor",
+      "dtype": "float64",
+      "null_pct": 10.394,
+      "n_unique": 653464,
+      "available_at_prediction_time": true,
+      "when_known": "gap to the most recent strictly earlier report",
+      "warning": "high cardinality \u2014 needs target-free encoding"
+    }
+  ],
+  "tasks": {
+    "resolution_ml": {
+      "rows": 1026596,
+      "target": "resolution_time_hours",
+      "predictors": 20,
+      "split": "per-source chronological"
+    },
+    "sla_ml": {
+      "rows": 20224,
+      "target": "sla_breach",
+      "predictors": 17,
+      "split": "per-source chronological"
+    },
+    "hotspot_ml": {
+      "rows": 67092,
+      "target": "future_incident_count",
+      "predictors": 13,
+      "split": "per-city chronological on week_start"
+    },
+    "duplicate_ml": {
+      "rows": 455460,
+      "target": "same_incident",
+      "predictors": 3,
+      "split": "connected-component chronological"
+    },
+    "priority_features": {
+      "rows": 1900000,
+      "target": null,
+      "predictors": 19,
+      "split": "per-source chronological"
+    }
+  }
+}

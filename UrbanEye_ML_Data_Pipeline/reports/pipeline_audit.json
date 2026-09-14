@@ -1,0 +1,995 @@
+{
+  "generated_at_utc": "2026-09-14T12:38:26.774324+00:00",
+  "pipeline_version": "2.0.0",
+  "summary": {
+    "total": 56,
+    "passed": 56,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "section": "DATASET",
+      "id": "DS-1",
+      "check": "union row count equals the sum of the per-source tables",
+      "result": "PASS",
+      "detail": "union=1,900,000 sum_of_sources=1,900,000"
+    },
+    {
+      "section": "DATASET",
+      "id": "DS-2",
+      "check": "no duplicate incident_id",
+      "result": "PASS",
+      "detail": "duplicates=0"
+    },
+    {
+      "section": "DATASET",
+      "id": "DS-3",
+      "check": "no incident_id shared across source datasets",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DATASET",
+      "id": "DS-4",
+      "check": "every row carries a source_dataset and a city",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DATASET",
+      "id": "DS-5/time_features",
+      "check": "feature table covers every incident exactly once",
+      "result": "PASS",
+      "detail": "rows=1,900,000 vs incidents=1,900,000"
+    },
+    {
+      "section": "DATASET",
+      "id": "DS-5/geo_features",
+      "check": "feature table covers every incident exactly once",
+      "result": "PASS",
+      "detail": "rows=1,900,000 vs incidents=1,900,000"
+    },
+    {
+      "section": "TIME",
+      "id": "TF-1",
+      "check": "no missing time features where reported_at is present",
+      "result": "PASS",
+      "detail": "missing=0"
+    },
+    {
+      "section": "TIME",
+      "id": "TF-2",
+      "check": "hour in [0,23], day_of_week in [0,6], month in [1,12]",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TIME",
+      "id": "TF-3",
+      "check": "is_night agrees with the configured local night window",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TIME",
+      "id": "TF-4",
+      "check": "is_weekend agrees with day_of_week",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TIME",
+      "id": "TF-5",
+      "check": "local hour re-derives exactly from the configured city timezone",
+      "result": "PASS",
+      "detail": "mismatches=0 of 2000 resampled rows"
+    },
+    {
+      "section": "TIME",
+      "id": "TF-6",
+      "check": "local time genuinely differs from UTC (features are not UTC in disguise)",
+      "result": "PASS",
+      "detail": "rows where local hour != UTC hour: 1.000"
+    },
+    {
+      "section": "SPATIAL",
+      "id": "SP-1",
+      "check": "POI/road/area columns are all present in the schema",
+      "result": "PASS",
+      "detail": "23 declared"
+    },
+    {
+      "section": "SPATIAL",
+      "id": "SP-2",
+      "check": "POI/road/area columns are NULL (no reference data exists to fill them)",
+      "result": "PASS",
+      "detail": "0 of 23 populated; no reference geodata in data/external"
+    },
+    {
+      "section": "SPATIAL",
+      "id": "SP-3",
+      "check": "coordinates, where present, are finite and in range",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-1",
+      "check": "density is NULL exactly where coordinates are missing",
+      "result": "PASS",
+      "detail": "rows without coordinates=29,606"
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-2",
+      "check": "windows are monotone: 24h <= 7d <= 30d",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-3",
+      "check": "same-category 30d count never exceeds the all-category 30d count",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-4",
+      "check": "category_incident_density is a share in [0,1]",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-5",
+      "check": "density is not degenerate (it varies across rows)",
+      "result": "PASS",
+      "detail": "distinct values=1555 over 1,870,394 usable rows"
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-6",
+      "check": "every density column re-derives exactly with reported_at < t",
+      "result": "PASS",
+      "detail": "mismatches={'nearby_similar_incidents_24h': 0, 'nearby_similar_incidents_7d': 0, 'nearby_similar_incidents_30d': 0, 'local_incident_density': 0} over 200 resampled rows"
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-7",
+      "check": "no density value exceeds what a backward window can produce",
+      "result": "PASS",
+      "detail": "suspect_rows=0"
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-8/hours_since_previous_similar_incident",
+      "check": "recency is positive and inside its own window",
+      "result": "PASS",
+      "detail": "range=[0.00, 720.00] window=720.0"
+    },
+    {
+      "section": "DENSITY",
+      "id": "DN-9/hours_since_previous_similar_incident",
+      "check": "recency is non-null exactly when a 30d same-category neighbour exists",
+      "result": "PASS",
+      "detail": "inconsistent=0"
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-1",
+      "check": "every row has a baseline band",
+      "result": "PASS",
+      "detail": "missing=0"
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-2",
+      "check": "baseline uses more than one band",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-3",
+      "check": "score is in [0,1]",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-4",
+      "check": "confidence is consistent with the declared tiers",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-5",
+      "check": "priority_method records the config version used",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-6",
+      "check": "is_ground_truth is False on every row",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "PRIORITY",
+      "id": "PR-7",
+      "check": "score is not a pure category lookup (context features actually move it)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-1",
+      "check": "priority_label is empty (no public source provides one)",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-2",
+      "check": "priority_label_source is empty",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-3",
+      "check": "no row claims ground truth",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-4",
+      "check": "the dataset states its own target situation in-band",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-5",
+      "check": "at least one genuinely observed target exists",
+      "result": "PASS",
+      "detail": "resolution_time_hours rows=1,853,828"
+    },
+    {
+      "section": "TARGET",
+      "id": "TG-6",
+      "check": "sla_target_hours comes only from publishers that ship a due date",
+      "result": "PASS",
+      "detail": "sources=['nyc311']"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-1/priority_dataset",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-2/priority_dataset",
+      "check": "within each source_dataset, train precedes val precedes test",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-3/priority_dataset",
+      "check": "no incident appears in more than one split",
+      "result": "PASS",
+      "detail": "contaminated=0"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-1/resolution_dataset",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-2/resolution_dataset",
+      "check": "within each source_dataset, train precedes val precedes test",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-3/resolution_dataset",
+      "check": "no incident appears in more than one split",
+      "result": "PASS",
+      "detail": "contaminated=0"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-1/hotspot_dataset",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-2/hotspot_dataset",
+      "check": "within each city, train precedes val precedes test",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-1/urbaneye_ml",
+      "check": "train, val and test are all non-empty",
+      "result": "PASS",
+      "detail": "present=['test', 'train', 'val']"
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-2/urbaneye_ml",
+      "check": "within each source_dataset, train precedes val precedes test",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "SPLIT",
+      "id": "SPL-3/urbaneye_ml",
+      "check": "no incident appears in more than one split",
+      "result": "PASS",
+      "detail": "contaminated=0"
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-1",
+      "check": "priority_dataset contains no post-resolution column",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-2",
+      "check": "no report timestamp lies in the future",
+      "result": "PASS",
+      "detail": "future_rows=0"
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-3",
+      "check": "ML dataset contains no post-resolution column outside its targets",
+      "result": "PASS",
+      "detail": "found=[]"
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-4",
+      "check": "no declared predictor is a target or derived from one",
+      "result": "PASS",
+      "detail": "predictors=19"
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-5",
+      "check": "priority policy output is not declared as a predictor",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-6",
+      "check": "raw coordinates are not declared as predictors",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-7",
+      "check": "no fabricated priority target survives anywhere in the ML table",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "section": "LEAKAGE",
+      "id": "LK-8",
+      "check": "ML dataset carries no future timestamps",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "findings": {
+    "dataset": {
+      "rows": 1900000,
+      "per_source_parquet_rows": {
+        "sf311": 200000,
+        "chicago311": 1600000,
+        "nyc311": 100000
+      },
+      "by_source": {
+        "chicago311": 1600000,
+        "sf311": 200000,
+        "nyc311": 100000
+      },
+      "by_city": {
+        "Chicago": 1600000,
+        "San Francisco": 200000,
+        "New York City": 100000
+      },
+      "by_category": {
+        "OUT_OF_SCOPE": 494011,
+        "UNMAPPED": 358838,
+        "GARBAGE_DUMPING": 178198,
+        "GRAFFITI_VISUAL_POLLUTION": 177920,
+        "STREETLIGHT_FAULT": 162330,
+        "POTHOLE": 157190,
+        "FALLEN_TREE": 115771,
+        "SIGNAGE_DAMAGE": 58179,
+        "DRAINAGE_SEWER": 49600,
+        "WATER_LEAKAGE_WATERLOGGING": 48031,
+        "TRAFFIC_SIGNAL_FAULT": 47234,
+        "FOOTPATH_DAMAGE": 20845,
+        "REVIEW_REQUIRED": 12107,
+        "ROAD_DAMAGE": 10266,
+        "PUBLIC_INFRASTRUCTURE_DAMAGE": 9480
+      },
+      "date_range": {
+        "min": "2010-01-01 05:38:00+00:00",
+        "max": "2020-08-28 12:52:21+00:00"
+      }
+    },
+    "time": {
+      "night_window_local": "22-06",
+      "timezone_mapping": {
+        "sf311": "America/Los_Angeles",
+        "boston311": "America/New_York",
+        "chicago311": "America/Chicago",
+        "nyc311": "America/New_York"
+      },
+      "by_source": {
+        "chicago311": {
+          "rows": 1600000,
+          "timezone": "America/Chicago",
+          "hour_null": 0,
+          "hour_range": [
+            0,
+            23
+          ],
+          "night_share_local": 0.0658,
+          "night_share_if_computed_from_utc": 0.2248,
+          "weekend_share": 0.1411,
+          "hour_histogram_local": {
+            "10": 148581,
+            "11": 146521,
+            "12": 137362,
+            "13": 136485,
+            "9": 135361,
+            "14": 125938,
+            "15": 110884,
+            "8": 97976,
+            "16": 89677,
+            "17": 68413,
+            "7": 60142,
+            "18": 55955,
+            "19": 51403,
+            "20": 49502,
+            "21": 48644,
+            "22": 35198,
+            "6": 31804,
+            "23": 20818,
+            "0": 13134,
+            "5": 12042,
+            "1": 8066,
+            "4": 6153,
+            "2": 5281,
+            "3": 4660
+          }
+        },
+        "nyc311": {
+          "rows": 100000,
+          "timezone": "America/New_York",
+          "hour_null": 0,
+          "hour_range": [
+            0,
+            23
+          ],
+          "night_share_local": 0.0595,
+          "night_share_if_computed_from_utc": 0.2162,
+          "weekend_share": 0.1436,
+          "hour_histogram_local": {
+            "10": 10198,
+            "11": 9637,
+            "14": 9427,
+            "13": 9187,
+            "9": 8749,
+            "12": 8642,
+            "15": 5832,
+            "18": 5547,
+            "8": 5276,
+            "16": 4709,
+            "19": 4585,
+            "17": 3649,
+            "7": 3471,
+            "20": 2214,
+            "21": 1842,
+            "22": 1518,
+            "23": 1390,
+            "6": 1087,
+            "0": 870,
+            "1": 597,
+            "5": 521,
+            "2": 385,
+            "4": 339,
+            "3": 328
+          }
+        },
+        "sf311": {
+          "rows": 200000,
+          "timezone": "America/Los_Angeles",
+          "hour_null": 0,
+          "hour_range": [
+            0,
+            23
+          ],
+          "night_share_local": 0.0555,
+          "night_share_if_computed_from_utc": 0.3576,
+          "weekend_share": 0.2163,
+          "hour_histogram_local": {
+            "9": 18273,
+            "10": 17613,
+            "8": 16866,
+            "11": 15948,
+            "12": 14739,
+            "13": 13985,
+            "14": 13460,
+            "15": 13184,
+            "16": 12713,
+            "17": 11539,
+            "7": 11400,
+            "18": 8363,
+            "19": 6870,
+            "20": 5247,
+            "21": 4829,
+            "22": 3941,
+            "6": 3864,
+            "23": 2294,
+            "5": 1404,
+            "0": 1187,
+            "1": 740,
+            "4": 656,
+            "2": 479,
+            "3": 406
+          }
+        }
+      }
+    },
+    "spatial": {
+      "coordinates_present": 1870394,
+      "coordinates_missing": 29606,
+      "coordinates_missing_by_source": {
+        "nyc311": 16478,
+        "chicago311": 6852,
+        "sf311": 6276
+      },
+      "outside_city_bbox_flagged": 0,
+      "poi_columns_declared": 23,
+      "poi_columns_populated": 0,
+      "reference_geodata_directory": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/external",
+      "reference_geodata_present": [],
+      "why_poi_is_empty": "No reference layer exists to compute against: data/external is absent and the repository ships no school/hospital/metro/rail/transport/fire/police/government/road/intersection geometry for any city. The 311 publishers supply a coordinate and nothing else. Emitting these columns NULL with the correct dtype is the honest option; imputing them would be fabrication, and US POI data would in any case be meaningless for an Indian deployment."
+    },
+    "density": {
+      "definitions": {
+        "nearby_similar_incidents_24h": {
+          "window_hours": 24,
+          "radius_m": 250,
+          "same_category_only": true,
+          "strictly_backward": true
+        },
+        "nearby_similar_incidents_7d": {
+          "window_hours": 168,
+          "radius_m": 250,
+          "same_category_only": true,
+          "strictly_backward": true
+        },
+        "nearby_similar_incidents_30d": {
+          "window_hours": 720,
+          "radius_m": 250,
+          "same_category_only": true,
+          "strictly_backward": true
+        },
+        "local_incident_density": {
+          "window_hours": 720,
+          "radius_m": 250,
+          "same_category_only": false,
+          "strictly_backward": true
+        },
+        "category_incident_density": {
+          "window_hours": null,
+          "radius_m": null,
+          "same_category_only": null,
+          "strictly_backward": true
+        }
+      },
+      "statistics": {
+        "nearby_similar_incidents_24h": {
+          "non_null": 1870394,
+          "null": 29606,
+          "zero_share": 0.5861,
+          "mean": 1.4647,
+          "median": 0.0,
+          "p95": 7.0,
+          "max": 217.0
+        },
+        "nearby_similar_incidents_7d": {
+          "non_null": 1870394,
+          "null": 29606,
+          "zero_share": 0.2605,
+          "mean": 5.2334,
+          "median": 2.0,
+          "p95": 21.0,
+          "max": 558.0
+        },
+        "nearby_similar_incidents_30d": {
+          "non_null": 1870394,
+          "null": 29606,
+          "zero_share": 0.0898,
+          "mean": 16.2893,
+          "median": 7.0,
+          "p95": 63.0,
+          "max": 910.0
+        },
+        "local_incident_density": {
+          "non_null": 1870394,
+          "null": 29606,
+          "zero_share": 0.0056,
+          "mean": 60.164,
+          "median": 40.0,
+          "p95": 168.0,
+          "max": 1766.0
+        },
+        "category_incident_density": {
+          "non_null": 1870394,
+          "null": 29606,
+          "zero_share": 0.0884,
+          "mean": 0.2464,
+          "median": 0.2,
+          "p95": 0.655,
+          "max": 1.0
+        }
+      },
+      "null_reason": "rows without usable coordinates or timestamp; never imputed as 0"
+    },
+    "recency": {
+      "hours_since_previous_similar_incident": {
+        "non_null": 1702522,
+        "null": 197478,
+        "null_means": "no qualifying earlier report inside the window",
+        "min": 0.0003,
+        "median": 29.8593,
+        "max": 720.0
+      }
+    },
+    "priority": {
+      "policy_version": "priority_config.yaml@0.1.0-draft",
+      "policy_status": "DRAFT",
+      "baseline_distribution": {
+        "P3": 1341213,
+        "P2": 261410,
+        "P4": 252963,
+        "P1": 44414
+      },
+      "confidence_distribution": {
+        "MEDIUM": 1870394,
+        "LOW": 29606
+      },
+      "features_available_distribution": {
+        "3": 1870394,
+        "1": 29606
+      },
+      "weighted_inputs_declared": 14,
+      "feature_coverage": {
+        "min": 0.3,
+        "median": 0.36,
+        "max": 0.36
+      },
+      "score_distribution": {
+        "p05": 0.1972,
+        "p25": 0.3406,
+        "p50": 0.4,
+        "p75": 0.4583,
+        "p95": 0.6889
+      },
+      "sla_hours_policy": {
+        "P1": 30,
+        "P2": 50,
+        "P3": 72,
+        "P4": 90
+      }
+    },
+    "target": {
+      "priority_label_non_null": 0,
+      "priority_label_source_non_null": 0,
+      "is_ground_truth_true_rows": 0,
+      "declared_status": "NO_PRIORITY_GROUND_TRUTH_AVAILABLE",
+      "declared_strategy": "policy_baseline_only",
+      "observable_targets": {
+        "resolution_time_hours": 1853828,
+        "sla_breach_computable": 20822,
+        "sla_target_hours_by_source": {
+          "nyc311": 22458
+        }
+      },
+      "censoring": {
+        "open_or_invalid": 46172
+      }
+    },
+    "split": {
+      "priority_dataset": {
+        "counts": {
+          "train": 1330004,
+          "test": 284999,
+          "val": 284997
+        },
+        "by_split": {
+          "test": {
+            "rows": 284999,
+            "date_range": {
+              "min": "2010-03-01 13:38:53+00:00",
+              "max": "2020-08-28 12:52:21+00:00"
+            },
+            "by_source": {
+              "chicago311": 240000,
+              "sf311": 30000,
+              "nyc311": 14999
+            },
+            "by_city": {
+              "Chicago": 240000,
+              "San Francisco": 30000,
+              "New York City": 14999
+            }
+          },
+          "train": {
+            "rows": 1330004,
+            "date_range": {
+              "min": "2010-01-01 05:38:00+00:00",
+              "max": "2020-03-18 21:48:33+00:00"
+            },
+            "by_source": {
+              "chicago311": 1120000,
+              "sf311": 140004,
+              "nyc311": 70000
+            },
+            "by_city": {
+              "Chicago": 1120000,
+              "San Francisco": 140004,
+              "New York City": 70000
+            }
+          },
+          "val": {
+            "rows": 284997,
+            "date_range": {
+              "min": "2010-02-19 18:41:16+00:00",
+              "max": "2020-06-24 22:29:30+00:00"
+            },
+            "by_source": {
+              "chicago311": 240000,
+              "sf311": 29996,
+              "nyc311": 15001
+            },
+            "by_city": {
+              "Chicago": 240000,
+              "San Francisco": 29996,
+              "New York City": 15001
+            }
+          }
+        }
+      },
+      "resolution_dataset": {
+        "counts": {
+          "train": 718627,
+          "test": 153989,
+          "val": 153980
+        },
+        "by_split": {
+          "test": {
+            "rows": 153989,
+            "date_range": {
+              "min": "2010-03-01 18:00:00+00:00",
+              "max": "2020-08-28 12:51:16+00:00"
+            },
+            "by_source": {
+              "chicago311": 123932,
+              "sf311": 17173,
+              "nyc311": 12884
+            },
+            "by_city": {
+              "Chicago": 123932,
+              "San Francisco": 17173,
+              "New York City": 12884
+            }
+          },
+          "train": {
+            "rows": 718627,
+            "date_range": {
+              "min": "2010-01-01 05:38:00+00:00",
+              "max": "2020-03-26 18:38:00+00:00"
+            },
+            "by_source": {
+              "chicago311": 578355,
+              "sf311": 80146,
+              "nyc311": 60126
+            },
+            "by_city": {
+              "Chicago": 578355,
+              "San Francisco": 80146,
+              "New York City": 60126
+            }
+          },
+          "val": {
+            "rows": 153980,
+            "date_range": {
+              "min": "2010-02-20 18:06:40+00:00",
+              "max": "2020-06-23 16:28:58+00:00"
+            },
+            "by_source": {
+              "chicago311": 123922,
+              "sf311": 17175,
+              "nyc311": 12883
+            },
+            "by_city": {
+              "Chicago": 123922,
+              "San Francisco": 17175,
+              "New York City": 12883
+            }
+          }
+        }
+      },
+      "hotspot_dataset": {
+        "counts": {
+          "train": 47694,
+          "val": 9949,
+          "test": 9449
+        },
+        "by_split": {
+          "test": {
+            "rows": 9449,
+            "date_range": {
+              "min": "2010-02-22 00:00:00+00:00",
+              "max": "2020-08-10 00:00:00+00:00"
+            },
+            "by_source": {},
+            "by_city": {
+              "Chicago": 8000,
+              "San Francisco": 726,
+              "New York City": 723
+            }
+          },
+          "train": {
+            "rows": 47694,
+            "date_range": {
+              "min": "2010-01-04 00:00:00+00:00",
+              "max": "2019-12-23 00:00:00+00:00"
+            },
+            "by_source": {},
+            "by_city": {
+              "Chicago": 39000,
+              "San Francisco": 4356,
+              "New York City": 4338
+            }
+          },
+          "val": {
+            "rows": 9949,
+            "date_range": {
+              "min": "2010-02-15 00:00:00+00:00",
+              "max": "2020-04-20 00:00:00+00:00"
+            },
+            "by_source": {},
+            "by_city": {
+              "Chicago": 8500,
+              "San Francisco": 726,
+              "New York City": 723
+            }
+          }
+        }
+      },
+      "urbaneye_ml": {
+        "counts": {
+          "train": 1330004,
+          "test": 284999,
+          "val": 284997
+        },
+        "by_split": {
+          "test": {
+            "rows": 284999,
+            "date_range": {
+              "min": "2010-03-01 13:38:53+00:00",
+              "max": "2020-08-28 12:52:21+00:00"
+            },
+            "by_source": {
+              "chicago311": 240000,
+              "sf311": 30000,
+              "nyc311": 14999
+            },
+            "by_city": {
+              "Chicago": 240000,
+              "San Francisco": 30000,
+              "New York City": 14999
+            }
+          },
+          "train": {
+            "rows": 1330004,
+            "date_range": {
+              "min": "2010-01-01 05:38:00+00:00",
+              "max": "2020-03-18 21:48:33+00:00"
+            },
+            "by_source": {
+              "chicago311": 1120000,
+              "sf311": 140004,
+              "nyc311": 70000
+            },
+            "by_city": {
+              "Chicago": 1120000,
+              "San Francisco": 140004,
+              "New York City": 70000
+            }
+          },
+          "val": {
+            "rows": 284997,
+            "date_range": {
+              "min": "2010-02-19 18:41:16+00:00",
+              "max": "2020-06-24 22:29:30+00:00"
+            },
+            "by_source": {
+              "chicago311": 240000,
+              "sf311": 29996,
+              "nyc311": 15001
+            },
+            "by_city": {
+              "Chicago": 240000,
+              "San Francisco": 29996,
+              "New York City": 15001
+            }
+          }
+        }
+      }
+    },
+    "leakage": {
+      "forbidden_feature_list": [
+        "closed_at",
+        "description",
+        "future_incident_count",
+        "resolution_description",
+        "resolution_time_hours",
+        "sla_met",
+        "status",
+        "subsequent_duplicate_count"
+      ],
+      "ml_predictor_count": 19,
+      "ml_predictors": [
+        "category",
+        "subcategory",
+        "zone_id",
+        "zone_type",
+        "report_channel",
+        "department",
+        "hour",
+        "day_of_week",
+        "month",
+        "year",
+        "is_weekend",
+        "is_night",
+        "has_coordinates",
+        "nearby_similar_incidents_24h",
+        "nearby_similar_incidents_7d",
+        "nearby_similar_incidents_30d",
+        "local_incident_density",
+        "category_incident_density",
+        "hours_since_previous_similar_incident"
+      ]
+    }
+  }
+}

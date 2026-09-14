@@ -1,0 +1,152 @@
+source_dataset,source_category,urbaneye_category,confidence,notes
+# ---------------------------------------------------------------------------
+# UrbanEye+ canonical taxonomy (15):
+# ROAD_DAMAGE POTHOLE GARBAGE_DUMPING STREETLIGHT_FAULT TRAFFIC_SIGNAL_FAULT
+# FOOTPATH_DAMAGE OPEN_MANHOLE DRAINAGE_SEWER WATER_LEAKAGE_WATERLOGGING
+# FALLEN_TREE PUBLIC_INFRASTRUCTURE_DAMAGE SIGNAGE_DAMAGE
+# GRAFFITI_VISUAL_POLLUTION CONSTRUCTION_OBSTRUCTION OTHER
+#
+# Special targets:
+#   REVIEW_REQUIRED - semantically ambiguous, a human must decide. Rows mapping
+#                     here are EXCLUDED from ml_ready outputs until resolved.
+#   OUT_OF_SCOPE    - real category, deliberately not an UrbanEye+ incident
+#                     (housing, noise, parking, rodents, transit feedback).
+#
+# confidence: high | medium | low | none
+# Source vocabularies below were read from live publisher metadata on 2026-09-13.
+# They are the highest-frequency values only. Any source value NOT listed here is
+# reported by process_*.py in reports/unmapped_categories.csv with a row count so
+# this file can be extended. Unlisted values are never auto-guessed.
+# ---------------------------------------------------------------------------
+sf311,Street Defects,ROAD_DAMAGE,high,"SF's pavement-defect bucket; Request Type 'Pavement_Defect' sits under it"
+sf311,Streetlights,STREETLIGHT_FAULT,high,
+sf311,Sewer Issues,DRAINAGE_SEWER,high,"PUC Sewer Ops queue"
+sf311,Sign Repair,SIGNAGE_DAMAGE,high,
+sf311,Graffiti,GRAFFITI_VISUAL_POLLUTION,high,
+sf311,Graffiti Public,GRAFFITI_VISUAL_POLLUTION,high,"duplicate-ish sibling of Graffiti on public property"
+sf311,Tree Maintenance,FALLEN_TREE,medium,"REVIEW: covers routine pruning as well as genuinely fallen/hazard trees. Subtype needed to separate. Currently low-precision."
+sf311,Illegal Postings,GRAFFITI_VISUAL_POLLUTION,medium,"posters/flyposting - visual pollution but not graffiti proper"
+sf311,Litter Receptacles,GARBAGE_DUMPING,medium,"overflowing public bins rather than fly-tipping"
+sf311,Damaged Property,PUBLIC_INFRASTRUCTURE_DAMAGE,medium,"REVIEW: includes private property damage in some subtypes"
+sf311,Street and Sidewalk Cleaning,REVIEW_REQUIRED,low,"3.49M rows - the single largest SF category. Splits across GARBAGE_DUMPING and FOOTPATH_DAMAGE depending on Request Type/Request Details. MUST be resolved at subcategory level, not here. See subcategory rules below."
+sf311,General Request - PUBLIC WORKS,REVIEW_REQUIRED,none,"catch-all; requires Request Type inspection"
+sf311,General Request,REVIEW_REQUIRED,none,"catch-all"
+sf311,General Request - MTA,REVIEW_REQUIRED,none,"catch-all"
+sf311,Encampments,OUT_OF_SCOPE,high,"homelessness response - not a civic infrastructure defect; also privacy-sensitive"
+sf311,Encampment,OUT_OF_SCOPE,high,"casing variant of Encampments"
+sf311,Parking Enforcement,OUT_OF_SCOPE,high,
+sf311,Abandoned Vehicle,OUT_OF_SCOPE,high,"arguably CONSTRUCTION_OBSTRUCTION-adjacent but it is a vehicle offence, not infrastructure"
+sf311,MUNI Feedback,OUT_OF_SCOPE,high,"transit service feedback"
+sf311,Rec and Park Requests,OUT_OF_SCOPE,medium,"park maintenance - occasionally infrastructure, mostly not"
+sf311,311 Complaints,OUT_OF_SCOPE,high,"complaints about 311 itself"
+# SF subcategory overrides (applied on Request Type / Request Details when the
+# top-level Category maps to REVIEW_REQUIRED). Format: source_category = "Category|Request Type"
+sf311,Street and Sidewalk Cleaning|General Cleaning,GARBAGE_DUMPING,medium,
+sf311,Street and Sidewalk Cleaning|Bulky Items,GARBAGE_DUMPING,high,"1.00M rows - fly-tipped furniture/mattresses"
+sf311,Street and Sidewalk Cleaning|garbage_and_debris,GARBAGE_DUMPING,high,"766k rows"
+sf311,Street and Sidewalk Cleaning|City_garbage_can_overflowing,GARBAGE_DUMPING,high,
+sf311,Street and Sidewalk Cleaning|Human or Animal Waste,OUT_OF_SCOPE,high,"sanitation/public health, not an infrastructure defect"
+sf311,Street and Sidewalk Cleaning|Hazardous Materials,PUBLIC_INFRASTRUCTURE_DAMAGE,low,"REVIEW: hazmat spill - arguably its own category"
+sf311,Street Defects|Pavement_Defect,POTHOLE,medium,"REVIEW: 'Pavement_Defect' conflates potholes with general surface wear. SF does not separate them."
+# ---------------------------------------------------------------------------
+chicago311,Pothole in Street Complaint,POTHOLE,high,"405198 rows"
+chicago311,Street Light Out Complaint,STREETLIGHT_FAULT,high,"383743 rows"
+chicago311,Street Lights - All/Out,STREETLIGHT_FAULT,high,
+chicago311,Traffic Signal Out Complaint,TRAFFIC_SIGNAL_FAULT,high,"176755 rows"
+chicago311,Sign Repair Request - All Other Signs,SIGNAGE_DAMAGE,high,"151149 rows"
+chicago311,Graffiti Removal Request,GRAFFITI_VISUAL_POLLUTION,high,"679929 rows"
+chicago311,Sanitation Code Violation,GARBAGE_DUMPING,medium,"105107 rows - overflowing dumpsters/alley garbage"
+chicago311,Garbage Cart Maintenance,GARBAGE_DUMPING,medium,"365054 rows - REVIEW: this is a bin-replacement request, arguably a service request not an incident"
+chicago311,Tree Emergency,FALLEN_TREE,high,"140044 rows - hazardous/broken/hanging limbs. Highest-precision fallen-tree signal available anywhere."
+chicago311,Tree Debris Clean-Up Request,FALLEN_TREE,high,"191042 rows"
+chicago311,Tree Trim Request (NO LONGER BEING ACCEPTED),OUT_OF_SCOPE,high,"retired request type; routine pruning"
+chicago311,Tree Removal Inspection,FALLEN_TREE,low,"REVIEW: inspection request, tree may be healthy"
+chicago311,Weed Removal Request,OUT_OF_SCOPE,medium,"vegetation overgrowth - not obstruction in the UrbanEye+ sense"
+chicago311,Street Cleaning Request,GARBAGE_DUMPING,low,"REVIEW: scheduled sweeping vs actual dumping"
+chicago311,Alley Pothole Complaint,POTHOLE,high,
+chicago311,Pavement Buckle Repair,ROAD_DAMAGE,high,
+chicago311,Sewer Cave-In Inspection Request,DRAINAGE_SEWER,high,
+chicago311,Sewer Cleaning Inspection Request,DRAINAGE_SEWER,high,
+chicago311,Water in Basement Complaint,WATER_LEAKAGE_WATERLOGGING,medium,"REVIEW: private-property flooding"
+chicago311,Water On Street Complaint,WATER_LEAKAGE_WATERLOGGING,high,
+chicago311,Open Fire Hydrant Complaint,WATER_LEAKAGE_WATERLOGGING,medium,
+chicago311,Sidewalk Inspection Request,FOOTPATH_DAMAGE,high,
+chicago311,Rodent Baiting/Rat Complaint,OUT_OF_SCOPE,high,"360908 rows - public health"
+chicago311,Abandoned Vehicle Complaint,OUT_OF_SCOPE,high,"312633 rows"
+chicago311,Building Violation,OUT_OF_SCOPE,high,"158130 rows - code enforcement on private buildings"
+chicago311,Blue Recycling Cart,OUT_OF_SCOPE,high,
+chicago311,Dead Animal Pick-Up Request,OUT_OF_SCOPE,high,
+chicago311,Water Lead Test Kit Request,OUT_OF_SCOPE,high,
+chicago311,311 INFORMATION ONLY CALL,OUT_OF_SCOPE,high,"4921249 rows - excluded server-side at download time"
+chicago311,Aircraft Noise Complaint,OUT_OF_SCOPE,high,"2389257 rows - excluded server-side at download time"
+# ---------------------------------------------------------------------------
+nyc311,Street Condition,ROAD_DAMAGE,high,"964673 rows; Descriptor 'Pothole' (585045) overrides to POTHOLE - see subcategory rule"
+nyc311,Street Condition|Pothole,POTHOLE,high,"585045 rows - NYC puts potholes in the Descriptor, not the Complaint Type"
+nyc311,Street Light Condition,STREETLIGHT_FAULT,high,"914827 rows"
+nyc311,Traffic Signal Condition,TRAFFIC_SIGNAL_FAULT,high,"434609 rows"
+nyc311,Sewer,DRAINAGE_SEWER,high,"361697 rows"
+nyc311,Sewer Backup (Use Comments),DRAINAGE_SEWER,high,
+nyc311,Root/Sewer/Sidewalk Condition,REVIEW_REQUIRED,low,"conflates three different UrbanEye+ categories in one label - unresolvable without Descriptor"
+nyc311,Water System,WATER_LEAKAGE_WATERLOGGING,medium,"648140 rows - REVIEW: includes hydrants, water quality, and leaks"
+nyc311,Dirty Conditions,GARBAGE_DUMPING,medium,"348777 rows"
+nyc311,Illegal Dumping,GARBAGE_DUMPING,high,
+nyc311,Missed Collection (All Materials),OUT_OF_SCOPE,medium,"service failure, not a civic defect"
+nyc311,Sweeping/Missed,OUT_OF_SCOPE,medium,
+nyc311,Sidewalk Condition,FOOTPATH_DAMAGE,high,
+nyc311,Curb Condition,FOOTPATH_DAMAGE,medium,
+nyc311,Damaged Tree,FALLEN_TREE,high,
+nyc311,Dead Tree,FALLEN_TREE,medium,
+nyc311,Overgrown Tree/Branches,FALLEN_TREE,low,"REVIEW: obstruction rather than fallen"
+nyc311,Graffiti,GRAFFITI_VISUAL_POLLUTION,high,
+nyc311,Street Sign - Damaged,SIGNAGE_DAMAGE,high,
+nyc311,Street Sign - Missing,SIGNAGE_DAMAGE,high,
+nyc311,Street Sign - Dangling,SIGNAGE_DAMAGE,high,
+nyc311,Highway Condition,ROAD_DAMAGE,high,
+nyc311,Bridge Condition,PUBLIC_INFRASTRUCTURE_DAMAGE,high,
+nyc311,Broken Muni Meter,PUBLIC_INFRASTRUCTURE_DAMAGE,medium,
+nyc311,Derelict Vehicles,OUT_OF_SCOPE,high,
+nyc311,Noise - Residential,OUT_OF_SCOPE,high,"1810072 rows"
+nyc311,HEAT/HOT WATER,OUT_OF_SCOPE,high,"1236353 rows - housing"
+nyc311,Blocked Driveway,OUT_OF_SCOPE,high,
+nyc311,Illegal Parking,OUT_OF_SCOPE,high,
+nyc311,UNSANITARY CONDITION,OUT_OF_SCOPE,high,"housing interior"
+nyc311,GENERAL CONSTRUCTION,OUT_OF_SCOPE,medium,"REVIEW: DOB building construction, not road obstruction"
+# ---------------------------------------------------------------------------
+# Boston REASON vocabulary. Boston's exact REASON value list could NOT be read
+# from the portal (the CSVs were unreachable from the build environment), so
+# these are the values observed in published column dumps only. Treat this block
+# as INCOMPLETE - process_boston311.py will report every unmapped REASON/TYPE
+# with counts on first real run.
+boston311,Street Lights,STREETLIGHT_FAULT,high,"observed in published column dump"
+boston311,Sanitation,GARBAGE_DUMPING,medium,"REVIEW: broad; TYPE-level split needed"
+boston311,Highway Maintenance,ROAD_DAMAGE,medium,"REVIEW: TYPE-level split needed (potholes vs general)"
+boston311,Signs & Signals,REVIEW_REQUIRED,low,"conflates SIGNAGE_DAMAGE and TRAFFIC_SIGNAL_FAULT in one REASON"
+boston311,Trees,FALLEN_TREE,low,"REVIEW: includes routine maintenance"
+boston311,Street Cleaning,OUT_OF_SCOPE,medium,
+boston311,Code Enforcement,OUT_OF_SCOPE,medium,
+boston311,Enforcement & Abandoned Vehicles,OUT_OF_SCOPE,high,
+boston311,Street Light Outages,STREETLIGHT_FAULT,high,"TYPE-level value"
+boston311,Requests for Street Cleaning,OUT_OF_SCOPE,medium,"TYPE-level value"
+boston311,Schedule a Bulk Item Pickup,OUT_OF_SCOPE,medium,"TYPE-level value"
+boston311,Parking Enforcement,OUT_OF_SCOPE,high,"TYPE-level value"
+# ---------------------------------------------------------------------------
+# VISION CLASS MAPPING - image datasets. These do NOT join to incidents; they
+# share only the taxonomy. See README "No fake row-level image joining".
+rdd2022,D00,ROAD_DAMAGE,high,"longitudinal crack"
+rdd2022,D10,ROAD_DAMAGE,high,"transverse crack"
+rdd2022,D20,ROAD_DAMAGE,high,"alligator crack"
+rdd2022,D40,POTHOLE,high,"pothole"
+rdd2022,D43,REVIEW_REQUIRED,low,"crosswalk blur - faded road marking. Arguably SIGNAGE_DAMAGE but signage usually means posts/boards, not paint. Present only in some country subsets."
+rdd2022,D44,REVIEW_REQUIRED,low,"white line blur - same ambiguity as D43"
+rdd2022,D50,REVIEW_REQUIRED,none,"manhole cover. CRITICAL: this class marks the PRESENCE of a cover, not a MISSING or OPEN manhole. It must NOT be mapped to OPEN_MANHOLE. Doing so would invert the label's meaning."
+smartathon,POTHOLES,POTHOLE,high,
+smartathon,GARBAGE,GARBAGE_DUMPING,high,"~8597 instances - dominant class"
+smartathon,CONSTRUCTION_ROAD,CONSTRUCTION_OBSTRUCTION,high,
+smartathon,CLUTTER_SIDEWALK,FOOTPATH_DAMAGE,medium,"REVIEW: obstruction of footpath rather than damage to it. Consider a FOOTPATH_OBSTRUCTION split later."
+smartathon,GRAFFITI,GRAFFITI_VISUAL_POLLUTION,high,
+smartathon,BAD_BILLBOARD,GRAFFITI_VISUAL_POLLUTION,medium,"visual pollution family"
+smartathon,FADED_SIGNAGE,SIGNAGE_DAMAGE,high,"~107 instances - too few to train on alone"
+smartathon,BROKEN_SIGNAGE,SIGNAGE_DAMAGE,high,"~83 instances - too few to train on alone"
+smartathon,BAD_STREETLIGHT,STREETLIGHT_FAULT,high,"~1 instance in the released train set. UNUSABLE as a class. Flagged by validation."
+smartathon,SAND_ON_ROAD,CONSTRUCTION_OBSTRUCTION,low,"REVIEW: desert-specific hazard with no Indian analogue. Consider OUT_OF_SCOPE."
+smartathon,UNKEPT_FACADE,PUBLIC_INFRASTRUCTURE_DAMAGE,low,"REVIEW: ~127 instances; building facade, usually private property"

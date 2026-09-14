@@ -1,0 +1,29 @@
+# UrbanEye+ ML data pipeline — runtime dependencies
+#
+# Deliberately small. This stage cleans, normalises and validates tabular data;
+# it trains nothing, so there is no torch / scikit-learn / xgboost here. Add
+# those when you start modelling, not before.
+#
+# Install:
+#   python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+#   pip install -r requirements.txt
+#
+# Python 3.10+ required (the code uses PEP 604 `X | None` annotations).
+# Verified against the versions in the right-hand column.
+
+pandas>=2.0,<4.0          # verified on 3.0.2
+pyarrow>=12.0             # verified on 25.0.1 — Parquet engine, required
+PyYAML>=6.0               # verified on 6.0.3 — config loading
+requests>=2.28            # verified on 2.33.1 — downloads + the SF media-URL probe
+numpy>=1.24               # verified on 2.4.4 — haversine + scoring maths
+
+# Tests only (not needed to run the pipeline):
+#   pip install pytest         # verified on 8.3.3 — python -m pytest tests -q
+#
+# Baseline models only (scripts/baselines/, NOT part of the pipeline — the
+# pipeline still trains nothing):
+#   pip install scikit-learn   # verified on 1.6.1
+
+# Everything else the pipeline uses is in the standard library:
+# argparse collections concurrent.futures dataclasses datetime functools hashlib
+# html json logging os pathlib random re sys time typing urllib xml

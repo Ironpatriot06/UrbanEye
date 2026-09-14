@@ -1,0 +1,186 @@
+# UrbanEye+ priority configuration
+#
+# =============================================================================
+# STATUS: DRAFT — NOT APPROVED PRODUCT POLICY
+# =============================================================================
+# Every weight and threshold below is a STARTING TEMPLATE. None of it is derived
+# from evidence, because no evidence for Indian priority policy exists in the US
+# 311 data. build_priority_features.py refuses to run without
+# --accept-draft-config so that nobody ships these numbers by accident.
+#
+# Two things are deliberately kept apart in this file and in the output schema:
+#
+#   priority_baseline      DERIVED by the weighted engine below. Explainable.
+#                          NOT ground truth.
+#   priority_label         A genuine operational priority, assigned by a human
+#                          or a municipal system. NULL everywhere right now,
+#                          because no public 311 dataset contains one.
+#
+# Training a model on priority_baseline would only teach it to imitate these
+# weights. See PRIORITY_METHODOLOGY.md, "Why priority is not yet an ML target".
+# =============================================================================
+
+config_version: "0.1.0-draft"
+status: DRAFT
+approved_by: null
+approved_at: null
+
+levels: [P1, P2, P3, P4]
+level_order: {P1: 1, P2: 2, P3: 3, P4: 4}
+
+# ---------------------------------------------------------------------------
+# 1. CATEGORY BASE SCORE
+# Hand-authored. No dataset supplies a public-safety judgement.
+# Scale 0.0 - 1.0, contributing category_weight to the final score.
+# ---------------------------------------------------------------------------
+category_base_score:
+  OPEN_MANHOLE:                 1.00
+  TRAFFIC_SIGNAL_FAULT:         0.85
+  WATER_LEAKAGE_WATERLOGGING:   0.75
+  DRAINAGE_SEWER:               0.70
+  FALLEN_TREE:                  0.70
+  POTHOLE:                      0.55
+  ROAD_DAMAGE:                  0.50
+  FOOTPATH_DAMAGE:              0.45
+  PUBLIC_INFRASTRUCTURE_DAMAGE: 0.45
+  STREETLIGHT_FAULT:            0.40
+  CONSTRUCTION_OBSTRUCTION:     0.40
+  SIGNAGE_DAMAGE:               0.30
+  GARBAGE_DUMPING:              0.30
+  GRAFFITI_VISUAL_POLLUTION:    0.10
+  OTHER:                        0.35
+
+# Categories where an uncovered/live hazard exists regardless of surroundings.
+# These bypass the score and go straight to P1.
+category_absolute_p1:
+  - OPEN_MANHOLE
+
+# ---------------------------------------------------------------------------
+# 2. FEATURE WEIGHTS
+# Each contributes weight * signal, where signal is in [0,1].
+# Weights need not sum to 1; the score is normalised by the sum of the weights
+# of the features that were actually AVAILABLE for that row (see null_handling).
+# ---------------------------------------------------------------------------
+weights:
+  category:                     0.30
+  near_school:                  0.12
+  near_hospital:                0.10
+  near_metro:                   0.08
+  near_public_transport:        0.05
+  near_major_road:              0.09
+  near_intersection:            0.07
+  near_fire_station:            0.02
+  near_police_station:          0.02
+  near_government_building:     0.02
+  metro_city:                   0.04
+  urban_area:                   0.03
+  local_incident_density:       0.03
+  nearby_similar_incidents_30d: 0.03
+
+# ---------------------------------------------------------------------------
+# 3. PROXIMITY THRESHOLDS (metres)
+# A distance below the threshold sets near_* = true. The engine also applies a
+# graded signal: signal = 1 - (distance / threshold), clipped to [0,1], so an
+# incident 20 m from a school scores higher than one 190 m away.
+# ---------------------------------------------------------------------------
+proximity_thresholds_m:
+  school:               200
+  hospital:             300
+  metro:                300
+  rail_station:         500
+  public_transport:     200
+  major_road:           100
+  intersection:          50
+  fire_station:         500
+  police_station:       500
+  government_building:  300
+
+# Saturation points for count-based features: the count at which the signal
+# reaches 1.0. Above this it is clipped.
+count_saturation:
+  nearby_similar_incidents_24h:  5
+  nearby_similar_incidents_7d:  15
+  nearby_similar_incidents_30d: 30
+  local_incident_density:       50
+  category_incident_density:    25
+
+# ---------------------------------------------------------------------------
+# 4. SCORE -> PRIORITY BANDS
+# ---------------------------------------------------------------------------
+score_bands:
+  P1: {min: 0.75}
+  P2: {min: 0.55}
+  P3: {min: 0.30}
+  P4: {min: 0.00}
+
+# ---------------------------------------------------------------------------
+# 5. NULL HANDLING
+# strict_available_only: normalise the score by the weight of the features that
+# were actually present, and record which ones were missing. This matters
+# enormously right now: on US 311 data EVERY geospatial feature is NULL, so the
+# score collapses to the category term alone. That is the honest result, and the
+# engine reports it rather than silently treating missing as false.
+# ---------------------------------------------------------------------------
+null_handling:
+  mode: strict_available_only
+  min_features_for_confident_score: 4
+  low_confidence_flag: true
+  note: >
+    With fewer than min_features_for_confident_score available inputs the row is
+    marked priority_confidence = LOW. Retained as the fallback rule when
+    confidence_tiers below is absent.
+
+# ---------------------------------------------------------------------------
+# 5b. CONFIDENCE
+# Confidence describes HOW MUCH OF THE POLICY was actually evaluable for a row.
+# It is not a probability and it is not a quality score for the incident.
+#
+# Two numbers are published per row so the tier can always be audited:
+#   priority_features_available  how many of the 14 weighted inputs were non-null
+#   priority_feature_coverage    the share of TOTAL weight those inputs carry
+#
+# Tiers are evaluated top-down; the first whose BOTH thresholds are met wins.
+#
+#   HIGH    most of the policy was evaluable, POI layer included
+#   MEDIUM  the category term and the historical-density terms were evaluable,
+#           but the POI / road / area layer was not. This is the best that any
+#           public US 311 corpus can reach, because that layer does not exist in
+#           it. Read MEDIUM as "ranked on category and local repeat-report
+#           pressure only".
+#   LOW     the score rests on one or two inputs — in practice category alone.
+#
+# An absolute category rule (category_absolute_p1) reports HIGH with coverage
+# 1.0: no other input can change the outcome, so nothing is missing from it.
+# ---------------------------------------------------------------------------
+confidence_tiers:
+  - {name: HIGH,   min_features: 8, min_weight_coverage: 0.70}
+  - {name: MEDIUM, min_features: 3, min_weight_coverage: 0.30}
+  - {name: LOW,    min_features: 0, min_weight_coverage: 0.0}
+
+# ---------------------------------------------------------------------------
+# 6. SLA BUSINESS RULES
+# These are PRODUCT CONFIGURATION, not learned and not evidenced by the US data.
+# Changing them is a business decision, not a modelling one.
+# ---------------------------------------------------------------------------
+sla_hours:
+  P1: 30
+  P2: 50
+  P3: 72
+  P4: 90
+
+sla_note: >
+  These values were supplied as product configuration. The US 311 SLA statistics
+  computed by this pipeline (Boston TARGET_DT, NYC Due Date) are reference
+  evidence about how US cities behave; they do NOT justify these numbers and
+  must not be presented as doing so.
+
+# ---------------------------------------------------------------------------
+# 7. EXPLANATION
+# ---------------------------------------------------------------------------
+explanation:
+  max_reasons: 5
+  min_contribution_to_report: 0.03
+  template: "{priority} because {reasons}."
+  # The citizen-facing UI shows priority only. Reasons are for admins/agents.
+  expose_to_citizen: false
+  expose_to_admin: true

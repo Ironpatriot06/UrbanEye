@@ -1,0 +1,191 @@
+{
+  "run_at_utc": "2026-09-14T12:25:02.671963+00:00",
+  "mode": "REAL_DATA",
+  "data_source_warning": "Outputs derive from the raw files present in data/raw/.",
+  "raw_files_present": {
+    "sf311": true,
+    "boston311": false,
+    "chicago311": true,
+    "nyc311": true
+  },
+  "total_seconds": 521.53,
+  "steps": [
+    {
+      "phase": "1-verify",
+      "step": "dataset_status",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/dataset_status.py",
+      "returncode": 0,
+      "seconds": 0.32,
+      "status": "OK"
+    },
+    {
+      "phase": "1-verify",
+      "step": "validate_mappings",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_mappings.py",
+      "returncode": 0,
+      "seconds": 0.32,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_sf311",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_sf311.py",
+      "returncode": 0,
+      "seconds": 5.12,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_chicago311",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_chicago311.py",
+      "returncode": 0,
+      "seconds": 30.97,
+      "status": "OK"
+    },
+    {
+      "phase": "2-preprocess",
+      "step": "preprocess_nyc311",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_nyc311.py",
+      "returncode": 0,
+      "seconds": 2.55,
+      "status": "OK"
+    },
+    {
+      "phase": "3-incidents",
+      "step": "build_incidents",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_incidents.py",
+      "returncode": 0,
+      "seconds": 18.92,
+      "status": "OK"
+    },
+    {
+      "phase": "4-features",
+      "step": "build_time_features",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_time_features.py",
+      "returncode": 0,
+      "seconds": 4.13,
+      "status": "OK"
+    },
+    {
+      "phase": "4-features",
+      "step": "build_geo_features",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_geo_features.py",
+      "returncode": 0,
+      "seconds": 28.12,
+      "status": "OK"
+    },
+    {
+      "phase": "5-priority",
+      "step": "build_priority_features",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_priority_features.py --accept-draft-config",
+      "returncode": 0,
+      "seconds": 60.1,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_resolution_dataset",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_resolution_dataset.py",
+      "returncode": 0,
+      "seconds": 18.25,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_hotspot_dataset",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_hotspot_dataset.py",
+      "returncode": 0,
+      "seconds": 8.4,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_duplicate_pairs",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_duplicate_pairs.py",
+      "returncode": 0,
+      "seconds": 63.28,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_ml_dataset",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/features/build_ml_dataset.py",
+      "returncode": 0,
+      "seconds": 40.07,
+      "status": "OK"
+    },
+    {
+      "phase": "6-ml",
+      "step": "build_task_datasets",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/features/build_task_datasets.py",
+      "returncode": 0,
+      "seconds": 25.09,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "data_quality_report",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/data_quality_report.py",
+      "returncode": 0,
+      "seconds": 17.6,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_provenance",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_provenance.py",
+      "returncode": 0,
+      "seconds": 34.05,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_leakage",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_leakage.py",
+      "returncode": 0,
+      "seconds": 22.46,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "validate_outputs",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_outputs.py",
+      "returncode": 0,
+      "seconds": 11.62,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "audit_pipeline",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_pipeline.py",
+      "returncode": 0,
+      "seconds": 87.01,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "audit_task_datasets",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_task_datasets.py",
+      "returncode": 0,
+      "seconds": 14.22,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "audit_statistics",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_statistics.py",
+      "returncode": 0,
+      "seconds": 28.32,
+      "status": "OK"
+    },
+    {
+      "phase": "7-validate",
+      "step": "report_category_candidates",
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/report_category_candidates.py",
+      "returncode": 0,
+      "seconds": 0.59,
+      "status": "OK"
+    }
+  ],
+  "failed_steps": []
+}

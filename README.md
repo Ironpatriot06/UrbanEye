@@ -8,10 +8,21 @@ a governed workflow to resolution — with full GIS/spatial awareness and SLA mo
 
 ---
 
-## Current State — Phase 2 (Auth, Roles, Workflow, SLA, Web App)
+## Current State — mid-project review (~50%)
 
-Phase 1 delivered the backend foundation. **Phase 2 adds authentication, three role-based
-dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web application.**
+| Phase | Scope | State |
+|---|---|---|
+| 1 | Backend foundation — FastAPI, PostGIS, incident CRUD | **Done** |
+| 2 | Auth, roles, governed workflow, SLA, Next.js web app | **Done** |
+| 3 | ML data pipeline — 1.9 M public 311 records, audited task datasets | **Done** |
+| 4 | Model training and evaluation | **Trained and evaluated, not yet served** |
+| 5 | Serving, monitoring, deployment | Not started |
+
+The web application is fully usable today: a citizen can report an incident, it is
+prioritised, auto-assigned and tracked to resolution with proof-of-work photos, and an
+admin governs users, assignments and SLAs. The models exist and have honest, audited
+numbers — but none of them is behind an API endpoint yet. `/priority` and `/sla` remain
+the designed integration seams.
 
 ### Implemented
 
@@ -62,14 +73,81 @@ dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web appli
 - Visual workflow timeline, SLA badges, authenticated image galleries with lightbox
 - Responsive dark theme, WCAG-AA text contrast, keyboard-accessible controls
 
+**Machine learning** (`UrbanEye_ML_Data_Pipeline/` — self-contained; it does not touch the
+backend, database or API)
+
+- Reproducible pipeline over public 311 data — **1,900,000 normalised incidents** from
+  SF (200 k), Chicago (1.6 M) and NYC (100 k). Boston is documented but not yet downloaded.
+- ~120 source categories mapped onto the 15-category UrbanEye+ taxonomy, with **enforced
+  provenance**, timezone-correct report-time features and **strictly backward-looking**
+  density features
+- Configurable, explainable **priority baseline engine** (not ML) — every score carries its
+  reasons, its confidence and its feature coverage
+- Audits for data quality, leakage, statistics and per-task readiness — 19/19 pipeline steps,
+  15 passing pipeline unit tests
+- **One clean dataset per ML task**, each with a manifest declaring every column's role and
+  when its value becomes known
+- Three models trained and evaluated against real baselines (below)
+
+**Review artefacts**
+
+- `visualization/index.html` — self-contained 50% progress deck; every figure is regenerated
+  from the pipeline's own reports, nothing is typed in by hand
+- `presentation/UrbanEye_Mid_Project_Review.pptx` — mid-project technical review deck, built
+  from the same reports and model metadata
+
 ### Not yet implemented
 
+- 🔌 **Model serving** — no trained model is behind an API endpoint yet; `/priority` and
+  `/sla` are the designed seams
 - 🤖 AI classification (NLP, Computer Vision / YOLO) — priority is currently rule-based
-- 🧠 ML-driven priority and SLA prediction — the `/priority` and `/sla` endpoints are the
-  designed integration seams
-- 🗺️ Department routing · 📲 Notifications · 🔁 Duplicate detection
+- 🔁 Duplicate detection — blocked on evaluation data, not on modelling (see below)
+- 🌏 India geospatial layer — the PostGIS enrichment interface is defined, the layer is
+  not plugged in; 64% of the priority policy's weight is unevaluable on US 311 data
+- 🗺️ Department routing · 📲 Notifications
 - ⚡ Redis / Celery async tasks · 📷 Camera / IoT ingestion
-- 📊 Analytics dashboard · 🚁 Kubernetes / production deployment
+- 📊 Analytics dashboard · 🚁 Kubernetes / production deployment · 📈 Model monitoring
+
+---
+
+## Model Results
+
+Trained with scikit-learn 1.6.1 (HistGradientBoosting), seed `20260915`, on the held-out
+**test** fold. Regenerate with `python scripts/train/run_all.py` inside the pipeline.
+
+| Task | Dataset rows | Metric | Model | Baseline | Verdict |
+|---|---|---|---|---|---|
+| Resolution time | 942,325 | MAE (hours) | **896.5** | 1,034.8 (median) | +13.4% |
+| Resolution time | 942,325 | Median AE (hours) | 133.3 | **115.5** (median) | **−15.5% — worse than the baseline** |
+| SLA breach | 20,213 | PR-AUC | **0.249** | 0.104 (base rate) | **×2.40 — strongest result** |
+| Hotspot count | 67,092 | MAE per zone-week | 10.314 | 10.885 (rolling 4-week) | +5.2% test, **−6.9% validation** |
+
+Read honestly:
+
+- **Resolution time** wins on the tail and loses in the middle — it beats the median
+  baseline on MAE but is *worse* on median absolute error, i.e. worse for the typical case.
+  Partial success only.
+- **SLA breach** is the one clear win, but on a narrow population (NYC 2010 rows, the only
+  ones carrying a due date).
+- **Hotspot** does not stably beat a 4-week moving average. The recommendation is to
+  **ship the moving average** until the model shows a real edge.
+
+Two tasks are deliberately **not** trained, and the reasons are recorded rather than hidden:
+
+- **Duplicate detection** — the labels are genuine, the *evaluation set* is not. In the
+  realistic candidate population (same category, ≤200 m, ≤7 days) the test fold holds
+  23,480 positives and zero negatives, and a depth-2 decision tree scores PR-AUC 0.967 —
+  any headline number would be measuring the negative-sampling rule. Needs adjudicated
+  hard negatives from real operations.
+- **Priority** — not a supervised task. No public 311 dataset records an operational
+  priority, and `priority_baseline` is a deterministic function of
+  `config/priority_config.yaml`, so training on it would reproduce the YAML. Needs
+  operator-assigned priorities and an override flag.
+
+Full reasoning and every figure behind these numbers:
+[`UrbanEye_ML_Data_Pipeline/MODEL_SCOPE.md`](UrbanEye_ML_Data_Pipeline/MODEL_SCOPE.md) ·
+[`ML_READINESS.md`](UrbanEye_ML_Data_Pipeline/ML_READINESS.md) ·
+[`reports/`](UrbanEye_ML_Data_Pipeline/reports/)
 
 ---
 
@@ -91,6 +169,9 @@ dashboards, a governed incident lifecycle, SLA tracking, and a Next.js web appli
 | Frontend styling | Vanilla CSS design system (`globals.css`) |
 | Maps | Leaflet + OpenStreetMap |
 | Container | Docker / Docker Compose |
+| ML data pipeline | pandas, pyarrow, numpy, PyYAML (no ML deps) |
+| Modelling | scikit-learn 1.6.1 (HistGradientBoosting), joblib |
+| Review artefacts | Matplotlib (SVG/PNG charts) + python-pptx |
 
 ---
 
@@ -141,7 +222,29 @@ UrbanEye/
 │       │                           #   agent, admin, admin/users
 │       ├── components/             # Timeline, images, badges, detail panels
 │       └── lib/api.ts              # Typed API client + JWT handling
-├── ml/                             # Placeholder — not yet implemented
+├── UrbanEye_ML_Data_Pipeline/      # Self-contained ML data pipeline + training
+│   ├── config/                     # dataset, feature, priority and category config
+│   ├── scripts/
+│   │   ├── run_pipeline.py         # download → clean → normalise → features → task datasets
+│   │   ├── download/ preprocess/ features/ validation/
+│   │   ├── baselines/run_baselines.py
+│   │   └── train/run_all.py        # trains resolution, sla, hotspot
+│   ├── data/                       # raw/ + processed/ — git-ignored, regenerable
+│   ├── models/                     # trained artefacts — git-ignored, regenerable
+│   ├── reports/                    # quality, leakage, audit and training reports
+│   ├── tests/                      # 15 pipeline unit tests
+│   ├── MODEL_SCOPE.md              # what is ML here, what deliberately is not
+│   ├── ML_READINESS.md             # per-task verdicts and the numbers behind them
+│   └── DATA_SCHEMA.md · DATASET_SOURCES.md · GEOSPATIAL_FEATURES.md
+├── visualization/                  # 50% progress review deck
+│   ├── index.html                  # self-contained; open in a browser
+│   ├── build_visuals.py            # regenerates everything from reports/
+│   ├── figures/*.svg · data/*.csv
+├── presentation/                   # mid-project technical review deck
+│   ├── build_pptx.py               # reads reports + model metadata at build time
+│   ├── UrbanEye_Mid_Project_Review.pptx
+│   └── assets/*.png
+├── ml/                             # Placeholder — superseded by UrbanEye_ML_Data_Pipeline/
 └── ai/                             # Placeholder — not yet implemented
 ```
 
@@ -289,6 +392,49 @@ Runs on **http://localhost:3000**. The backend's CORS policy (`app/main.py`) all
 `localhost:3000`, `127.0.0.1:3000` and `localhost:3001` — add your origin there if you
 serve the frontend elsewhere.
 
+### 7. (Optional) Run the ML pipeline and training
+
+The pipeline is independent of the app — it reads nothing from the database and writes
+nothing to it. It needs the raw 311 downloads (~9 GB subset; see
+[`DATASET_DOWNLOAD_GUIDE.md`](UrbanEye_ML_Data_Pipeline/DATASET_DOWNLOAD_GUIDE.md)).
+
+```bash
+cd UrbanEye_ML_Data_Pipeline
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+# Verify the install with synthetic fixtures — no download needed
+python tests/make_fixtures.py
+python scripts/run_pipeline.py --fixtures      # expect 19/19 steps OK
+rm -rf data/processed/*                        # discard the synthetic output
+python -m pytest tests -q                      # 15 passed
+
+# With real data in data/raw/
+python scripts/run_pipeline.py                 # datasets + reports
+python scripts/baselines/run_baselines.py      # baselines to beat
+python scripts/train/run_all.py                # train + evaluate (~44 s)
+```
+
+`data/`, `models/` and `experiments/` are git-ignored by design — everything in them is
+regenerated by the commands above.
+
+### 8. (Optional) Rebuild the review decks
+
+```bash
+python visualization/build_visuals.py    # → visualization/index.html + figures/ + data/
+python presentation/build_assets.py      # → presentation/assets/*.png
+python presentation/build_pptx.py        # → presentation/UrbanEye_Mid_Project_Review.pptx
+```
+
+Needs `matplotlib`, `pandas`, `pyarrow`, `pillow` and `python-pptx` in the active
+environment. `build_pptx.py` reads the PNGs from `presentation/assets/`, so run
+`build_assets.py` first if the numbers have changed.
+
+Both read the pipeline's own reports and the metadata saved beside each trained model, so
+a slide cannot disagree with the run that produced it. The one exception is `PYTEST_COUNT`
+in `build_visuals.py`, which is hand-maintained because pytest emits no machine-readable
+report here.
+
 ---
 
 ## API Documentation
@@ -328,6 +474,19 @@ npx tsc --noEmit     # type check
 npm run lint
 npm run build
 ```
+
+ML pipeline tests (independent of the app and the database):
+
+```bash
+cd UrbanEye_ML_Data_Pipeline
+source .venv/bin/activate
+python -m pytest tests -q     # 15 passed
+```
+
+These check what a summary report cannot show: that the density windows match a
+brute-force implementation of their own definition, that local time converts correctly
+across DST, that the vectorised priority engine agrees with the readable one row for row,
+and that the provenance guard still fires.
 
 ---
 
@@ -512,7 +671,7 @@ terminal. The frontend mirrors these rules for UX only — the backend is the au
 ## Notes
 
 - **No Alembic.** Schema changes use plain, idempotent SQL files in `backend/migrations/`.
-  The two existing files are independent of each other, so either order works — but they are
+  The five existing files are independent of each other, so any order works — but they are
   not sequence-numbered, so a future migration with a real dependency should adopt a
   `NNN_description.sql` prefix to make the order explicit.
 - **The `models/` gitignore trap.** The root `.gitignore` ML section anchors its rule as

@@ -1,0 +1,9 @@
+workstream,implemented,partial,planned
+Data pipeline,13,0,0
+Validation & audit,8,0,0
+ML task datasets,9,0,0
+Baselines,4,0,0
+Training framework,7,0,0
+Evaluation,5,1,0
+Model optimisation,0,2,7
+Deployment & monitoring,0,0,8

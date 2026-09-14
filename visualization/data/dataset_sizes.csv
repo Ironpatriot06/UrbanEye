@@ -1,0 +1,9 @@
+dataset,rows,columns
+all_incidents,1900000,41
+chicago311,1600000,41
+nyc311,100000,41
+sf311,200000,41
+resolution_ml,942325,27
+sla_ml,20213,26
+hotspot_ml,67092,20
+priority_features,1900000,60

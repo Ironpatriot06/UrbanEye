@@ -1,0 +1,5 @@
+predictor,validation_MAE,test_MAE
+GBM (ML model),7.457111489309407,10.314467448067894
+Rolling 4-week mean,6.977875,10.885
+Lagged rolling 4-week,7.3226,11.76215
+Persistence,7.9257,12.6231

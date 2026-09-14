@@ -18,7 +18,7 @@ import pyarrow.parquet as pq
 
 from ..utils.cleaning import (CleaningStats, clean_coordinates, clean_text,
                               compute_resolution_hours, drop_exact_duplicate_rows,
-                              parse_timestamps)
+                              instant_closure_flag, parse_timestamps)
 from ..utils.logging_setup import get_logger
 from ..utils.mapping import map_categories, report_unmapped
 from ..utils.paths import ensure_dir, p

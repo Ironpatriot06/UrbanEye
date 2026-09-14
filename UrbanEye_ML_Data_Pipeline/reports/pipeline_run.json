@@ -1,5 +1,5 @@
 {
-  "run_at_utc": "2026-09-14T12:25:02.671963+00:00",
+  "run_at_utc": "2026-09-14T18:10:41.084476+00:00",
   "mode": "REAL_DATA",
   "data_source_warning": "Outputs derive from the raw files present in data/raw/.",
   "raw_files_present": {
@@ -8,14 +8,14 @@
     "chicago311": true,
     "nyc311": true
   },
-  "total_seconds": 521.53,
+  "total_seconds": 606.93,
   "steps": [
     {
       "phase": "1-verify",
       "step": "dataset_status",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/dataset_status.py",
       "returncode": 0,
-      "seconds": 0.32,
+      "seconds": 0.35,
       "status": "OK"
     },
     {
@@ -23,7 +23,7 @@
       "step": "validate_mappings",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_mappings.py",
       "returncode": 0,
-      "seconds": 0.32,
+      "seconds": 3.37,
       "status": "OK"
     },
     {
@@ -31,7 +31,7 @@
       "step": "preprocess_sf311",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_sf311.py",
       "returncode": 0,
-      "seconds": 5.12,
+      "seconds": 5.37,
       "status": "OK"
     },
     {
@@ -39,7 +39,7 @@
       "step": "preprocess_chicago311",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_chicago311.py",
       "returncode": 0,
-      "seconds": 30.97,
+      "seconds": 32.97,
       "status": "OK"
     },
     {
@@ -47,7 +47,7 @@
       "step": "preprocess_nyc311",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/preprocess_nyc311.py",
       "returncode": 0,
-      "seconds": 2.55,
+      "seconds": 2.67,
       "status": "OK"
     },
     {
@@ -55,7 +55,7 @@
       "step": "build_incidents",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_incidents.py",
       "returncode": 0,
-      "seconds": 18.92,
+      "seconds": 20.14,
       "status": "OK"
     },
     {
@@ -63,7 +63,7 @@
       "step": "build_time_features",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_time_features.py",
       "returncode": 0,
-      "seconds": 4.13,
+      "seconds": 4.29,
       "status": "OK"
     },
     {
@@ -71,7 +71,7 @@
       "step": "build_geo_features",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_geo_features.py",
       "returncode": 0,
-      "seconds": 28.12,
+      "seconds": 30.1,
       "status": "OK"
     },
     {
@@ -79,7 +79,7 @@
       "step": "build_priority_features",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_priority_features.py --accept-draft-config",
       "returncode": 0,
-      "seconds": 60.1,
+      "seconds": 70.15,
       "status": "OK"
     },
     {
@@ -87,7 +87,7 @@
       "step": "build_resolution_dataset",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_resolution_dataset.py",
       "returncode": 0,
-      "seconds": 18.25,
+      "seconds": 27.2,
       "status": "OK"
     },
     {
@@ -95,7 +95,7 @@
       "step": "build_hotspot_dataset",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_hotspot_dataset.py",
       "returncode": 0,
-      "seconds": 8.4,
+      "seconds": 12.71,
       "status": "OK"
     },
     {
@@ -103,7 +103,7 @@
       "step": "build_duplicate_pairs",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/preprocess/build_duplicate_pairs.py",
       "returncode": 0,
-      "seconds": 63.28,
+      "seconds": 97.54,
       "status": "OK"
     },
     {
@@ -111,7 +111,7 @@
       "step": "build_ml_dataset",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/features/build_ml_dataset.py",
       "returncode": 0,
-      "seconds": 40.07,
+      "seconds": 42.16,
       "status": "OK"
     },
     {
@@ -119,7 +119,7 @@
       "step": "build_task_datasets",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/features/build_task_datasets.py",
       "returncode": 0,
-      "seconds": 25.09,
+      "seconds": 20.51,
       "status": "OK"
     },
     {
@@ -127,7 +127,7 @@
       "step": "data_quality_report",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/data_quality_report.py",
       "returncode": 0,
-      "seconds": 17.6,
+      "seconds": 24.15,
       "status": "OK"
     },
     {
@@ -135,7 +135,7 @@
       "step": "validate_provenance",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_provenance.py",
       "returncode": 0,
-      "seconds": 34.05,
+      "seconds": 40.08,
       "status": "OK"
     },
     {
@@ -143,7 +143,7 @@
       "step": "validate_leakage",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_leakage.py",
       "returncode": 0,
-      "seconds": 22.46,
+      "seconds": 25.97,
       "status": "OK"
     },
     {
@@ -151,7 +151,7 @@
       "step": "validate_outputs",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/validate_outputs.py",
       "returncode": 0,
-      "seconds": 11.62,
+      "seconds": 15.14,
       "status": "OK"
     },
     {
@@ -159,7 +159,7 @@
       "step": "audit_pipeline",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_pipeline.py",
       "returncode": 0,
-      "seconds": 87.01,
+      "seconds": 84.73,
       "status": "OK"
     },
     {
@@ -167,7 +167,7 @@
       "step": "audit_task_datasets",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_task_datasets.py",
       "returncode": 0,
-      "seconds": 14.22,
+      "seconds": 15.66,
       "status": "OK"
     },
     {
@@ -175,7 +175,7 @@
       "step": "audit_statistics",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/audit_statistics.py",
       "returncode": 0,
-      "seconds": 28.32,
+      "seconds": 31.2,
       "status": "OK"
     },
     {
@@ -183,7 +183,7 @@
       "step": "report_category_candidates",
       "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/validation/report_category_candidates.py",
       "returncode": 0,
-      "seconds": 0.59,
+      "seconds": 0.42,
       "status": "OK"
     }
   ],

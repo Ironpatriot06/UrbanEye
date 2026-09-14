@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-14T12:39:22.192390+00:00",
+  "generated_at_utc": "2026-09-14T18:15:09.164671+00:00",
   "classification_scheme": {
     "safe": "no action needed",
     "needs_preprocessing": "usable, with the documented treatment",
@@ -8,7 +8,7 @@
   },
   "summary": {
     "safe": 0,
-    "needs_preprocessing": 39,
+    "needs_preprocessing": 40,
     "policy_decision": 2,
     "dangerous": 1
   },
@@ -26,7 +26,7 @@
       "column": "category_incident_density",
       "issue": "high cardinality",
       "severity": "needs_preprocessing",
-      "detail": "8,409 distinct values",
+      "detail": "8,317 distinct values",
       "recommended_action": "hashing or per-group target encoding FITTED ON TRAIN ONLY; never plain label-encode into a numeric feature"
     },
     {
@@ -34,7 +34,7 @@
       "column": "hours_since_previous_similar_incident",
       "issue": "high cardinality",
       "severity": "needs_preprocessing",
-      "detail": "420,424 distinct values",
+      "detail": "402,776 distinct values",
       "recommended_action": "hashing or per-group target encoding FITTED ON TRAIN ONLY; never plain label-encode into a numeric feature"
     },
     {
@@ -50,7 +50,15 @@
       "column": "category",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "total-variation 0.223 (threshold 0.2)",
+      "detail": "total-variation 0.224 (threshold 0.2)",
+      "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
+    },
+    {
+      "table": "resolution_ml",
+      "column": "department",
+      "issue": "distribution drift across splits",
+      "severity": "needs_preprocessing",
+      "detail": "total-variation 0.210 (threshold 0.2)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -58,7 +66,7 @@
       "column": "month",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "PSI 7.083 (threshold 0.25)",
+      "detail": "PSI 7.084 (threshold 0.25)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -66,7 +74,7 @@
       "column": "local_incident_density",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "PSI 0.258 (threshold 0.25)",
+      "detail": "PSI 0.278 (threshold 0.25)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -74,7 +82,7 @@
       "column": "sla_target_hours",
       "issue": "high cardinality",
       "severity": "needs_preprocessing",
-      "detail": "4,318 distinct values",
+      "detail": "4,307 distinct values",
       "recommended_action": "hashing or per-group target encoding FITTED ON TRAIN ONLY; never plain label-encode into a numeric feature"
     },
     {
@@ -82,7 +90,7 @@
       "column": "hours_since_previous_similar_incident",
       "issue": "high cardinality",
       "severity": "needs_preprocessing",
-      "detail": "10,992 distinct values",
+      "detail": "10,991 distinct values",
       "recommended_action": "hashing or per-group target encoding FITTED ON TRAIN ONLY; never plain label-encode into a numeric feature"
     },
     {
@@ -90,7 +98,7 @@
       "column": "subcategory",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "total-variation 0.213 (threshold 0.2)",
+      "detail": "total-variation 0.219 (threshold 0.2)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -98,7 +106,7 @@
       "column": "sla_target_hours",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "PSI 0.833 (threshold 0.25)",
+      "detail": "PSI 0.851 (threshold 0.25)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -106,7 +114,7 @@
       "column": "local_incident_density",
       "issue": "distribution drift across splits",
       "severity": "needs_preprocessing",
-      "detail": "PSI 0.292 (threshold 0.25)",
+      "detail": "PSI 0.289 (threshold 0.25)",
       "recommended_action": "expected under a chronological split \u2014 report per-split metrics and do not treat a single pooled score as an estimate of future performance"
     },
     {
@@ -346,7 +354,7 @@
       "column": "resolution_time_hours",
       "issue": "regime change across splits",
       "severity": "dangerous",
-      "detail": "median resolution hours by split: {'test': 144.2, 'train': 137.3, 'val': 50.8} \u2014 the validation window covers the first COVID wave",
+      "detail": "median resolution hours by split: {'test': 198.1, 'train': 187.4, 'val': 82.5} \u2014 the validation window covers the first COVID wave",
       "recommended_action": "do not present a single val/test score as an estimate of steady-state performance; report per-period metrics and say which period they cover"
     }
   ],
@@ -396,148 +404,148 @@
       }
     },
     "dominant_source_median_resolution_by_split": {
-      "test": 144.22,
-      "train": 137.29,
-      "val": 50.81
+      "test": 198.09,
+      "train": 187.42,
+      "val": 82.51
     }
   },
   "tables": {
     "resolution_ml": {
-      "rows": 1026596,
-      "columns": 26,
+      "rows": 942325,
+      "columns": 27,
       "target": "resolution_time_hours",
       "predictors": 20,
       "target_health": {
         "kind": "regression",
-        "rows": 1026596,
-        "min": 0.0,
-        "p50": 82.98736111111111,
-        "p99": 18047.864541666688,
+        "rows": 942325,
+        "min": 0.016666666666666666,
+        "p50": 116.03833333333333,
+        "p99": 18609.251166666676,
         "max": 71015.38416666667,
-        "mean": 1155.4051148114738,
-        "std": 3857.190387288309,
-        "zero_share": 0.0069
+        "mean": 1258.7312814551487,
+        "std": 4009.7847679699735,
+        "zero_share": 0.0
       },
       "column_health": {
         "category": {
           "n_unique": 12,
           "null_share": 0.0,
-          "dominant_value_share": 0.1736,
-          "unique_ratio": 1.2e-05
+          "dominant_value_share": 0.189,
+          "unique_ratio": 1.3e-05
         },
         "subcategory": {
-          "n_unique": 344,
-          "null_share": 0.8048,
-          "dominant_value_share": 0.1472,
-          "unique_ratio": 0.000335
+          "n_unique": 343,
+          "null_share": 0.7949,
+          "dominant_value_share": 0.1526,
+          "unique_ratio": 0.000364
         },
         "city": {
           "n_unique": 3,
           "null_share": 0.0,
-          "dominant_value_share": 0.8048,
+          "dominant_value_share": 0.7949,
           "unique_ratio": 3e-06
         },
         "source_dataset": {
           "n_unique": 3,
           "null_share": 0.0,
-          "dominant_value_share": 0.8048,
+          "dominant_value_share": 0.7949,
           "unique_ratio": 3e-06
         },
         "department": {
           "n_unique": 121,
           "null_share": 0.0,
-          "dominant_value_share": 0.3754,
-          "unique_ratio": 0.000118
+          "dominant_value_share": 0.4051,
+          "unique_ratio": 0.000128
         },
         "zone_key": {
           "n_unique": 168,
-          "null_share": 0.0054,
-          "dominant_value_share": 0.0235,
-          "unique_ratio": 0.000164
+          "null_share": 0.0048,
+          "dominant_value_share": 0.025,
+          "unique_ratio": 0.000178
         },
         "zone_type": {
           "n_unique": 3,
           "null_share": 0.0,
-          "dominant_value_share": 0.8048,
+          "dominant_value_share": 0.7949,
           "unique_ratio": 3e-06
         },
         "report_channel": {
           "n_unique": 7,
           "null_share": 0.0,
-          "dominant_value_share": 0.4912,
+          "dominant_value_share": 0.5278,
           "unique_ratio": 7e-06
         },
         "hour": {
           "n_unique": 24,
           "null_share": 0.0,
-          "dominant_value_share": 0.0923,
-          "unique_ratio": 2.3e-05
+          "dominant_value_share": 0.0863,
+          "unique_ratio": 2.5e-05
         },
         "day_of_week": {
           "n_unique": 7,
           "null_share": 0.0,
-          "dominant_value_share": 0.1857,
+          "dominant_value_share": 0.1832,
           "unique_ratio": 7e-06
         },
         "month": {
           "n_unique": 12,
           "null_share": 0.0,
-          "dominant_value_share": 0.1131,
-          "unique_ratio": 1.2e-05
+          "dominant_value_share": 0.1158,
+          "unique_ratio": 1.3e-05
         },
         "year": {
           "n_unique": 4,
           "null_share": 0.0,
-          "dominant_value_share": 0.4566,
+          "dominant_value_share": 0.4608,
           "unique_ratio": 4e-06
         },
         "is_weekend": {
           "n_unique": 2,
           "null_share": 0.0,
-          "dominant_value_share": 0.8507,
+          "dominant_value_share": 0.8399,
           "unique_ratio": 2e-06
         },
         "is_night": {
           "n_unique": 2,
           "null_share": 0.0,
-          "dominant_value_share": 0.9268,
+          "dominant_value_share": 0.9207,
           "unique_ratio": 2e-06
         },
         "nearby_similar_incidents_24h": {
           "n_unique": 111,
-          "null_share": 0.0172,
-          "dominant_value_share": 0.6021,
-          "unique_ratio": 0.000108
+          "null_share": 0.0151,
+          "dominant_value_share": 0.6002,
+          "unique_ratio": 0.000118
         },
         "nearby_similar_incidents_7d": {
           "n_unique": 319,
-          "null_share": 0.0172,
-          "dominant_value_share": 0.3384,
-          "unique_ratio": 0.000311
+          "null_share": 0.0151,
+          "dominant_value_share": 0.3469,
+          "unique_ratio": 0.000339
         },
         "nearby_similar_incidents_30d": {
           "n_unique": 626,
-          "null_share": 0.0172,
-          "dominant_value_share": 0.1406,
-          "unique_ratio": 0.00061
+          "null_share": 0.0151,
+          "dominant_value_share": 0.1471,
+          "unique_ratio": 0.000664
         },
         "local_incident_density": {
           "n_unique": 1317,
-          "null_share": 0.0172,
-          "dominant_value_share": 0.016,
-          "unique_ratio": 0.001283
+          "null_share": 0.0151,
+          "dominant_value_share": 0.0161,
+          "unique_ratio": 0.001398
         },
         "category_incident_density": {
-          "n_unique": 8409,
-          "null_share": 0.0172,
-          "dominant_value_share": 0.1406,
-          "unique_ratio": 0.008191
+          "n_unique": 8317,
+          "null_share": 0.0151,
+          "dominant_value_share": 0.1471,
+          "unique_ratio": 0.008826
         },
         "hours_since_previous_similar_incident": {
-          "n_unique": 420424,
-          "null_share": 0.1554,
-          "dominant_value_share": 0.0166,
-          "unique_ratio": 0.409532
+          "n_unique": 402776,
+          "null_share": 0.16,
+          "dominant_value_share": 0.0178,
+          "unique_ratio": 0.427428
         }
       },
       "missingness_by_group": {
@@ -548,50 +556,50 @@
             "sf311": 0.0
           },
           "zone_key": {
-            "chicago311": 0.0063,
+            "chicago311": 0.0055,
             "nyc311": 0.0,
             "sf311": 0.0035
           },
           "nearby_similar_incidents_24h": {
-            "chicago311": 0.0051,
-            "nyc311": 0.1523,
+            "chicago311": 0.0042,
+            "nyc311": 0.136,
             "sf311": 0.003
           },
           "nearby_similar_incidents_7d": {
-            "chicago311": 0.0051,
-            "nyc311": 0.1523,
+            "chicago311": 0.0042,
+            "nyc311": 0.136,
             "sf311": 0.003
           },
           "nearby_similar_incidents_30d": {
-            "chicago311": 0.0051,
-            "nyc311": 0.1523,
+            "chicago311": 0.0042,
+            "nyc311": 0.136,
             "sf311": 0.003
           },
           "local_incident_density": {
-            "chicago311": 0.0051,
-            "nyc311": 0.1523,
+            "chicago311": 0.0042,
+            "nyc311": 0.136,
             "sf311": 0.003
           },
           "category_incident_density": {
-            "chicago311": 0.0051,
-            "nyc311": 0.1523,
+            "chicago311": 0.0042,
+            "nyc311": 0.136,
             "sf311": 0.003
           },
           "hours_since_previous_similar_incident": {
-            "chicago311": 0.1436,
-            "nyc311": 0.4075,
+            "chicago311": 0.1514,
+            "nyc311": 0.3988,
             "sf311": 0.0517
           }
         }
       },
       "drift": {
         "category": {
-          "tv_train_val": 0.1268,
-          "tv_train_test": 0.2231
+          "tv_train_val": 0.1255,
+          "tv_train_test": 0.2243
         },
         "subcategory": {
-          "tv_train_val": 0.1055,
-          "tv_train_test": 0.1071
+          "tv_train_val": 0.1018,
+          "tv_train_test": 0.1038
         },
         "city": {
           "tv_train_val": 0.0,
@@ -602,139 +610,139 @@
           "tv_train_test": 0.0
         },
         "department": {
-          "tv_train_val": 0.1329,
-          "tv_train_test": 0.1945
+          "tv_train_val": 0.1316,
+          "tv_train_test": 0.21
         },
         "zone_key": {
-          "tv_train_val": 0.0381,
-          "tv_train_test": 0.0542
+          "tv_train_val": 0.0433,
+          "tv_train_test": 0.0496
         },
         "zone_type": {
           "tv_train_val": 0.0,
           "tv_train_test": 0.0
         },
         "report_channel": {
-          "tv_train_val": 0.0665,
-          "tv_train_test": 0.0434
+          "tv_train_val": 0.0555,
+          "tv_train_test": 0.0637
         },
         "hour": {
-          "psi_train_val": 0.0043,
-          "psi_train_test": 0.0036
+          "psi_train_val": 0.0054,
+          "psi_train_test": 0.0033
         },
         "day_of_week": {
-          "psi_train_val": 0.002,
-          "psi_train_test": 0.0077
+          "psi_train_val": 0.0016,
+          "psi_train_test": 0.0075
         },
         "month": {
-          "psi_train_val": 5.9579,
-          "psi_train_test": 7.0831
+          "psi_train_val": 6.9614,
+          "psi_train_test": 7.0836
         },
         "year": {
-          "psi_train_val": 0.0042,
-          "psi_train_test": 0.0042
+          "psi_train_val": 0.0046,
+          "psi_train_test": 0.0046
         },
         "is_weekend": {
-          "tv_train_val": 0.0137,
-          "tv_train_test": 0.0183
+          "tv_train_val": 0.0058,
+          "tv_train_test": 0.0113
         },
         "is_night": {
-          "tv_train_val": 0.0028,
-          "tv_train_test": 0.004
+          "tv_train_val": 0.0029,
+          "tv_train_test": 0.0045
         },
         "nearby_similar_incidents_24h": {
-          "psi_train_val": 0.0013,
-          "psi_train_test": 0.0345
+          "psi_train_val": 0.0018,
+          "psi_train_test": 0.0348
         },
         "nearby_similar_incidents_7d": {
-          "psi_train_val": 0.0016,
-          "psi_train_test": 0.0611
+          "psi_train_val": 0.0008,
+          "psi_train_test": 0.0637
         },
         "nearby_similar_incidents_30d": {
-          "psi_train_val": 0.0053,
-          "psi_train_test": 0.0942
+          "psi_train_val": 0.0054,
+          "psi_train_test": 0.101
         },
         "local_incident_density": {
-          "psi_train_val": 0.0557,
-          "psi_train_test": 0.2579
+          "psi_train_val": 0.0624,
+          "psi_train_test": 0.2783
         },
         "category_incident_density": {
-          "psi_train_val": 0.0049,
-          "psi_train_test": 0.0263
+          "psi_train_val": 0.0098,
+          "psi_train_test": 0.0301
         },
         "hours_since_previous_similar_incident": {
-          "psi_train_val": 0.0018,
-          "psi_train_test": 0.02
+          "psi_train_val": 0.0028,
+          "psi_train_test": 0.0241
         }
       },
       "duplicate_feature_rows": {
         "checked_rows": 400000,
-        "duplicate_feature_rows": 4008,
-        "duplicate_share": 0.01,
-        "contradictory_groups": 1298
+        "duplicate_feature_rows": 2200,
+        "duplicate_share": 0.0055,
+        "contradictory_groups": 1288
       },
       "split_counts": {
-        "train": 718627,
-        "test": 153989,
-        "val": 153980
+        "train": 659627,
+        "test": 141350,
+        "val": 141348
       },
       "split_by_source_dataset": {
         "chicago311": {
-          "train": 578355,
-          "test": 123932,
-          "val": 123922
+          "train": 524337,
+          "val": 112358,
+          "test": 112358
         },
         "nyc311": {
-          "train": 60126,
-          "test": 12884,
-          "val": 12883
+          "train": 55162,
+          "test": 11821,
+          "val": 11820
         },
         "sf311": {
-          "train": 80146,
-          "val": 17175,
-          "test": 17173
+          "train": 80128,
+          "test": 17171,
+          "val": 17170
         }
       }
     },
     "sla_ml": {
-      "rows": 20224,
-      "columns": 25,
+      "rows": 20213,
+      "columns": 26,
       "target": "sla_breach",
       "predictors": 17,
       "target_health": {
         "kind": "binary",
-        "rows": 20224,
-        "positive_rate": 0.10507,
-        "imbalance_ratio": 8.52
+        "rows": 20213,
+        "positive_rate": 0.10513,
+        "imbalance_ratio": 8.51
       },
       "column_health": {
         "category": {
           "n_unique": 6,
           "null_share": 0.0,
-          "dominant_value_share": 0.4783,
+          "dominant_value_share": 0.4786,
           "unique_ratio": 0.000297
         },
         "subcategory": {
-          "n_unique": 90,
+          "n_unique": 89,
           "null_share": 0.0,
-          "dominant_value_share": 0.1724,
-          "unique_ratio": 0.00445
+          "dominant_value_share": 0.1725,
+          "unique_ratio": 0.004403
         },
         "department": {
-          "n_unique": 4,
+          "n_unique": 3,
           "null_share": 0.0,
-          "dominant_value_share": 0.8554,
-          "unique_ratio": 0.000198
+          "dominant_value_share": 0.8558,
+          "unique_ratio": 0.000148
         },
         "zone_key": {
           "n_unique": 75,
           "null_share": 0.0,
           "dominant_value_share": 0.0415,
-          "unique_ratio": 0.003708
+          "unique_ratio": 0.00371
         },
         "report_channel": {
           "n_unique": 3,
           "null_share": 0.0,
-          "dominant_value_share": 0.7251,
+          "dominant_value_share": 0.7255,
           "unique_ratio": 0.000148
         },
         "hour": {
@@ -768,162 +776,162 @@
           "unique_ratio": 9.9e-05
         },
         "sla_target_hours": {
-          "n_unique": 4318,
+          "n_unique": 4307,
           "null_share": 0.0,
-          "dominant_value_share": 0.3705,
-          "unique_ratio": 0.213509
+          "dominant_value_share": 0.3708,
+          "unique_ratio": 0.213081
         },
         "nearby_similar_incidents_24h": {
           "n_unique": 22,
-          "null_share": 0.0419,
+          "null_share": 0.042,
           "dominant_value_share": 0.7416,
           "unique_ratio": 0.001088
         },
         "nearby_similar_incidents_7d": {
           "n_unique": 34,
-          "null_share": 0.0419,
-          "dominant_value_share": 0.53,
-          "unique_ratio": 0.001681
+          "null_share": 0.042,
+          "dominant_value_share": 0.5299,
+          "unique_ratio": 0.001682
         },
         "nearby_similar_incidents_30d": {
           "n_unique": 46,
-          "null_share": 0.0419,
-          "dominant_value_share": 0.3509,
-          "unique_ratio": 0.002275
+          "null_share": 0.042,
+          "dominant_value_share": 0.3508,
+          "unique_ratio": 0.002276
         },
         "local_incident_density": {
           "n_unique": 173,
-          "null_share": 0.0419,
+          "null_share": 0.042,
           "dominant_value_share": 0.0452,
-          "unique_ratio": 0.008554
+          "unique_ratio": 0.008559
         },
         "category_incident_density": {
           "n_unique": 890,
-          "null_share": 0.0419,
-          "dominant_value_share": 0.3509,
-          "unique_ratio": 0.044007
+          "null_share": 0.042,
+          "dominant_value_share": 0.3508,
+          "unique_ratio": 0.044031
         },
         "hours_since_previous_similar_incident": {
-          "n_unique": 10992,
-          "null_share": 0.3782,
+          "n_unique": 10991,
+          "null_share": 0.378,
           "dominant_value_share": 0.0255,
-          "unique_ratio": 0.543513
+          "unique_ratio": 0.543759
         }
       },
       "missingness_by_group": {
         "source_dataset": {
           "nearby_similar_incidents_24h": {
-            "nyc311": 0.0419
+            "nyc311": 0.042
           },
           "nearby_similar_incidents_7d": {
-            "nyc311": 0.0419
+            "nyc311": 0.042
           },
           "nearby_similar_incidents_30d": {
-            "nyc311": 0.0419
+            "nyc311": 0.042
           },
           "local_incident_density": {
-            "nyc311": 0.0419
+            "nyc311": 0.042
           },
           "category_incident_density": {
-            "nyc311": 0.0419
+            "nyc311": 0.042
           },
           "hours_since_previous_similar_incident": {
-            "nyc311": 0.3782
+            "nyc311": 0.378
           }
         }
       },
       "drift": {
         "category": {
-          "tv_train_val": 0.0803,
-          "tv_train_test": 0.1427
+          "tv_train_val": 0.1008,
+          "tv_train_test": 0.1472
         },
         "subcategory": {
-          "tv_train_val": 0.2128,
-          "tv_train_test": 0.2097
+          "tv_train_val": 0.2191,
+          "tv_train_test": 0.2154
         },
         "department": {
-          "tv_train_val": 0.0054,
-          "tv_train_test": 0.0556
+          "tv_train_val": 0.0089,
+          "tv_train_test": 0.0563
         },
         "zone_key": {
-          "tv_train_val": 0.1487,
-          "tv_train_test": 0.1732
+          "tv_train_val": 0.1519,
+          "tv_train_test": 0.1756
         },
         "report_channel": {
-          "tv_train_val": 0.0658,
-          "tv_train_test": 0.0314
+          "tv_train_val": 0.062,
+          "tv_train_test": 0.031
         },
         "hour": {
-          "psi_train_val": 0.0257,
-          "psi_train_test": 0.1083
+          "psi_train_val": 0.0149,
+          "psi_train_test": 0.1064
         },
         "day_of_week": {
-          "psi_train_val": 0.1775,
-          "psi_train_test": 0.0352
+          "psi_train_val": 0.128,
+          "psi_train_test": 0.0224
         },
         "month": {
           "psi_train_val": NaN,
           "psi_train_test": NaN
         },
         "is_weekend": {
-          "tv_train_val": 0.1307,
-          "tv_train_test": 0.0308
+          "tv_train_val": 0.0764,
+          "tv_train_test": 0.0236
         },
         "is_night": {
-          "tv_train_val": 0.0246,
-          "tv_train_test": 0.0023
+          "tv_train_val": 0.0261,
+          "tv_train_test": 0.0035
         },
         "sla_target_hours": {
-          "psi_train_val": 0.1804,
-          "psi_train_test": 0.8326
+          "psi_train_val": 0.197,
+          "psi_train_test": 0.8513
         },
         "nearby_similar_incidents_24h": {
-          "psi_train_val": 0.0048,
-          "psi_train_test": 0.0076
+          "psi_train_val": 0.0029,
+          "psi_train_test": 0.0073
         },
         "nearby_similar_incidents_7d": {
-          "psi_train_val": 0.0233,
-          "psi_train_test": 0.0508
+          "psi_train_val": 0.02,
+          "psi_train_test": 0.0495
         },
         "nearby_similar_incidents_30d": {
-          "psi_train_val": 0.0756,
-          "psi_train_test": 0.1037
+          "psi_train_val": 0.0691,
+          "psi_train_test": 0.1022
         },
         "local_incident_density": {
-          "psi_train_val": 0.1788,
-          "psi_train_test": 0.2925
+          "psi_train_val": 0.1717,
+          "psi_train_test": 0.2893
         },
         "category_incident_density": {
-          "psi_train_val": 0.0611,
-          "psi_train_test": 0.085
+          "psi_train_val": 0.0569,
+          "psi_train_test": 0.0861
         },
         "hours_since_previous_similar_incident": {
-          "psi_train_val": 0.0406,
-          "psi_train_test": 0.0481
+          "psi_train_val": 0.0382,
+          "psi_train_test": 0.0499
         }
       },
       "duplicate_feature_rows": {
-        "checked_rows": 20224,
+        "checked_rows": 20213,
         "duplicate_feature_rows": 400,
         "duplicate_share": 0.0198,
         "contradictory_groups": 5
       },
       "split_counts": {
-        "train": 13053,
-        "test": 3948,
-        "val": 3223
+        "train": 13209,
+        "test": 3873,
+        "val": 3131
       },
       "split_by_source_dataset": {
         "nyc311": {
-          "train": 13053,
-          "test": 3948,
-          "val": 3223
+          "train": 13209,
+          "test": 3873,
+          "val": 3131
         }
       }
     },
     "hotspot_ml": {
       "rows": 67092,
-      "columns": 19,
+      "columns": 20,
       "target": "future_incident_count",
       "predictors": 13,
       "target_health": {
@@ -1201,7 +1209,7 @@
     },
     "priority_features": {
       "rows": 1900000,
-      "columns": 59,
+      "columns": 60,
       "target": null,
       "predictors": 19,
       "column_health": {
@@ -1472,19 +1480,19 @@
     },
     "urbaneye_ml": {
       "rows": 1900000,
-      "columns": 71,
+      "columns": 73,
       "target": "resolution_time_hours",
       "predictors": 19,
       "target_health": {
         "kind": "regression",
-        "rows": 1853828,
-        "min": 0.0,
-        "p50": 113.96277777777777,
-        "p99": 20184.35203611111,
+        "rows": 1680482,
+        "min": 0.016666666666666666,
+        "p50": 161.4163888888889,
+        "p99": 21003.613486111102,
         "max": 71015.38416666667,
-        "mean": 1498.1355700605272,
-        "std": 4346.59334927826,
-        "zero_share": 0.0053
+        "mean": 1652.6717363897196,
+        "std": 4537.215639885012,
+        "zero_share": 0.0
       },
       "column_health": {
         "category": {
@@ -1728,7 +1736,7 @@
         "checked_rows": 400000,
         "duplicate_feature_rows": 2393,
         "duplicate_share": 0.006,
-        "contradictory_groups": 614
+        "contradictory_groups": 571
       },
       "split_counts": {
         "train": 1330004,

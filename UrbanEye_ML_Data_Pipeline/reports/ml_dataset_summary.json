@@ -1,6 +1,6 @@
 {
   "rows": 1900000,
-  "columns": 71,
+  "columns": 73,
   "built_from": {
     "incidents": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/all_incidents_prioritised.parquet",
     "time_features": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/features/incident_time_features.parquet",
@@ -58,6 +58,7 @@
     "sla_breach": "target",
     "sla_target_hours": "target_support",
     "target_is_censored": "target_support",
+    "resolution_instant_closure": "target_support",
     "priority_baseline": "policy_metadata",
     "priority_score": "policy_metadata",
     "priority_reasons": "policy_metadata",
@@ -127,9 +128,10 @@
     "local_incident_density": 1870394,
     "category_incident_density": 1870394,
     "hours_since_previous_similar_incident": 1702522,
-    "resolution_time_hours": 1853828,
-    "sla_breach": 20822,
+    "resolution_time_hours": 1680482,
+    "sla_breach": 20811,
     "sla_target_hours": 22458,
+    "resolution_instant_closure": 1859796,
     "target_is_censored": 1900000,
     "priority_baseline": 1900000,
     "priority_score": 1900000,
@@ -150,7 +152,8 @@
     "reported_at_local": 1900000,
     "local_timezone": 1900000,
     "date_local": 1900000,
-    "split": 1900000
+    "split": 1900000,
+    "split_global": 1900000
   },
   "usable_predictors": [
     "category",
@@ -204,12 +207,12 @@
   "targets": {
     "resolution_time_hours": {
       "kind": "regression",
-      "rows_with_target": 1853828,
-      "note": "closed_at - reported_at. Right-censored: open cases are NULL, flagged by target_is_censored, and are NOT dropped here."
+      "rows_with_target": 1680482,
+      "note": "closed_at - reported_at. NULL for three distinct reasons, each flagged separately: the case is still open (target_is_censored), the duration is negative or absurd, or the closure was recorded sooner than the source timestamps can measure (resolution_instant_closure). No row is dropped here."
     },
     "sla_breach": {
       "kind": "binary",
-      "rows_with_target": 20822,
+      "rows_with_target": 20811,
       "note": "resolution_time_hours > sla_target_hours. Only where the publisher ships a due/target timestamp: NYC (Due Date) and Boston (TARGET_DT)."
     },
     "priority_label": {
@@ -241,57 +244,91 @@
     "priority_target": "removed. It was a keyword count over category and agency-written resolution text, presented as a label. Fabricated targets are what this pipeline's provenance guard exists to prevent."
   },
   "split": {
-    "strategy": "chronological",
-    "per_source": true,
-    "ts_column": "reported_at",
-    "groups": {
-      "chicago311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2020-03-18 21:48:50.100000+00:00",
-        "val_end": "2020-06-24 22:29:31.349999872+00:00",
-        "counts": {
-          "train": 1120000,
-          "val": 240000,
-          "test": 240000
-        },
-        "date_range": {
-          "min": "2018-07-01 08:42:31+00:00",
-          "max": "2020-08-28 12:52:21+00:00"
-        }
-      },
-      "nyc311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2010-02-19 18:41:14.600000+00:00",
-        "val_end": "2010-03-01 13:38:00+00:00",
-        "counts": {
-          "train": 70000,
-          "val": 15001,
-          "test": 14999
-        },
-        "date_range": {
-          "min": "2010-01-01 05:38:00+00:00",
-          "max": "2010-03-09 05:55:45+00:00"
-        }
-      },
-      "sf311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2018-04-06 15:53:00+00:00",
-        "val_end": "2018-04-24 16:18:09+00:00",
-        "counts": {
-          "train": 140004,
-          "test": 30000,
-          "val": 29996
-        },
-        "date_range": {
-          "min": "2018-01-01 08:25:00+00:00",
-          "max": "2018-05-10 19:47:00+00:00"
-        }
-      }
+    "policy": {
+      "split": "per-source chronological \u2014 use for PER-CITY models",
+      "split_global": "single global chronological cut \u2014 use for POOLED models"
     },
-    "counts": {
-      "train": 1330004,
-      "test": 284999,
-      "val": 284997
+    "per_source": {
+      "strategy": "chronological",
+      "per_source": true,
+      "ts_column": "reported_at",
+      "groups": {
+        "chicago311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2020-03-18 21:48:50.100000+00:00",
+          "val_end": "2020-06-24 22:29:31.349999872+00:00",
+          "counts": {
+            "train": 1120000,
+            "val": 240000,
+            "test": 240000
+          },
+          "date_range": {
+            "min": "2018-07-01 08:42:31+00:00",
+            "max": "2020-08-28 12:52:21+00:00"
+          }
+        },
+        "nyc311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2010-02-19 18:41:14.600000+00:00",
+          "val_end": "2010-03-01 13:38:00+00:00",
+          "counts": {
+            "train": 70000,
+            "val": 15001,
+            "test": 14999
+          },
+          "date_range": {
+            "min": "2010-01-01 05:38:00+00:00",
+            "max": "2010-03-09 05:55:45+00:00"
+          }
+        },
+        "sf311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2018-04-06 15:53:00+00:00",
+          "val_end": "2018-04-24 16:18:09+00:00",
+          "counts": {
+            "train": 140004,
+            "test": 30000,
+            "val": 29996
+          },
+          "date_range": {
+            "min": "2018-01-01 08:25:00+00:00",
+            "max": "2018-05-10 19:47:00+00:00"
+          }
+        }
+      },
+      "counts": {
+        "train": 1330004,
+        "test": 284999,
+        "val": 284997
+      },
+      "globally_chronological": false
+    },
+    "global": {
+      "strategy": "chronological",
+      "per_source": false,
+      "ts_column": "reported_at",
+      "groups": {
+        "ALL": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2020-01-31 18:50:37+00:00",
+          "val_end": "2020-06-10 19:40:43.900000+00:00",
+          "counts": {
+            "train": 1330001,
+            "test": 285000,
+            "val": 284999
+          },
+          "date_range": {
+            "min": "2010-01-01 05:38:00+00:00",
+            "max": "2020-08-28 12:52:21+00:00"
+          }
+        }
+      },
+      "counts": {
+        "train": 1330001,
+        "test": 285000,
+        "val": 284999
+      },
+      "globally_chronological": true
     }
   },
   "split_counts": {

@@ -1,7 +1,7 @@
 # UrbanEye+ — Data Schema
 
 *Generated from code by `scripts/validation/generate_schema_doc.py` on
-2026-09-14 12:29 UTC. Do not edit by hand.*
+2026-09-14 18:00 UTC. Do not edit by hand.*
 
 | Provenance | Meaning |
 |---|---|
@@ -57,7 +57,8 @@ prove the guard works.
 | `sla_met` | `boolean` | DERIVED | resolution_time_hours <= sla_target_hours, only when both valid. POST-RESOLUTION. |
 | `sla_hours_policy` | `float64` | DERIVED | UrbanEye+ business-rule SLA for priority_baseline, from priority_config.sla_hours. Product config, not evidence. |
 | `response_time_hours` | `float64` | **NULL** | NO configured source records a first-response timestamp. Always NULL. |
-| `resolution_time_hours` | `float64` | DERIVED | closed_at - reported_at. NULL when still open. POST-RESOLUTION — target only, never a feature. |
+| `resolution_time_hours` | `float64` | DERIVED | closed_at - reported_at. NULL when still open, when the duration is negative/absurd, or when it is below cleaning.resolution_time.min_observable_seconds. POST-RESOLUTION — target only, never a feature. |
+| `resolution_instant_closure` | `boolean` | DERIVED | closure recorded sooner than the source timestamps can measure (see cleaning.resolution_time.min_observable_seconds). Such rows keep status/closed_at but have a NULL resolution_time_hours. NULL when the case is not closed. |
 | `is_duplicate` | `boolean` | SOURCE | Chicago DUPLICATE flag; weak text signal from SF Status Notes; NULL elsewhere |
 | `parent_incident_id` | `string` | SOURCE | Chicago PARENT_SR_NUMBER only |
 | `report_channel` | `string` | SOURCE | phone / web / mobile / social / other |

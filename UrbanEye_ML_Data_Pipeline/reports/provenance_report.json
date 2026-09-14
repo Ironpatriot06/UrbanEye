@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-14T12:40:44.874942+00:00",
+  "generated_at_utc": "2026-09-14T18:11:51.286199+00:00",
   "summary": {
     "total": 11,
     "passed": 11,
@@ -58,7 +58,7 @@
       "id": "ACTIVE-3",
       "check": "guard REJECTS response_time derived from resolution_time",
       "result": "PASS",
-      "detail": "blocked 1853828 rows"
+      "detail": "blocked 1680482 rows"
     },
     {
       "id": "ACTIVE-5",
@@ -278,7 +278,13 @@
         "field": "resolution_time_hours",
         "dtype": "float64",
         "provenance": "DERIVED",
-        "note": "closed_at - reported_at. NULL when still open. POST-RESOLUTION \u2014 target only, never a feature."
+        "note": "closed_at - reported_at. NULL when still open, when the duration is negative/absurd, or when it is below cleaning.resolution_time.min_observable_seconds. POST-RESOLUTION \u2014 target only, never a feature."
+      },
+      {
+        "field": "resolution_instant_closure",
+        "dtype": "boolean",
+        "provenance": "DERIVED",
+        "note": "closure recorded sooner than the source timestamps can measure (see cleaning.resolution_time.min_observable_seconds). Such rows keep status/closed_at but have a NULL resolution_time_hours. NULL when the case is not closed."
       },
       {
         "field": "is_duplicate",

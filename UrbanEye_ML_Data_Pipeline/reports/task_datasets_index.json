@@ -1,21 +1,21 @@
 {
-  "generated_at_utc": "2026-09-14T12:37:04.005678+00:00",
+  "generated_at_utc": "2026-09-14T18:06:43.544171+00:00",
   "tasks": {
     "resolution": {
       "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/resolution_ml.parquet",
-      "rows": 1026596,
+      "rows": 942325,
       "unit": "one incident",
       "target": "resolution_time_hours",
       "target_available": true,
-      "split_strategy": "per-source chronological"
+      "split_strategy": "chronological"
     },
     "sla": {
       "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/sla_ml.parquet",
-      "rows": 20224,
+      "rows": 20213,
       "unit": "one incident",
       "target": "sla_breach",
       "target_available": true,
-      "split_strategy": "per-source chronological"
+      "split_strategy": "chronological"
     },
     "hotspot": {
       "path": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/ml/hotspot_ml.parquet",
@@ -39,7 +39,7 @@
       "unit": "one incident",
       "target": null,
       "target_available": false,
-      "split_strategy": "per-source chronological"
+      "split_strategy": "chronological"
     }
   }
 }

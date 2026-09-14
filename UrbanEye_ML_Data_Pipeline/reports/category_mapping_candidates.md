@@ -1,6 +1,6 @@
 # Candidate category mappings
 
-Generated 2026-09-14T12:25:02.634771+00:00
+Generated 2026-09-14T18:10:41.052884+00:00
 
 **142 unmapped source categories covering 358,838 rows.** Nothing below has been applied.
 

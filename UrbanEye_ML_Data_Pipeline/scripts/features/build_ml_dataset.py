@@ -53,7 +53,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import numpy as np
 import pandas as pd
 
-from scripts.preprocess._ml_common import chronological_split
+from scripts.preprocess._ml_common import dual_chronological_split
 from scripts.utils.logging_setup import get_logger
 from scripts.utils.mapping import CANONICAL
 from scripts.utils.paths import ensure_dir, load_feature_config, load_priority_config, p
@@ -87,7 +87,7 @@ CONTEXT_METADATA = ["latitude", "longitude", "reported_at", "reported_at_local",
 
 # Observed outcomes. Targets, never inputs.
 TARGETS = ["resolution_time_hours", "sla_breach"]
-TARGET_SUPPORT = ["sla_target_hours", "target_is_censored"]
+TARGET_SUPPORT = ["sla_target_hours", "target_is_censored", "resolution_instant_closure"]
 
 # Known only after closure. Excluded from this table altogether (other than the
 # declared targets above), and asserted absent by validate_leakage.py.
@@ -160,8 +160,15 @@ def main() -> int:
     out["resolution_time_hours"] = res.astype("float64")
     out["sla_breach"] = (res > sla_target).where(res.notna() & sla_target.notna()).astype("boolean")
     out["sla_target_hours"] = sla_target.astype("float64")
-    # right-censoring is a property of the TARGET, not a feature
-    out["target_is_censored"] = res.isna().astype("boolean")
+    # right-censoring is a property of the TARGET, not a feature. It is split
+    # from the instant-closure artifact so the two exclusion reasons never get
+    # read as one number: a still-open case is censored, an instant closure is
+    # simply unmeasurable.
+    inst = df.get("resolution_instant_closure")
+    out["resolution_instant_closure"] = (inst.astype("boolean") if inst is not None
+                                         else pd.Series(pd.NA, index=df.index, dtype="boolean"))
+    out["target_is_censored"] = (res.isna() &
+                                 ~out["resolution_instant_closure"].fillna(False)).astype("boolean")
 
     # ---- policy metadata ---------------------------------------------------
     for c in POLICY_METADATA:
@@ -178,8 +185,9 @@ def main() -> int:
               "local_timezone", "date_local"):
         out[c] = df[c] if c in df.columns else pd.NA
 
-    split, split_meta = chronological_split(df)
+    split, split_global, split_meta = dual_chronological_split(df)
     out["split"] = split
+    out["split_global"] = split_global
 
     # ---- guards ------------------------------------------------------------
     leaked = [c for c in EXCLUDED_POST_RESOLUTION if c in out.columns]
@@ -246,8 +254,11 @@ def main() -> int:
         "targets": {
             "resolution_time_hours": {
                 "kind": "regression", "rows_with_target": available.get("resolution_time_hours", 0),
-                "note": "closed_at - reported_at. Right-censored: open cases are NULL, "
-                        "flagged by target_is_censored, and are NOT dropped here."},
+                "note": ("closed_at - reported_at. NULL for three distinct reasons, each flagged "
+                         "separately: the case is still open (target_is_censored), the duration is "
+                         "negative or absurd, or the closure was recorded sooner than the source "
+                         "timestamps can measure (resolution_instant_closure). No row is dropped "
+                         "here.")},
             "sla_breach": {
                 "kind": "binary", "rows_with_target": available.get("sla_breach", 0),
                 "note": "resolution_time_hours > sla_target_hours. Only where the publisher "

@@ -35,7 +35,7 @@ import argparse, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import pandas as pd
-from scripts.preprocess._ml_common import chronological_split, in_scope, load_incidents, write
+from scripts.preprocess._ml_common import dual_chronological_split, in_scope, load_incidents, write
 from scripts.utils.logging_setup import get_logger
 from scripts.utils.paths import load_config
 
@@ -148,8 +148,10 @@ def main() -> int:
 
     # Same corpus-aware chronological rule as every other table, on week_start
     # and grouped by city (a weekly panel row has no source_dataset column).
-    split, split_meta = chronological_split(agg, ts_col="week_start", source_col="city")
+    split, split_global, split_meta = dual_chronological_split(
+        agg, ts_col="week_start", source_col="city")
     agg["split"] = split
+    agg["split_global"] = split_global
 
     write(agg, "hotspot", "hotspot_dataset", {
         "model": "Hotspot / incident risk",

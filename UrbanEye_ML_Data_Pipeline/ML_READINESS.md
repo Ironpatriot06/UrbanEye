@@ -19,9 +19,9 @@ Generated artefacts behind this document:
 
 | Task | Dataset | Rows | Target | Verdict |
 |---|---|---|---|---|
-| Resolution time | `resolution_ml.parquet` | 1,026,596 | `resolution_time_hours` | **CONDITIONALLY READY** |
+| Resolution time | `resolution_ml.parquet` | 942,325 | `resolution_time_hours` | **CONDITIONALLY READY** |
 | SLA breach | `sla_ml.parquet` | 20,224 | `sla_breach` | **CONDITIONALLY READY** |
-| Hotspot | `hotspot_ml.parquet` | 67,092 | `future_incident_count` | **CONDITIONALLY READY** |
+| Hotspot | `hotspot_ml.parquet` | 67,092 | `future_incident_count` | **CONDITIONALLY READY** — does not beat a 4-week moving average |
 | Duplicate detection | `duplicate_ml.parquet` | 455,460 | `same_incident` | **NOT READY for evaluation** |
 | Priority | `priority_features.parquet` | 1,900,000 | none | **NOT READY — and not a supervised task** |
 
@@ -29,35 +29,61 @@ Generated artefacts behind this document:
 
 ## 2. Resolution time — CONDITIONALLY READY
 
-**Target** `resolution_time_hours`, 1,026,596 closed in-scope cases. Median ~83 h,
-p99 ~18,000 h, max 71,015 h. Fit on `log1p`.
+**Target** `resolution_time_hours`, **942,325** closed in-scope cases with a
+*measurable* duration. Median 116 h, p99 ~18,600 h. Fit on `log1p`.
 
-**Baseline** (HistGradientBoosting, 400k train rows, 20 declared predictors):
+### The instant-closure artifact, and how it is handled
 
-| Split | Model median AE | Naive median AE | Model MAE | Naive MAE |
+8.2% of the old target was not a service duration at all. Chicago closed 18,279
+cases at exactly 7 seconds, 18,125 at 6 s and 14,578 at 5 s — a transactional
+write, not field work — and NYC's entire sub-minute population sat at exactly
+0 s (7,640 rows, with just 5 rows anywhere in the 1–60 s range).
+
+These rows are now excluded from the target by a rule grounded in the data, not
+a chosen threshold. One minute is the coarsest timestamp granularity in the
+sources (90.8% of SF `requested_datetime` and 57.7% of NYC `created_date` land
+exactly on :00 seconds), so a sub-minute duration is **below what the source can
+express**. See `cleaning.resolution_time.min_observable_seconds`.
+
+Nothing is deleted. All 1,900,000 incidents remain; 173,346 of them keep their
+`status`, `closed_at` and a new `resolution_instant_closure = True` flag, and
+only their duration is NULL — the same treatment negative and over-cap durations
+already received.
+
+| Target statistic | before | after |
+|---|---|---|
+| rows in `resolution_ml` | 1,026,596 | 942,325 |
+| p10 | 0.03 h | 1.32 h |
+| p25 | 8.87 h | 20.20 h |
+| median | 82.99 h | 116.04 h |
+| p75 | 598.8 h | 706.9 h |
+| share under one minute | **8.21%** | **0.00%** |
+| share under one hour | 16.43% | 8.95% |
+
+### Baseline
+
+GBM on `log1p`, evaluated on `split_global` (pooled, one wall clock):
+
+| Split | Model MAE | Naive median MAE | Model median AE | Naive median AE |
 |---|---|---|---|---|
-| val | 47.0 h | 91.8 h | 681.9 h | 856.2 h |
-| test | 84.7 h | 92.3 h | 733.5 h | 896.9 h |
+| val | 734.1 | 866.6 | 84.7 | 109.0 |
+| test | 876.5 | 1034.8 | **127.7** | **115.7** |
 
-The model beats "predict the training median", but not by much on test: 84.7 h
-against 92.3 h is an 8% improvement, and the typical error is roughly the size of
-the typical target. Per-city test MAE: Chicago 774 h, NYC 275 h, SF 784 h.
+**Read that last row carefully.** On test the model beats the training-median
+baseline on MAE (−15.3%) but is *worse* on median absolute error (127.7 h vs
+115.7 h). It wins on the tail and loses in the middle. That is not a model ready
+to be trusted for typical cases.
 
-**Why only conditional**
+**Why still only conditional**
 
-1. **A regime change sits inside the split.** Chicago's validation window is the
-   first COVID wave; median resolution time falls from 137 h in train to 51 h in
-   val and returns to 144 h in test. That is why val looks better than test. No
-   single number from this split estimates steady-state performance.
-2. **Right-censoring.** Open cases are excluded, so the long tail is
-   systematically under-represented and the model is fitted on the cases that
-   closed.
-3. **The three cities are not exchangeable** — an order of magnitude apart in
-   median resolution time, with different department vocabularies (3 values in
-   Chicago, 113 in SF) and `subcategory` missing for 100% of Chicago rows.
-
-**Before deploying anything:** model per city, report per-period metrics, and
-decide whether the censored tail matters enough to need survival analysis.
+1. **A regime change sits inside the split.** Chicago's 2020 window is the first
+   COVID wave; median resolution time moves sharply across the fold boundary.
+2. **The cities are not exchangeable** — different department vocabularies (3
+   values in Chicago, 113 in SF) and `subcategory` missing for 100% of Chicago.
+3. **Censoring is mild, and was previously over-stated here.** Measured: 0.82%
+   of in-scope incidents are still open (NYC 8.2%, Chicago and SF ≈0.1%). Right
+   censoring is a real caveat but it is *not* the main target problem; the
+   instant-closure artifact was.
 
 ---
 
@@ -85,19 +111,47 @@ general SLA model and must never be presented as one.
 
 ---
 
-## 4. Hotspot — CONDITIONALLY READY
+## 4. Hotspot — CONDITIONALLY READY (and it does **not** beat a moving average)
 
 **Target** `future_incident_count`, week t+1 per city × zone × category. 67,092
 panel rows, 20.0% of them zero.
 
-| Split | Model MAE | Persistence MAE | Model Poisson dev. | Persistence Poisson dev. |
-|---|---|---|---|---|
-| val | 7.62 | 7.81 | 6.42 | 15.91 |
-| test | 10.92 | 12.82 | 14.85 | 23.39 |
+**Baselines matter more than the model here, so all three are reported.**
+Evaluated on `split_global` (one wall clock — see §8), test MAE:
 
-The model beats persistence ("next week equals this week") on both splits, which
-is the bar that matters for a weekly panel — a 15% MAE improvement and a 37%
-reduction in Poisson deviance on test.
+| Predictor | val MAE | test MAE | test Poisson dev. |
+|---|---|---|---|
+| GBM (Poisson) | 7.90 | **10.54** | 14.02 |
+| **Rolling 4-week mean (t-3..t)** — primary benchmark | **6.98** | 10.89 | 14.48 |
+| Rolling 4-week mean, lagged (t-4..t-1) | 7.32 | 11.76 | 16.56 |
+| Persistence (t+1 = t) | 7.93 | 12.62 | 23.88 |
+
+| Comparison | val | test |
+|---|---|---|
+| Model vs **persistence** | +0.4% | **+16.5%** |
+| Model vs **rolling 4-week mean** | **−13.2%** | **+3.2%** |
+
+**An earlier version of this document claimed "a 15% MAE improvement" and cited
+only persistence. That was misleading and is withdrawn.** Persistence is the
+weakest thing anyone would try on a weekly count panel. Against a four-week
+moving average — the first tool any forecaster reaches for — the model is **3.2%
+better on test and 13.2% WORSE on validation**. On Poisson deviance the two are
+also within a few percent of each other on test.
+
+The honest reading: the gradient-boosted model has not demonstrated that it adds
+anything over a moving average. Persistence is kept in the table because it is
+the naive floor and shows the panel has real autocorrelation, but it is no
+longer presented as the benchmark.
+
+**Why the rolling window is defined as t-3..t.** The manifest states the
+deployment assumption: the forecast for week t+1 is produced at the END of week
+t, when week t is complete. Week t is therefore available, and excluding it
+would handicap the baseline and flatter the model — the exact error being
+corrected. The strictly-lagged t-4..t-1 variant is reported alongside because it
+is what already ships as the `rolling_4w_mean` feature. Both are trailing
+windows that end at or before week t while the target is week t+1, so neither
+can see the target; `tests/test_pipeline.py` proves it by rewriting every future
+value and asserting no prediction moves.
 
 **This task was previously unlearnable and nobody could see it.** The panel used
 to contain only weeks that had at least one incident, so `shift(-1)` meant "the
@@ -106,9 +160,10 @@ next week that happened to have one": the target's minimum was 1, the binary
 referred to a week that was not t−1 at all. The panel is now a complete calendar
 grid and zeros are real observations.
 
-**Remaining caveat:** NYC contributes 10 weeks and SF 19, so their validation and
-test folds are one or two weeks wide. Per-city metrics for those two cities are
-not meaningful. Chicago carries the result.
+**Remaining caveat:** under `split_global`, validation and test are Chicago-only,
+because SF ends May 2018 and NYC ends March 2010. Under the per-city `split`
+column all three cities appear, and the conclusion is unchanged (model vs
+rolling mean: −10.0% val, +1.3% test).
 
 ---
 
@@ -196,7 +251,32 @@ something the rules do not already contain. See `PRIORITY_METHODOLOGY.md` §6.
 
 ---
 
-## 7. Cross-cutting limits
+## 7. Split policy — two columns, stated explicitly
+
+Every table carries **both** split columns, because there is no single cut that
+answers both questions:
+
+| Column | Guarantee | Cost | Use for |
+|---|---|---|---|
+| `split` | chronological **within each city**; every city in every fold | not globally ordered — 19.5% of resolution test rows fall before the last training row on one wall clock | per-city models |
+| `split_global` | chronological on **one wall clock**; no evaluation row predates a training row | SF ends May 2018 and NYC ends March 2010, so val/test are Chicago-only | pooled models |
+
+Concrete counts for `resolution_ml` (942,325 rows):
+
+| Column | train | val | test | cities in val/test |
+|---|---|---|---|---|
+| `split` | 659,627 | 141,348 | 141,350 | all three |
+| `split_global` | 659,627 | 141,349 | 141,349 | Chicago only |
+
+The baseline script picks automatically and records which it used: `split_global`
+for genuinely multi-city tables, `split` for single-source ones (sla_ml is
+NYC-only, and a global cut would put every NYC row in train and leave validation
+and test empty). Encoders are fitted on the training fold alone; unseen levels
+map to a reserved code.
+
+---
+
+## 8. Cross-cutting limits
 
 1. **Chicago is 84% of the corpus.** Any pooled metric is a Chicago metric.
 2. **The cities barely overlap in time** — NYC Jan–Mar 2010, SF Jan–May 2018,

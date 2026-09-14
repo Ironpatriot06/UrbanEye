@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-09-14T12:39:57.811332+00:00",
+  "generated_at_utc": "2026-09-14T18:11:06.245530+00:00",
   "pipeline_version": "2.0.0",
   "schema_version": "2.0.0",
   "datasets": {
     "sf311": {
       "label": "sf311",
       "rows": 200000,
-      "columns": 40,
+      "columns": 41,
       "missing_pct": {
         "incident_id": 0.0,
         "source_dataset": 0.0,
@@ -40,7 +40,8 @@
         "sla_met": 100.0,
         "sla_hours_policy": 100.0,
         "response_time_hours": 100.0,
-        "resolution_time_hours": 0.1,
+        "resolution_time_hours": 2.15,
+        "resolution_instant_closure": 0.1,
         "is_duplicate": 0.0,
         "parent_incident_id": 100.0,
         "report_channel": 0.0,
@@ -78,12 +79,12 @@
       },
       "duplicate_incident_ids": 0,
       "resolution_time_hours": {
-        "count": 199795,
-        "min": 0.0,
-        "p25": 2.207777777777778,
-        "median": 24.836944444444445,
-        "p75": 141.8,
-        "p90": 1331.7733333333356,
+        "count": 195698,
+        "min": 0.016666666666666666,
+        "p25": 2.466666666666667,
+        "median": 26.216666666666665,
+        "p75": 144.51534722222223,
+        "p90": 1474.4538611111182,
         "max": 56083.889444444445,
         "negative_count": 0
       },
@@ -103,7 +104,7 @@
     "chicago311": {
       "label": "chicago311",
       "rows": 1600000,
-      "columns": 40,
+      "columns": 41,
       "missing_pct": {
         "incident_id": 0.0,
         "source_dataset": 0.0,
@@ -137,7 +138,8 @@
         "sla_met": 100.0,
         "sla_hours_policy": 100.0,
         "response_time_hours": 100.0,
-        "resolution_time_hours": 2.38,
+        "resolution_time_hours": 12.48,
+        "resolution_instant_closure": 2.38,
         "is_duplicate": 0.0,
         "parent_incident_id": 84.89,
         "report_channel": 0.0,
@@ -176,12 +178,12 @@
       },
       "duplicate_incident_ids": 0,
       "resolution_time_hours": {
-        "count": 1561893,
-        "min": 0.0,
-        "p25": 18.57611111111111,
-        "median": 152.28222222222223,
-        "p75": 1088.1408333333334,
-        "p90": 4442.051944444444,
+        "count": 1400289,
+        "min": 0.016666666666666666,
+        "p25": 31.375,
+        "median": 224.4802777777778,
+        "p75": 1341.3516666666667,
+        "p90": 4984.9751111111045,
         "max": 71015.38416666667,
         "negative_count": 0
       },
@@ -197,7 +199,7 @@
     "nyc311": {
       "label": "nyc311",
       "rows": 100000,
-      "columns": 40,
+      "columns": 41,
       "missing_pct": {
         "incident_id": 0.0,
         "source_dataset": 0.0,
@@ -228,10 +230,11 @@
         "priority_label_source": 100.0,
         "is_ground_truth": 100.0,
         "sla_target_hours": 77.54,
-        "sla_met": 79.18,
+        "sla_met": 79.19,
         "sla_hours_policy": 100.0,
         "response_time_hours": 100.0,
-        "resolution_time_hours": 7.86,
+        "resolution_time_hours": 15.5,
+        "resolution_instant_closure": 1.91,
         "is_duplicate": 100.0,
         "parent_incident_id": 100.0,
         "report_channel": 0.0,
@@ -272,12 +275,12 @@
       },
       "duplicate_incident_ids": 0,
       "resolution_time_hours": {
-        "count": 92140,
-        "min": 0.0,
-        "p25": 3.2,
-        "median": 26.772916666666667,
-        "p75": 141.608125,
-        "p90": 479.3024166666668,
+        "count": 84495,
+        "min": 0.016666666666666666,
+        "p25": 7.912916666666667,
+        "median": 37.48833333333334,
+        "p75": 160.82638888888889,
+        "p90": 550.7997777777781,
         "max": 58789.86666666667,
         "negative_count": 0
       },
@@ -299,7 +302,7 @@
     "ALL": {
       "label": "all_incidents",
       "rows": 1900000,
-      "columns": 40,
+      "columns": 41,
       "missing_pct": {
         "incident_id": 0.0,
         "source_dataset": 0.0,
@@ -333,7 +336,8 @@
         "sla_met": 98.9,
         "sla_hours_policy": 0.0,
         "response_time_hours": 100.0,
-        "resolution_time_hours": 2.43,
+        "resolution_time_hours": 11.55,
+        "resolution_instant_closure": 2.12,
         "is_duplicate": 5.26,
         "parent_incident_id": 87.28,
         "report_channel": 0.0,
@@ -376,12 +380,12 @@
       },
       "duplicate_incident_ids": 0,
       "resolution_time_hours": {
-        "count": 1853828,
-        "min": 0.0,
-        "p25": 13.172152777777779,
-        "median": 113.96277777777777,
-        "p75": 862.8838888888889,
-        "p90": 4104.646472222223,
+        "count": 1680482,
+        "min": 0.016666666666666666,
+        "p25": 23.99590277777778,
+        "median": 161.4163888888889,
+        "p75": 1074.5120138888888,
+        "p90": 4563.526166666667,
         "max": 71015.38416666667,
         "negative_count": 0
       },
@@ -404,7 +408,7 @@
   "vision": {},
   "ml_ready": {
     "resolution_dataset": {
-      "rows": 1026596,
+      "rows": 942325,
       "columns": [
         "incident_id",
         "source_dataset",
@@ -432,13 +436,14 @@
         "sla_target_hours",
         "resolution_time_hours",
         "sla_breach",
-        "split"
+        "split",
+        "split_global"
       ],
       "location": "data/processed/resolution",
       "split_counts": {
-        "train": 718627,
-        "test": 153989,
-        "val": 153980
+        "train": 659627,
+        "test": 141350,
+        "val": 141348
       }
     },
     "hotspot_dataset": {
@@ -460,7 +465,8 @@
         "week_start",
         "month",
         "year",
-        "split"
+        "split",
+        "split_global"
       ],
       "location": "data/processed/hotspot",
       "split_counts": {
@@ -550,7 +556,8 @@
         "chicago_parent_pointer_present": 241713
       },
       "nulled_by_rule": {
-        "resolution_time_negative": 8
+        "resolution_time_negative": 8,
+        "resolution_time_instant_closure": 161604
       },
       "output_parquet": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/chicago311.parquet",
       "sla_available": false,
@@ -568,6 +575,7 @@
       "nulled_by_rule": {
         "timestamp_out_of_range___target": 339,
         "resolution_time_negative": 5904,
+        "resolution_time_instant_closure": 7645,
         "resolution_time_exceeds_cap": 46,
         "sla_target_negative": 2
       },
@@ -588,6 +596,7 @@
       },
       "nulled_by_rule": {
         "resolution_time_negative": 10,
+        "resolution_time_instant_closure": 4097,
         "coordinates_null_island_0_0": 6276
       },
       "output_parquet": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/data/processed/incidents/sf311.parquet",

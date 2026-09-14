@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-14T12:38:52.167417+00:00",
+  "generated_at_utc": "2026-09-14T18:14:33.401080+00:00",
   "summary": {
     "total": 80,
     "passed": 78,
@@ -33,7 +33,7 @@
       "task": "resolution_ml",
       "check": "the target column exists and has values",
       "result": "PASS",
-      "detail": "rows_with_target=1026596"
+      "detail": "rows_with_target=942325"
     },
     {
       "id": "TL-6",
@@ -82,7 +82,7 @@
       "task": "resolution_ml",
       "check": "no predictor is a global frequency/target encoding",
       "result": "PASS",
-      "detail": "named=[] detected=[]; structural co-linearity (not leakage): ['year is constant within subcategory (4 values / 248 levels)']"
+      "detail": "named=[] detected=[]; structural co-linearity (not leakage): ['year is constant within subcategory (4 values / 266 levels)']"
     },
     {
       "id": "TL-7",
@@ -145,7 +145,7 @@
       "task": "sla_ml",
       "check": "the target column exists and has values",
       "result": "PASS",
-      "detail": "rows_with_target=20224"
+      "detail": "rows_with_target=20213"
     },
     {
       "id": "TL-6",
@@ -201,7 +201,7 @@
       "task": "sla_ml",
       "check": "joined history features match the feature table exactly",
       "result": "PASS",
-      "detail": "mismatched=[] over 20,224 sampled rows"
+      "detail": "mismatched=[] over 20,213 sampled rows"
     },
     {
       "id": "TL-11",
@@ -585,8 +585,8 @@
       "column": "subcategory",
       "role": "predictor",
       "dtype": "string",
-      "null_pct": 80.48,
-      "n_unique": 344,
+      "null_pct": 79.49,
+      "n_unique": 343,
       "available_at_prediction_time": true,
       "when_known": "publisher's second-level label, assigned at intake",
       "warning": null
@@ -629,7 +629,7 @@
       "column": "zone_key",
       "role": "predictor",
       "dtype": "string",
-      "null_pct": 0.544,
+      "null_pct": 0.481,
       "n_unique": 168,
       "available_at_prediction_time": true,
       "when_known": "administrative unit of the report location, resolved at intake",
@@ -728,7 +728,7 @@
       "column": "nearby_similar_incidents_24h",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 1.719,
+      "null_pct": 1.511,
       "n_unique": 111,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -739,7 +739,7 @@
       "column": "nearby_similar_incidents_7d",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 1.719,
+      "null_pct": 1.511,
       "n_unique": 319,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -750,7 +750,7 @@
       "column": "nearby_similar_incidents_30d",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 1.719,
+      "null_pct": 1.511,
       "n_unique": 626,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -761,7 +761,7 @@
       "column": "local_incident_density",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 1.719,
+      "null_pct": 1.511,
       "n_unique": 1317,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -772,8 +772,8 @@
       "column": "category_incident_density",
       "role": "predictor",
       "dtype": "float64",
-      "null_pct": 1.719,
-      "n_unique": 8409,
+      "null_pct": 1.511,
+      "n_unique": 8317,
       "available_at_prediction_time": true,
       "when_known": "ratio of two strictly-backward counts",
       "warning": "high cardinality \u2014 needs target-free encoding"
@@ -783,8 +783,8 @@
       "column": "hours_since_previous_similar_incident",
       "role": "predictor",
       "dtype": "float64",
-      "null_pct": 15.542,
-      "n_unique": 420424,
+      "null_pct": 16.0,
+      "n_unique": 402776,
       "available_at_prediction_time": true,
       "when_known": "gap to the most recent strictly earlier report",
       "warning": "high cardinality \u2014 needs target-free encoding"
@@ -817,7 +817,7 @@
       "role": "predictor",
       "dtype": "string",
       "null_pct": 0.0,
-      "n_unique": 90,
+      "n_unique": 89,
       "available_at_prediction_time": true,
       "when_known": "publisher's second-level label, assigned at intake",
       "warning": null
@@ -828,7 +828,7 @@
       "role": "predictor",
       "dtype": "string",
       "null_pct": 0.0,
-      "n_unique": 4,
+      "n_unique": 3,
       "available_at_prediction_time": true,
       "when_known": "assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for that source.",
       "warning": null
@@ -916,7 +916,7 @@
       "role": "predictor",
       "dtype": "float64",
       "null_pct": 0.0,
-      "n_unique": 4318,
+      "n_unique": 4307,
       "available_at_prediction_time": true,
       "when_known": "the deadline, set by the publisher at intake. Only legitimate for the SLA task, where the question is whether this known deadline will be missed.",
       "warning": "high cardinality \u2014 needs target-free encoding"
@@ -926,7 +926,7 @@
       "column": "nearby_similar_incidents_24h",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 4.193,
+      "null_pct": 4.195,
       "n_unique": 22,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -937,7 +937,7 @@
       "column": "nearby_similar_incidents_7d",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 4.193,
+      "null_pct": 4.195,
       "n_unique": 34,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -948,7 +948,7 @@
       "column": "nearby_similar_incidents_30d",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 4.193,
+      "null_pct": 4.195,
       "n_unique": 46,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -959,7 +959,7 @@
       "column": "local_incident_density",
       "role": "predictor",
       "dtype": "Int64",
-      "null_pct": 4.193,
+      "null_pct": 4.195,
       "n_unique": 173,
       "available_at_prediction_time": true,
       "when_known": "counts only reports strictly earlier than this one",
@@ -970,7 +970,7 @@
       "column": "category_incident_density",
       "role": "predictor",
       "dtype": "float64",
-      "null_pct": 4.193,
+      "null_pct": 4.195,
       "n_unique": 890,
       "available_at_prediction_time": true,
       "when_known": "ratio of two strictly-backward counts",
@@ -981,8 +981,8 @@
       "column": "hours_since_previous_similar_incident",
       "role": "predictor",
       "dtype": "float64",
-      "null_pct": 37.816,
-      "n_unique": 10992,
+      "null_pct": 37.802,
+      "n_unique": 10991,
       "available_at_prediction_time": true,
       "when_known": "gap to the most recent strictly earlier report",
       "warning": "high cardinality \u2014 needs target-free encoding"
@@ -1408,16 +1408,16 @@
   ],
   "tasks": {
     "resolution_ml": {
-      "rows": 1026596,
+      "rows": 942325,
       "target": "resolution_time_hours",
       "predictors": 20,
-      "split": "per-source chronological"
+      "split": "chronological"
     },
     "sla_ml": {
-      "rows": 20224,
+      "rows": 20213,
       "target": "sla_breach",
       "predictors": 17,
-      "split": "per-source chronological"
+      "split": "chronological"
     },
     "hotspot_ml": {
       "rows": 67092,
@@ -1435,7 +1435,7 @@
       "rows": 1900000,
       "target": null,
       "predictors": 19,
-      "split": "per-source chronological"
+      "split": "chronological"
     }
   }
 }

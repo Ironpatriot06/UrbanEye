@@ -48,7 +48,7 @@
     "with_image_url": 84309,
     "with_after_image_url": 0,
     "with_sla_target": 22458,
-    "with_resolution_time": 1853828,
+    "with_resolution_time": 1680482,
     "with_parent_pointer": 241713
   },
   "note": "UNION of four independent city datasets. No cross-city entity resolution performed."

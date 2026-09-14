@@ -60,10 +60,27 @@
   },
   "targets_review_required": 9,
   "targets_out_of_scope": 33,
-  "observed_incident_counts": {},
+  "observed_incident_counts": {
+    "ROAD_DAMAGE": 10266,
+    "POTHOLE": 157190,
+    "GARBAGE_DUMPING": 178198,
+    "STREETLIGHT_FAULT": 162330,
+    "TRAFFIC_SIGNAL_FAULT": 47234,
+    "FOOTPATH_DAMAGE": 20845,
+    "OPEN_MANHOLE": 0,
+    "DRAINAGE_SEWER": 49600,
+    "WATER_LEAKAGE_WATERLOGGING": 48031,
+    "FALLEN_TREE": 115771,
+    "PUBLIC_INFRASTRUCTURE_DAMAGE": 9480,
+    "SIGNAGE_DAMAGE": 58179,
+    "GRAFFITI_VISUAL_POLLUTION": 177920,
+    "CONSTRUCTION_OBSTRUCTION": 0,
+    "OTHER": 0
+  },
   "observed_vision_counts": {},
   "categories_with_no_incident_data": [
     "OPEN_MANHOLE",
+    "CONSTRUCTION_OBSTRUCTION",
     "OTHER"
   ],
   "categories_with_weak_incident_data_lt_100": {},

@@ -1,6 +1,6 @@
 # UrbanEye+ pipeline audit
 
-Generated 2026-09-14T12:38:26.774324+00:00 · pipeline 2.0.0
+Generated 2026-09-14T18:13:58.318274+00:00 · pipeline 2.0.0
 
 **56/56 passed, 0 failed, 0 skipped.**
 
@@ -69,7 +69,7 @@ Generated 2026-09-14T12:38:26.774324+00:00 · pipeline 2.0.0
 | TG-2 | priority_label_source is empty | PASS |  |
 | TG-3 | no row claims ground truth | PASS |  |
 | TG-4 | the dataset states its own target situation in-band | PASS |  |
-| TG-5 | at least one genuinely observed target exists | PASS | resolution_time_hours rows=1,853,828 |
+| TG-5 | at least one genuinely observed target exists | PASS | resolution_time_hours rows=1,680,482 |
 | TG-6 | sla_target_hours comes only from publishers that ship a due date | PASS | sources=['nyc311'] |
 
 ## SPLIT
@@ -117,11 +117,11 @@ Generated 2026-09-14T12:38:26.774324+00:00 · pipeline 2.0.0
 
 - priority_label non-null: **0**
 - is_ground_truth true rows: **0**
-- observable targets: {'resolution_time_hours': 1853828, 'sla_breach_computable': 20822, 'sla_target_hours_by_source': {'nyc311': 22458}}
+- observable targets: {'resolution_time_hours': 1680482, 'sla_breach_computable': 20811, 'sla_target_hours_by_source': {'nyc311': 22458}}
 
 ## Splits
 
 - `priority_dataset`: {'train': 1330004, 'test': 284999, 'val': 284997}
-- `resolution_dataset`: {'train': 718627, 'test': 153989, 'val': 153980}
+- `resolution_dataset`: {'train': 659627, 'test': 141350, 'val': 141348}
 - `hotspot_dataset`: {'train': 47694, 'val': 9949, 'test': 9449}
 - `urbaneye_ml`: {'train': 1330004, 'test': 284999, 'val': 284997}

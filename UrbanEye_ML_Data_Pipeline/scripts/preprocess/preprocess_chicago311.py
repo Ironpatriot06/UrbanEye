@@ -16,7 +16,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 import pandas as pd
 from scripts.preprocess._tabular import (DEFAULT_CHUNK, IncidentWriter, apply_common, clean_text,
-                                         compute_resolution_hours, finish, get, normalise_channel,
+                                         compute_resolution_hours, finish, get,
+                                         instant_closure_flag, normalise_channel,
                                          normalise_status, parse_timestamps, read_source_chunks, find_raw_file,
                                          missing_raw_message, resolve_col,
                                          write_unmapped, build_incident_id)
@@ -81,6 +82,7 @@ def main() -> int:
         out["closed_at"] = get(raw, "closed_date")
 
         out = parse_timestamps(out, ["reported_at", "closed_at"], DATASET, stats)
+        out["resolution_instant_closure"] = instant_closure_flag(out, "reported_at", "closed_at")
         out["resolution_time_hours"] = compute_resolution_hours(out, "reported_at", "closed_at", stats)
 
         dup = get(raw, "duplicate").astype("string").str.lower().isin(["true", "1", "yes"])

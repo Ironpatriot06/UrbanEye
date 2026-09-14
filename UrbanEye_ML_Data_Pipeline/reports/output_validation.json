@@ -15,7 +15,7 @@
       "id": "OUT-1",
       "check": "resolution_dataset present",
       "result": "PASS",
-      "detail": "Resolution time / SLA risk: 1,026,596 rows"
+      "detail": "Resolution time / SLA risk: 942,325 rows"
     },
     {
       "id": "OUT-1",
@@ -39,7 +39,7 @@
       "id": "OUT-3",
       "check": "resolution_dataset chronological splits do not overlap within each source",
       "result": "PASS",
-      "detail": "chicago311: train 2018-07-01..2020-03-26, val 2020-03-26..2020-06-23, test 2020-06-23..2020-08-28 | nyc311: train 2010-01-01..2010-02-20, val 2010-02-20..2010-03-01, test 2010-03-01..2010-03-09 | sf311: train 2018-01-01..2018-04-03, val 2018-04-03..2018-04-21, test 2018-04-21..2018-05-10"
+      "detail": "chicago311: train 2018-07-01..2020-03-22, val 2020-03-22..2020-06-23, test 2020-06-23..2020-08-28 | nyc311: train 2010-01-01..2010-02-21, val 2010-02-21..2010-03-01, test 2010-03-01..2010-03-09 | sf311: train 2018-01-01..2018-04-03, val 2018-04-03..2018-04-21, test 2018-04-21..2018-05-10"
     },
     {
       "id": "OUT-4",
@@ -99,15 +99,15 @@
   "outputs": {
     "priority_dataset": {
       "rows": 1900000,
-      "columns": 64
+      "columns": 65
     },
     "resolution_dataset": {
-      "rows": 1026596,
-      "columns": 27
+      "rows": 942325,
+      "columns": 28
     },
     "hotspot_dataset": {
       "rows": 67092,
-      "columns": 17
+      "columns": 18
     },
     "duplicate_pairs": {
       "rows": 455460,

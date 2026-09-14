@@ -231,8 +231,10 @@ tasks turned out to be broken in ways every existing validator passed.
 
 Running them was the point. Two results changed the verdicts:
 
-* **Hotspot beats persistence** (test MAE 10.9 vs 12.8, Poisson deviance 14.8 vs
-  23.4). It could not have, before the panel fix — the target had no zeros.
+* **Hotspot beats persistence** (test MAE 10.5 vs 12.6) but **not a 4-week
+  moving average** (10.5 vs 10.9 on test, and 13.2% WORSE on validation). The
+  "~15% improvement" this section originally quoted used persistence alone and
+  overstated the model; see ML_READINESS.md section 4 for the full table.
 * **Duplicate detection scores PR-AUC 0.998, and that number is worthless.** The
   per-strategy breakdown shows ≥0.9986 against every negative strategy, because
   N1 is *defined* by distance and N2 by time gap — the two features the model is

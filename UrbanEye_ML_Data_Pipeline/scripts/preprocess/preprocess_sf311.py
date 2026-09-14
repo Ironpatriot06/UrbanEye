@@ -21,7 +21,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import pandas as pd
 from scripts.preprocess._tabular import (DEFAULT_CHUNK, IncidentWriter, apply_common, clean_text,
                                          compute_resolution_hours, extract_url, find_raw_file,
-                                         finish, get, missing_raw_message, normalise_channel,
+                                         finish, get, instant_closure_flag,
+                                         missing_raw_message, normalise_channel,
                                          normalise_status, parse_timestamps, read_source_chunks,
                                          write_unmapped)
 from scripts.preprocess._tabular import resolve_col
@@ -77,6 +78,7 @@ def main() -> int:
         out["closed_at"] = get(raw, "closed_date", "Closed")
 
         out = parse_timestamps(out, ["reported_at", "closed_at"], DATASET, stats)
+        out["resolution_instant_closure"] = instant_closure_flag(out, "reported_at", "closed_at")
         out["resolution_time_hours"] = compute_resolution_hours(out, "reported_at", "closed_at", stats)
 
         # Weak duplicate signal. No parent pointer exists in SF, so we record the

@@ -18,7 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import pandas as pd
 from scripts.preprocess._tabular import (DEFAULT_CHUNK, IncidentWriter, apply_common, clean_text,
                                          compute_resolution_hours, compute_sla, compute_sla_met,
-                                         finish, get, normalise_channel, normalise_status,
+                                         finish, get, instant_closure_flag, normalise_channel,
+                                         normalise_status,
                                          parse_timestamps, read_source_chunks, find_raw_file,
                                          missing_raw_message, resolve_col, write_unmapped)
 from scripts.utils.cleaning import CleaningStats, drop_exact_duplicate_rows
@@ -73,6 +74,7 @@ def main() -> int:
         out["_target"] = get(raw, "due_date")
 
         out = parse_timestamps(out, ["reported_at", "closed_at", "_target"], DATASET, stats)
+        out["resolution_instant_closure"] = instant_closure_flag(out, "reported_at", "closed_at")
         out["resolution_time_hours"] = compute_resolution_hours(out, "reported_at", "closed_at", stats)
         out["sla_target_hours"] = compute_sla(out, "_target", "reported_at", stats)
         out["sla_met"] = compute_sla_met(out["resolution_time_hours"], out["sla_target_hours"])

@@ -63,7 +63,7 @@
     "observable_targets_that_do_exist": {
       "resolution_time_hours": {
         "available": true,
-        "rows_with_target": 1853828,
+        "rows_with_target": 1680482,
         "built_by": "scripts/preprocess/build_resolution_dataset.py"
       },
       "sla_breach": {
@@ -133,57 +133,91 @@
     "date_local": 1900000
   },
   "split": {
-    "strategy": "chronological",
-    "per_source": true,
-    "ts_column": "reported_at",
-    "groups": {
-      "chicago311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2020-03-18 21:48:50.100000+00:00",
-        "val_end": "2020-06-24 22:29:31.349999872+00:00",
-        "counts": {
-          "train": 1120000,
-          "val": 240000,
-          "test": 240000
-        },
-        "date_range": {
-          "min": "2018-07-01 08:42:31+00:00",
-          "max": "2020-08-28 12:52:21+00:00"
-        }
-      },
-      "nyc311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2010-02-19 18:41:14.600000+00:00",
-        "val_end": "2010-03-01 13:38:00+00:00",
-        "counts": {
-          "train": 70000,
-          "val": 15001,
-          "test": 14999
-        },
-        "date_range": {
-          "min": "2010-01-01 05:38:00+00:00",
-          "max": "2010-03-09 05:55:45+00:00"
-        }
-      },
-      "sf311": {
-        "cut_mode": "quantile_fallback",
-        "train_end": "2018-04-06 15:53:00+00:00",
-        "val_end": "2018-04-24 16:18:09+00:00",
-        "counts": {
-          "train": 140004,
-          "test": 30000,
-          "val": 29996
-        },
-        "date_range": {
-          "min": "2018-01-01 08:25:00+00:00",
-          "max": "2018-05-10 19:47:00+00:00"
-        }
-      }
+    "policy": {
+      "split": "per-source chronological \u2014 use for PER-CITY models",
+      "split_global": "single global chronological cut \u2014 use for POOLED models"
     },
-    "counts": {
-      "train": 1330004,
-      "test": 284999,
-      "val": 284997
+    "per_source": {
+      "strategy": "chronological",
+      "per_source": true,
+      "ts_column": "reported_at",
+      "groups": {
+        "chicago311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2020-03-18 21:48:50.100000+00:00",
+          "val_end": "2020-06-24 22:29:31.349999872+00:00",
+          "counts": {
+            "train": 1120000,
+            "val": 240000,
+            "test": 240000
+          },
+          "date_range": {
+            "min": "2018-07-01 08:42:31+00:00",
+            "max": "2020-08-28 12:52:21+00:00"
+          }
+        },
+        "nyc311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2010-02-19 18:41:14.600000+00:00",
+          "val_end": "2010-03-01 13:38:00+00:00",
+          "counts": {
+            "train": 70000,
+            "val": 15001,
+            "test": 14999
+          },
+          "date_range": {
+            "min": "2010-01-01 05:38:00+00:00",
+            "max": "2010-03-09 05:55:45+00:00"
+          }
+        },
+        "sf311": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2018-04-06 15:53:00+00:00",
+          "val_end": "2018-04-24 16:18:09+00:00",
+          "counts": {
+            "train": 140004,
+            "test": 30000,
+            "val": 29996
+          },
+          "date_range": {
+            "min": "2018-01-01 08:25:00+00:00",
+            "max": "2018-05-10 19:47:00+00:00"
+          }
+        }
+      },
+      "counts": {
+        "train": 1330004,
+        "test": 284999,
+        "val": 284997
+      },
+      "globally_chronological": false
+    },
+    "global": {
+      "strategy": "chronological",
+      "per_source": false,
+      "ts_column": "reported_at",
+      "groups": {
+        "ALL": {
+          "cut_mode": "quantile_fallback",
+          "train_end": "2020-01-31 18:50:37+00:00",
+          "val_end": "2020-06-10 19:40:43.900000+00:00",
+          "counts": {
+            "train": 1330001,
+            "test": 285000,
+            "val": 284999
+          },
+          "date_range": {
+            "min": "2010-01-01 05:38:00+00:00",
+            "max": "2020-08-28 12:52:21+00:00"
+          }
+        }
+      },
+      "counts": {
+        "train": 1330001,
+        "test": 285000,
+        "val": 284999
+      },
+      "globally_chronological": true
     }
   },
   "split_counts": {

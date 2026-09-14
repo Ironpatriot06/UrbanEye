@@ -52,7 +52,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import numpy as np
 import pandas as pd
 
-from scripts.preprocess._ml_common import chronological_split
+from scripts.preprocess._ml_common import dual_chronological_split
 from scripts.utils.logging_setup import get_logger
 from scripts.utils.paths import (ensure_dir, load_config, load_feature_config,
                                  load_priority_config, p)
@@ -578,8 +578,9 @@ def main() -> int:
     feat["target_strategy"] = manifest["priority"]["strategy"]
 
     # leakage-resistant chronological split (per source; see dataset_config.yaml)
-    split, split_meta = chronological_split(out)
+    split, split_global, split_meta = dual_chronological_split(out)
     feat["split"] = split
+    feat["split_global"] = split_global
 
     dest = ensure_dir(p("processed", "priority", "priority_dataset.parquet"))
     feat.to_parquet(dest, index=False)

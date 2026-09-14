@@ -55,6 +55,28 @@ log = get_logger("features.task_datasets")
 
 
 # ---------------------------------------------------------------------------
+SPLIT_POLICY = {
+    "strategy": "chronological",
+    "columns": {
+        "split": ("per-source chronological — each city cut on its own timeline. Every city "
+                  "appears in every fold, so `city` stays evaluable. Use this for a PER-CITY "
+                  "model. It is NOT globally chronological: measured on this corpus, 19.5% of "
+                  "resolution test rows (every SF and NYC test row) fall before the last "
+                  "Chicago training row on one wall clock."),
+        "split_global": ("one global chronological cut — every evaluation row is strictly after "
+                         "every training row on a single wall clock. Use this for a POOLED "
+                         "model. Cost, stated plainly: SF ends May 2018 and NYC ends March 2010, "
+                         "so validation and test contain Chicago and nothing else."),
+    },
+    "default_column": "split",
+    "pooled_column": "split_global",
+    "rule": ("Pick the column that matches how you model. Pooling cities on `split` means "
+             "being scored partly on the past; using `split_global` means you cannot evaluate "
+             "SF or NYC at all. There is no option that gives both, and inventing one would "
+             "mean manufacturing data."),
+}
+
+
 def zone_key(df: pd.DataFrame) -> pd.Series:
     """
     city-scoped zone identifier.
@@ -202,10 +224,13 @@ def _profile(df: pd.DataFrame, cols: list[str]) -> dict:
     return out
 
 
-def _split_profile(df: pd.DataFrame, ts_col: str, by: list[str]) -> dict:
+def _split_profile(df: pd.DataFrame, ts_col: str, by: list[str],
+                   split_col: str = "split") -> dict:
+    if split_col not in df.columns:
+        return {}
     ts = pd.to_datetime(df[ts_col], utc=True, errors="coerce") if ts_col in df.columns else None
     prof = {}
-    for s, g in df.groupby("split", observed=True):
+    for s, g in df.groupby(split_col, observed=True):
         entry = {"rows": int(len(g))}
         if ts is not None:
             gts = ts.loc[g.index]
@@ -245,7 +270,8 @@ def build_resolution(fc: dict) -> dict:
                   "zone_key", "zone_type", "report_channel",
                   "hour", "day_of_week", "month", "year", "is_weekend", "is_night"] + density
     target = "resolution_time_hours"
-    keep = ["incident_id", "reported_at"] + predictors + [target, "sla_target_hours", "split"]
+    keep = ["incident_id", "reported_at"] + predictors + [target, "sla_target_hours",
+                                                     "split", "split_global"]
     out = d[[c for c in keep if c in d.columns]].copy()
     out["resolution_time_hours_log1p"] = np.log1p(
         pd.to_numeric(out[target], errors="coerce")).astype("float64")
@@ -301,8 +327,10 @@ def build_resolution(fc: dict) -> dict:
             "coord_outside_city_bbox": "constant False across all 1.9M rows — no information",
             "priority_*": "policy-engine output, not an observation",
         },
-        "split": {"strategy": "per-source chronological", "column": "split",
-                  "profile": _split_profile(out, "reported_at", ["source_dataset", "split"])},
+        "split": {**SPLIT_POLICY,
+                  "profile": _split_profile(out, "reported_at", ["source_dataset", "split"]),
+                  "profile_global": _split_profile(out, "reported_at", ["source_dataset"],
+                                                   split_col="split_global")},
         "recommended_preprocessing": [
             "fit every encoder and imputer on TRAIN ONLY",
             "log1p the target; report MAE/median-AE back in hours",
@@ -347,7 +375,7 @@ def build_sla(fc: dict) -> dict:
                   "zone_key", "zone_type", "report_channel",
                   "hour", "day_of_week", "month", "year", "is_weekend", "is_night",
                   "sla_target_hours"] + density
-    keep = ["incident_id", "reported_at"] + predictors + ["sla_breach", "split"]
+    keep = ["incident_id", "reported_at"] + predictors + ["sla_breach", "split", "split_global"]
     out = d[[c for c in keep if c in d.columns]].copy()
 
     y = out["sla_breach"].astype("boolean")
@@ -391,8 +419,10 @@ def build_sla(fc: dict) -> dict:
                                      "would make the task trivial and meaningless",
             "sla_met": "the same quantity as the target, inverted",
         },
-        "split": {"strategy": "per-source chronological", "column": "split",
-                  "profile": _split_profile(out, "reported_at", ["source_dataset"])},
+        "split": {**SPLIT_POLICY,
+                  "profile": _split_profile(out, "reported_at", ["source_dataset"]),
+                  "profile_global": _split_profile(out, "reported_at", ["source_dataset"],
+                                                   split_col="split_global")},
         "recommended_preprocessing": [
             "fit on TRAIN ONLY", "keep the natural class ratio; do not resample before the "
             "metric is chosen", "treat NULL density as its own category",
@@ -427,7 +457,7 @@ def build_hotspot() -> dict:
                   "incident_count", "previous_period_count", "rolling_4w_count",
                   "rolling_12w_count", "rolling_4w_mean", "trend_4w"]
     keep = ["city", "zone_type", "zone_id", "category", "week", "week_start"] + predictors + \
-           ["future_incident_count", "future_incident_flag", "split"]
+           ["future_incident_count", "future_incident_flag", "split", "split_global"]
     out = d[[c for c in dict.fromkeys(keep) if c in d.columns]].copy()
 
     y = pd.to_numeric(out["future_incident_count"], errors="coerce")
@@ -470,8 +500,11 @@ def build_hotspot() -> dict:
             "zone_key": "city-scoped. Chicago wards, SF neighbourhoods and NYC community boards "
                         "are not comparable units; never pool them as one vocabulary.",
         },
-        "split": {"strategy": "per-city chronological on week_start", "column": "split",
-                  "profile": _split_profile(out, "week_start", ["city"])},
+        "split": {**SPLIT_POLICY,
+                  "strategy": "per-city chronological on week_start",
+                  "profile": _split_profile(out, "week_start", ["city"]),
+                  "profile_global": _split_profile(out, "week_start", ["city"],
+                                                   split_col="split_global")},
         "recommended_preprocessing": [
             "fit on TRAIN ONLY",
             "counts are over-dispersed: use a Poisson/Tweedie objective or model log1p(count)",
@@ -595,7 +628,7 @@ def build_priority(fc: dict) -> dict:
               "sla_hours_policy"]
     keep = ["incident_id", "reported_at", "in_scope"] + features + poi + policy + \
            ["priority_label", "priority_label_source", "is_ground_truth",
-            "target_status", "target_strategy", "split"]
+            "target_status", "target_strategy", "split", "split_global"]
     out = d[[c for c in dict.fromkeys(keep) if c in d.columns]].copy()
 
     features, demoted = effective_predictors(out, features)
@@ -667,7 +700,7 @@ def build_priority(fc: dict) -> dict:
             "config": load_priority_config()["config_version"],
             "config_status": load_priority_config()["status"],
         },
-        "split": {"strategy": "per-source chronological", "column": "split",
+        "split": {**SPLIT_POLICY,
                   "note": "provided for consistency; there is no supervised task to split for",
                   "profile": _split_profile(out, "reported_at", ["source_dataset"])},
         "recommended_metrics": [

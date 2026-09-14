@@ -32,7 +32,7 @@ import argparse, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import pandas as pd
-from scripts.preprocess._ml_common import (add_time_features, chronological_split,
+from scripts.preprocess._ml_common import (add_time_features, dual_chronological_split,
                                            in_scope, load_incidents, write)
 from scripts.utils.logging_setup import get_logger
 from scripts.utils.paths import load_feature_config, p
@@ -54,9 +54,14 @@ def main() -> int:
 
     df = in_scope(load_incidents(args.incidents))
     total = len(df)
-    open_cases = int(df["resolution_time_hours"].isna().sum())
+    no_target = df["resolution_time_hours"].isna()
+    instant = df.get("resolution_instant_closure")
+    instant = instant.fillna(False).astype(bool) if instant is not None else pd.Series(False, index=df.index)
+    excluded_instant = int((no_target & instant).sum())
+    excluded_open = int((no_target & ~instant).sum())
     df = df[df["resolution_time_hours"].notna()].copy()
-    log.info("closed cases with a valid duration: %d (excluded %d open/invalid)", len(df), open_cases)
+    log.info("closed cases with a measurable duration: %d (excluded %d still-open/invalid, "
+             "%d instant-closure artifacts)", len(df), excluded_open, excluded_instant)
 
     df = add_time_features(df)
 
@@ -78,8 +83,9 @@ def main() -> int:
     # Secondary target: SLA breach, only where a real target timestamp existed.
     out["sla_breach"] = (out["resolution_time_hours"] > out["sla_target_hours"]).where(
         out["sla_target_hours"].notna()).astype("boolean")
-    split, split_meta = chronological_split(df)
+    split, split_global, split_meta = dual_chronological_split(df)
     out["split"] = split
+    out["split_global"] = split_global
 
     leaked = [c for c in FORBIDDEN if c in out.columns and c != "resolution_time_hours"]
     write(out, "resolution", "resolution_dataset", {
@@ -91,10 +97,18 @@ def main() -> int:
         "leaked_columns_detected": leaked,
         "sla_breach_available_rows": int(out["sla_breach"].notna().sum()),
         "sla_breach_sources": "Boston (TARGET_DT) and NYC (Due Date) only",
-        "right_censoring": {
-            "total_in_scope": total, "open_or_invalid_excluded": open_cases,
-            "note": ("Open cases are excluded, biasing the sample toward faster resolutions. "
-                     "Use survival analysis if long-running cases matter.")},
+        "excluded_rows": {
+            "total_in_scope": total,
+            "still_open_or_invalid": excluded_open,
+            "instant_closure_artifact": excluded_instant,
+            "right_censoring_note": ("Open cases are excluded, biasing the sample toward faster "
+                                     "resolutions. Use survival analysis if long-running cases "
+                                     "matter. Measured censoring on this corpus is mild (<1%)."),
+            "instant_closure_note": ("Cases closed sooner than the source timestamps can measure "
+                                     "(cleaning.resolution_time.min_observable_seconds). Their "
+                                     "duration is unobserved, so they carry no regression target; "
+                                     "the rows still exist in all_incidents with status, closed_at "
+                                     "and the resolution_instant_closure flag intact.")},
         "split": split_meta,
     })
     return 0

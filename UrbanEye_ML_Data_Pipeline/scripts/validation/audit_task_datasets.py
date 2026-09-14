@@ -58,7 +58,7 @@ TABLE: list[dict] = []
 
 POST_RESOLUTION = {"closed_at", "status", "sla_met", "description", "resolution_description",
                    "status_notes", "resolution_time_hours", "resolution_time_hours_log1p",
-                   "target_is_censored"}
+                   "target_is_censored", "resolution_instant_closure"}
 POLICY_OUTPUT_PREFIXES = ("priority_",)
 POLICY_OUTPUT = {"sla_hours_policy"}
 ENCODING_PATTERNS = ("_frequency", "_freq", "_target_enc", "_te", "_mean_target", "_woe")

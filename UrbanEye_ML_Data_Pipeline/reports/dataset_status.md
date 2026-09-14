@@ -1,15 +1,15 @@
 # UrbanEye+ dataset status
 
-Generated 2026-09-14T12:16:21+00:00
+Generated 2026-09-14T18:00:34+00:00
 
 ## Core datasets
 
 | Dataset | Type | Acquisition | Raw files | Raw size | Processed rows | Licence status |
 |---|---|---|---|---|---|---|
-| sf311 | tabular | **AVAILABLE LOCALLY** | 1 | 150.5 MB | — | **VERIFIED** |
+| sf311 | tabular | **PROCESSED** | 1 | 150.5 MB | 200,000 | **VERIFIED** |
 | boston311 | tabular | **NOT DOWNLOADED** | 0 | — | — | **VERIFIED** |
-| chicago311 | tabular | **AVAILABLE LOCALLY** | 1 | 934.4 MB | — | **VERIFIED** |
-| nyc311 | tabular | **AVAILABLE LOCALLY** | 1 | 72.0 MB | — | **VERIFIED** |
+| chicago311 | tabular | **PROCESSED** | 1 | 934.4 MB | 1,600,000 | **VERIFIED** |
+| nyc311 | tabular | **PROCESSED** | 1 | 72.0 MB | 100,000 | **VERIFIED** |
 
 ## Licences
 

@@ -164,25 +164,70 @@ def parse_timestamps(
     return df
 
 
+def _raw_duration_hours(df: pd.DataFrame, opened_col: str, closed_col: str) -> pd.Series:
+    """closed - opened in hours, with no rules applied. NaN when either is missing."""
+    opened = df[opened_col]
+    closed = df[closed_col] if closed_col in df.columns else pd.Series(pd.NaT, index=df.index)
+    return (closed - opened).dt.total_seconds() / 3600.0
+
+
+def instant_closure_flag(df: pd.DataFrame, opened_col: str, closed_col: str) -> pd.Series:
+    """
+    True where the case was closed sooner than the data can actually measure.
+
+    See cleaning.resolution_time.min_observable_seconds in dataset_config.yaml
+    for the full justification. In short: one minute is the coarsest timestamp
+    granularity across the publishers, and the sub-minute population is a
+    machine signature (Chicago closes 18,279 cases at exactly 7 seconds; NYC's
+    entire sub-minute population sits at exactly 0) rather than the short tail
+    of a service-time distribution.
+
+    NULL where the case is not closed at all — "we cannot tell" is not "False".
+    """
+    rules = load_config()["cleaning"]["resolution_time"]
+    floor_s = rules.get("min_observable_seconds")
+    hrs = _raw_duration_hours(df, opened_col, closed_col)
+    if not floor_s:
+        return pd.Series(pd.NA, index=df.index, dtype="boolean")
+    # A NEGATIVE duration is a different defect — an internally inconsistent
+    # record, already counted as resolution_time_negative — so it is False here
+    # rather than being folded into the instant-closure population.
+    floor_h = float(floor_s) / 3600.0
+    return ((hrs >= 0) & (hrs < floor_h)).where(hrs.notna()).astype("boolean")
+
+
 def compute_resolution_hours(
     df: pd.DataFrame, opened_col: str, closed_col: str, stats: CleaningStats
 ) -> pd.Series:
     """
     resolution_time_hours = closed - opened. NULL when closed is missing.
 
-    Negative and absurd durations are nulled, not clipped: a negative duration
-    means the record is internally inconsistent, and silently flooring it at
-    zero would inject a fake "instantly resolved" case into the SLA model.
+    Negative, absurd and UNMEASURABLY SHORT durations are nulled, not clipped.
+    A negative duration means the record is internally inconsistent, and
+    silently flooring it at zero would inject a fake "instantly resolved" case
+    into the SLA model. A closure written seconds after intake is the same
+    problem wearing a positive sign: it is a property of how the record was
+    written, not of how long the work took, so it is removed from the target
+    rather than left to teach a model clerical behaviour.
+
+    Nothing is dropped here. The row survives with its status, closed_at and
+    `resolution_instant_closure` flag intact; only the duration is unobserved.
     """
     rules = load_config()["cleaning"]["resolution_time"]
-    opened = df[opened_col]
-    closed = df[closed_col] if closed_col in df.columns else pd.Series(pd.NaT, index=df.index)
-    hrs = (closed - opened).dt.total_seconds() / 3600.0
+    hrs = _raw_duration_hours(df, opened_col, closed_col)
 
     if rules.get("reject_negative", True):
         neg = (hrs < 0).fillna(False)
         stats.null("resolution_time_negative", int(neg.sum()))
         hrs = hrs.where(~neg)
+
+    floor_s = rules.get("min_observable_seconds")
+    if floor_s:
+        # negatives are already NULL from the rule above; this counts only the
+        # genuinely-instant population so the two defects stay distinguishable
+        instant = ((hrs >= 0) & (hrs < float(floor_s) / 3600.0)).fillna(False)
+        stats.null("resolution_time_instant_closure", int(instant.sum()))
+        hrs = hrs.where(~instant)
 
     cap = float(rules.get("max_hours", 87600))
     too_long = (hrs > cap).fillna(False)

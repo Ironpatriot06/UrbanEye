@@ -354,6 +354,28 @@ cleaning:
   resolution_time:
     reject_negative: true
     max_hours: 87600                  # 10 years
+    # INSTANT-CLOSURE ARTIFACT.
+    # A closure recorded less than one minute after the report is not a
+    # measurement of service time. Two things establish that, and neither is a
+    # hand-picked threshold:
+    #
+    #  1. RESOLUTION. One minute is the coarsest timestamp granularity in the
+    #     sources. 90.8% of SF `requested_datetime` values and 57.7% of NYC
+    #     `created_date` values land exactly on :00 seconds, so for those
+    #     publishers a sub-minute duration is below what the data can express.
+    #  2. SHAPE. The sub-minute population is a machine signature, not a tail of
+    #     the service-time distribution. Chicago has 18,279 cases closed at
+    #     exactly 7 seconds, 18,125 at 6 s and 14,578 at 5 s — a transactional
+    #     write, not field work. NYC's entire sub-minute population sits at
+    #     exactly 0 s (7,640 rows) with just 5 rows in the whole 1-60 s range.
+    #     Past 60 s the counts rise again into the real distribution.
+    #
+    # These rows are NOT deleted and NOT clipped. resolution_time_hours becomes
+    # NULL — the same treatment negative and over-cap durations already get —
+    # and `resolution_instant_closure` marks them so the population stays
+    # auditable and can be modelled separately. The case is still known to be
+    # closed; only its duration is unmeasurable.
+    min_observable_seconds: 60
   text:
     lowercase: false
     strip_html: true
@@ -429,6 +451,22 @@ splits:
     # another.
     per_source: true
     min_rows_per_split: 1
+    # POOLED-MODEL POLICY.
+    # per_source: true guarantees chronology WITHIN a city, not across the
+    # corpus. Measured on this data, 19.5% of resolution test rows (every SF and
+    # NYC test row) fall before the last Chicago training row on one wall clock,
+    # so a model pooled across cities would be scored partly on the past.
+    #
+    # Every table therefore carries BOTH columns, and each task manifest says
+    # which to use:
+    #   split         per-source chronological  -> PER-CITY models
+    #   split_global  one global cut            -> POOLED models
+    #
+    # split_global's cost is stated rather than hidden: SF ends May 2018 and NYC
+    # ends March 2010, so a global cut puts Chicago alone in val and test.
+    emit_global_split_column: true
+    per_source_split_column: split
+    pooled_split_column: split_global
     note: >
       Random splitting would leak future municipal behaviour into the past and
       make the resolution model look far better than it is.

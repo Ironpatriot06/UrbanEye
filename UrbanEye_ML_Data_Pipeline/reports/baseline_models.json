@@ -1,7 +1,9 @@
 {
-  "generated_at_utc": "2026-09-14T12:41:04.973171+00:00",
+  "generated_at_utc": "2026-09-14T17:59:13.044692+00:00",
   "purpose": "evidence of dataset readiness, not production models. Every model here is an out-of-the-box gradient-boosted tree with default-ish settings.",
   "protocol": {
+    "split_column_requested": "split_global",
+    "split_rationale": "these baselines pool every city into one model, so they are scored on split_global, whose train/val/test are ordered on a single wall clock. On the per-source `split` column a pooled model is evaluated partly on the past.",
     "predictors": "taken from each task manifest \u2014 never 'all columns except the target'",
     "preprocessing": "ordinal encoding fitted on TRAIN only; the 250 most frequent train levels are kept and the tail folded into __OTHER__; unseen levels map to -1; NULL is an explicit __MISSING__ level",
     "evaluation": "val and test scored separately, never merged"
@@ -9,184 +11,200 @@
   "results": {
     "resolution": {
       "rows_trained_on": 400000,
-      "fit_seconds": 3.9,
+      "fit_seconds": 4.8,
+      "split_column": "split_global",
       "target": "log1p(resolution_time_hours), metrics reported in hours",
       "naive_baseline": "median resolution time of the TRAIN split",
       "val": {
         "model": {
-          "n": 153980,
-          "MAE": 681.898341757924,
-          "median_AE": 47.01198240654477,
-          "RMSE": 2858.0282893152394,
-          "RMSE_log1p": 1.7851109072547697
+          "n": 141349,
+          "MAE": 734.1476865157409,
+          "median_AE": 84.74493309617844,
+          "RMSE": 3135.3575414624966,
+          "RMSE_log1p": 1.8063111866796981
         },
         "naive": {
-          "n": 153980,
-          "MAE": 856.2373306399821,
-          "median_AE": 91.76152777777777,
-          "RMSE": 3475.235050154605,
-          "RMSE_log1p": 2.7595452694756415
+          "n": 141349,
+          "MAE": 866.6401724445245,
+          "median_AE": 108.96902777777778,
+          "RMSE": 3683.9513909628113,
+          "RMSE_log1p": 2.42942644371214
         },
         "by_city": {
           "Chicago": {
-            "n": 123922,
-            "MAE": 689.8366463011316,
-            "median_AE": 55.07434319896336,
-            "RMSE": 2800.124263806269,
-            "RMSE_log1p": 1.8114641525203308
-          },
-          "New York City": {
-            "n": 12883,
-            "MAE": 280.1363311481957,
-            "median_AE": 26.40271224425803,
-            "RMSE": 1503.5355639907366,
-            "RMSE_log1p": 1.6630410511429548
-          },
-          "San Francisco": {
-            "n": 17175,
-            "MAE": 925.9838967554065,
-            "median_AE": 23.348512424725147,
-            "RMSE": 3868.2864513712143,
-            "RMSE_log1p": 1.6788324146818139
+            "n": 141349,
+            "MAE": 734.1476865157409,
+            "median_AE": 84.74493309617844,
+            "RMSE": 3135.3575414624966,
+            "RMSE_log1p": 1.8063111866796981
           }
         }
       },
       "test": {
         "model": {
-          "n": 153989,
-          "MAE": 733.5451919472946,
-          "median_AE": 84.71884179450393,
-          "RMSE": 2825.6545639593555,
-          "RMSE_log1p": 1.88118161180151
+          "n": 141349,
+          "MAE": 876.4705864693369,
+          "median_AE": 127.73908779028997,
+          "RMSE": 3131.485463478486,
+          "RMSE_log1p": 1.8071077243193063
         },
         "naive": {
-          "n": 153989,
-          "MAE": 896.9344888208103,
-          "median_AE": 92.32291666666667,
-          "RMSE": 3428.275046853771,
-          "RMSE_log1p": 2.6442913332889693
+          "n": 141349,
+          "MAE": 1034.763525824771,
+          "median_AE": 115.71708333333333,
+          "RMSE": 3684.087745493887,
+          "RMSE_log1p": 2.4026352903656605
         },
         "by_city": {
           "Chicago": {
-            "n": 123932,
-            "MAE": 774.2335166508682,
-            "median_AE": 105.7260762412713,
-            "RMSE": 2843.2014199289983,
-            "RMSE_log1p": 1.9394364256644498
-          },
-          "New York City": {
-            "n": 12884,
-            "MAE": 275.0643687359461,
-            "median_AE": 39.47802891820492,
-            "RMSE": 1703.290401895923,
-            "RMSE_log1p": 1.6139625215411888
-          },
-          "San Francisco": {
-            "n": 17173,
-            "MAE": 783.8847638969661,
-            "median_AE": 18.80390558126352,
-            "RMSE": 3328.6752040822053,
-            "RMSE_log1p": 1.6227571693427423
+            "n": 141349,
+            "MAE": 876.4705864693369,
+            "median_AE": 127.73908779028997,
+            "RMSE": 3131.485463478486,
+            "RMSE_log1p": 1.8071077243193063
           }
         }
       },
       "interpretation": "Compare model MAE against naive MAE. The target spans four orders of magnitude, so median absolute error is the more readable number and MAE is dominated by the tail. Per-city numbers matter more than the pooled one: the three cities have different operating regimes, and Chicago's validation window is the first COVID wave."
     },
     "sla": {
-      "rows_trained_on": 13053,
-      "fit_seconds": 0.5,
+      "rows_trained_on": 13209,
+      "fit_seconds": 0.6,
+      "split_column": "split",
       "naive_baseline": "predict the TRAIN positive rate for every row",
       "val": {
         "model": {
-          "n": 3223,
-          "positive_rate": 0.08377288240769469,
-          "PR_AUC": 0.349098908243226,
-          "precision@0.5": 0.7741935483870968,
-          "recall@0.5": 0.17777777777777778,
-          "f1@0.5": 0.2891566265060241,
-          "brier": 0.06728093374465088,
-          "ROC_AUC": 0.7655667180895761
+          "n": 3131,
+          "positive_rate": 0.07793037368252954,
+          "PR_AUC": 0.2563274634351833,
+          "precision@0.5": 0.5365853658536586,
+          "recall@0.5": 0.09016393442622951,
+          "f1@0.5": 0.1543859649122807,
+          "brier": 0.06784732078076228,
+          "ROC_AUC": 0.7401884933591509
         },
         "naive": {
-          "n": 3223,
-          "positive_rate": 0.08377288240769469,
-          "PR_AUC": 0.08377288240769469,
+          "n": 3131,
+          "positive_rate": 0.07793037368252954,
+          "PR_AUC": 0.07793037368252954,
           "precision@0.5": 0.0,
           "recall@0.5": 0.0,
           "f1@0.5": 0.0,
-          "brier": 0.07749262340822086,
+          "brier": 0.07301586624437331,
           "ROC_AUC": 0.5
         }
       },
       "test": {
         "model": {
-          "n": 3948,
-          "positive_rate": 0.10309017223910841,
-          "PR_AUC": 0.2602035571480503,
-          "precision@0.5": 0.43434343434343436,
-          "recall@0.5": 0.10565110565110565,
-          "f1@0.5": 0.16996047430830039,
-          "brier": 0.08902874998822766,
-          "ROC_AUC": 0.6785215936585607
+          "n": 3873,
+          "positive_rate": 0.10379550735863671,
+          "PR_AUC": 0.2544163922954457,
+          "precision@0.5": 0.5555555555555556,
+          "recall@0.5": 0.08706467661691543,
+          "f1@0.5": 0.15053763440860216,
+          "brier": 0.08982584591523424,
+          "ROC_AUC": 0.6838689009576148
         },
         "naive": {
-          "n": 3948,
-          "positive_rate": 0.10309017223910841,
-          "PR_AUC": 0.10309017223910841,
+          "n": 3873,
+          "positive_rate": 0.10379550735863671,
+          "PR_AUC": 0.10379550735863671,
           "precision@0.5": 0.0,
           "recall@0.5": 0.0,
           "f1@0.5": 0.0,
-          "brier": 0.09252408842144917,
+          "brier": 0.09308880782312831,
           "ROC_AUC": 0.5
         }
       },
       "interpretation": "PR-AUC against the positive rate is the number that matters; ROC-AUC flatters an imbalanced problem. Remember the population: NYC, Jan-Mar 2010, only the complaint types that carry a Due Date. Nothing here transfers to another city's SLA policy."
     },
     "hotspot": {
-      "rows_trained_on": 47694,
-      "fit_seconds": 1.1,
-      "naive_baseline": "future_incident_count = this week's incident_count (persistence)",
+      "rows_trained_on": 47092,
+      "fit_seconds": 1.4,
+      "split_column": "split_global",
+      "baselines": {
+        "persistence": "future_incident_count = this week's incident_count",
+        "rolling_4w_mean": "mean weekly count over weeks t-3..t (PRIMARY benchmark)",
+        "rolling_4w_mean_lagged": "mean weekly count over weeks t-4..t-1"
+      },
       "val": {
         "model": {
-          "n": 9949,
-          "MAE": 7.6156899417985375,
-          "median_AE": 3.9727641451358355,
-          "RMSE": 15.542787721009955,
-          "RMSE_log1p": 0.7252831701583354,
-          "poisson_deviance": 6.418948224645808
+          "n": 10000,
+          "MAE": 7.896561228280123,
+          "median_AE": 3.9752239099565485,
+          "RMSE": 14.478887546364831,
+          "RMSE_log1p": 0.7395115748885254,
+          "poisson_deviance": 7.393039062646045
         },
-        "naive_persistence": {
-          "n": 9949,
-          "MAE": 7.813750125640768,
+        "persistence": {
+          "n": 10000,
+          "MAE": 7.9257,
           "median_AE": 4.0,
-          "RMSE": 15.377466600292777,
-          "RMSE_log1p": 0.7943319510634298,
-          "poisson_deviance": 15.909793962217657
-        }
+          "RMSE": 15.128684675146085,
+          "RMSE_log1p": 0.7827644668153773,
+          "poisson_deviance": 14.234058868857433
+        },
+        "rolling_4w_mean": {
+          "n": 10000,
+          "MAE": 6.977875,
+          "median_AE": 3.5,
+          "RMSE": 13.01246877998176,
+          "RMSE_log1p": 0.683102500070187,
+          "poisson_deviance": 6.139147801873871
+        },
+        "rolling_4w_mean_lagged": {
+          "n": 10000,
+          "MAE": 7.3226,
+          "median_AE": 3.75,
+          "RMSE": 13.679686582667017,
+          "RMSE_log1p": 0.7086615308111773,
+          "poisson_deviance": 6.694811021386413
+        },
+        "model_vs_rolling_4w_mean_MAE_improvement": -0.1317,
+        "model_vs_persistence_MAE_improvement": 0.0037
       },
       "test": {
         "model": {
-          "n": 9449,
-          "MAE": 10.924736271928184,
-          "median_AE": 4.70400055565711,
-          "RMSE": 36.15303696978277,
-          "RMSE_log1p": 0.6902342977893675,
-          "poisson_deviance": 14.845527418354065
+          "n": 10000,
+          "MAE": 10.537067967966019,
+          "median_AE": 4.949936162379288,
+          "RMSE": 32.36922120957331,
+          "RMSE_log1p": 0.7050316436489272,
+          "poisson_deviance": 14.01859455030633
         },
-        "naive_persistence": {
-          "n": 9449,
-          "MAE": 12.820510106889618,
+        "persistence": {
+          "n": 10000,
+          "MAE": 12.6231,
           "median_AE": 5.0,
-          "RMSE": 39.36636588566067,
-          "RMSE_log1p": 0.8181796288945167,
-          "poisson_deviance": 23.390592129760027
-        }
+          "RMSE": 37.10458327484625,
+          "RMSE_log1p": 0.8422029145143625,
+          "poisson_deviance": 23.877913920631766
+        },
+        "rolling_4w_mean": {
+          "n": 10000,
+          "MAE": 10.885,
+          "median_AE": 5.0,
+          "RMSE": 31.64848515332132,
+          "RMSE_log1p": 0.733112022367634,
+          "poisson_deviance": 14.47541502596829
+        },
+        "rolling_4w_mean_lagged": {
+          "n": 10000,
+          "MAE": 11.76215,
+          "median_AE": 5.25,
+          "RMSE": 33.382876411417875,
+          "RMSE_log1p": 0.7632999211490246,
+          "poisson_deviance": 16.55584286717254
+        },
+        "model_vs_rolling_4w_mean_MAE_improvement": 0.032,
+        "model_vs_persistence_MAE_improvement": 0.1653
       },
-      "interpretation": "Persistence is a strong baseline on a weekly panel. A model that does not beat it is not yet worth deploying. Poisson deviance is the right loss-aligned metric for a count target; MAE is included because it is the one an operator can read."
+      "interpretation": "The ROLLING 4-WEEK MEAN is the primary benchmark. Persistence is retained because it is the simplest thing an operator would try, but it is the weaker of the two and quoting only the improvement over it overstates the model. A smoothed trailing mean is what any competent forecaster would reach for first on a weekly count panel, so that is the bar. Poisson deviance is the loss-aligned metric for a count target; MAE is included because it is the one an operator can read."
     },
     "duplicate": {
       "rows_trained_on": 324501,
-      "fit_seconds": 1.4,
+      "fit_seconds": 1.7,
+      "split_column": "split",
       "naive_baseline": "predict the TRAIN positive rate for every pair",
       "val": {
         "model": {

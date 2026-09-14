@@ -117,23 +117,43 @@ def _cut_points(ts: pd.Series, sp: dict) -> tuple[pd.Timestamp, pd.Timestamp, st
 
 
 def chronological_split(df: pd.DataFrame, ts_col: str = "reported_at",
-                        source_col: str = "source_dataset") -> tuple[pd.Series, dict]:
+                        source_col: str = "source_dataset",
+                        per_source: bool | None = None) -> tuple[pd.Series, dict]:
     """
     Leakage-resistant chronological split. Returns (split_series, metadata).
 
-    Per `splits.tabular.per_source`, each source_dataset is split on its own
-    timeline. The three cities in this corpus occupy disjoint date ranges, so a
-    single global cut would hand validation and test to Chicago alone. Within a
-    city train strictly precedes val strictly precedes test, which is the
-    property that prevents a model from being scored on the past.
+    TWO POLICIES, AND THE RIGHT ONE DEPENDS ON HOW YOU MODEL
+    -------------------------------------------------------
+    per_source=True  (column `split`, the default from splits.tabular.per_source)
+        Each source_dataset is cut on its OWN timeline. Within a city, train
+        strictly precedes val strictly precedes test. Every city appears in
+        every fold, so `city` stays evaluable. This is the correct policy for a
+        PER-CITY model.
 
-    Rows with an unusable timestamp go to `unassigned`, never silently to train.
+        It is NOT globally chronological. The three cities occupy disjoint
+        windows (NYC Jan-Mar 2010, SF Jan-May 2018, Chicago Jul 2018-Aug 2020),
+        so on one wall clock 19.5% of resolution test rows — every SF and NYC
+        test row — fall before the last training row. For a POOLED model that
+        means being scored partly on the past.
+
+    per_source=False (column `split_global`)
+        One cut across the whole corpus. Every evaluation row is strictly after
+        every training row on a single wall clock, which is the property a
+        POOLED model needs. The price is real and must be reported: because SF
+        and NYC end years before Chicago, validation and test contain Chicago
+        and nothing else.
+
+    Neither is universally right, so the pipeline writes both and each task
+    manifest records which column to use. Rows with an unusable timestamp go to
+    `unassigned`, never silently to train.
     """
     sp = load_config()["splits"]["tabular"]
     ts = pd.to_datetime(df[ts_col], utc=True, errors="coerce")
     out = pd.Series("unassigned", index=df.index, dtype="string")
 
-    per_source = bool(sp.get("per_source", False)) and source_col in df.columns
+    if per_source is None:
+        per_source = bool(sp.get("per_source", False))
+    per_source = bool(per_source) and source_col in df.columns
     if per_source:
         groups = {str(k): idx for k, idx in df.groupby(df[source_col].astype("string"),
                                                        dropna=False).groups.items()}
@@ -157,7 +177,31 @@ def chronological_split(df: pd.DataFrame, ts_col: str = "reported_at",
             "date_range": {"min": str(g.min()), "max": str(g.max())},
         }
     meta["counts"] = {k: int(v) for k, v in out.value_counts().items()}
+    meta["globally_chronological"] = not per_source
     return out, meta
+
+
+def dual_chronological_split(df: pd.DataFrame, ts_col: str = "reported_at",
+                             source_col: str = "source_dataset") -> tuple[pd.Series, pd.Series, dict]:
+    """
+    Both split policies at once: (per_source_split, global_split, metadata).
+
+    Writing both is deliberate. A per-city model needs every city present in
+    every fold; a pooled model needs a single wall clock. Publishing one column
+    and calling it "the" split forces every consumer into whichever question the
+    pipeline happened to answer.
+    """
+    per_src, meta_src = chronological_split(df, ts_col, source_col, per_source=True)
+    glob, meta_glob = chronological_split(df, ts_col, source_col, per_source=False)
+    meta = {
+        "policy": {
+            "split": "per-source chronological — use for PER-CITY models",
+            "split_global": "single global chronological cut — use for POOLED models",
+        },
+        "per_source": meta_src,
+        "global": meta_glob,
+    }
+    return per_src, glob, meta
 
 
 def add_time_features(df: pd.DataFrame, ts_col: str = "reported_at") -> pd.DataFrame:

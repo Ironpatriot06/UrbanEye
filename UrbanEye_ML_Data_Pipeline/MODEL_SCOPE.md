@@ -30,7 +30,7 @@ is downloaded.
 | Priority (learned) | **ML** | **Blocked — no genuine labels exist** |
 | Resolution time | **ML** | Conditionally ready — see `ML_READINESS.md` §2 |
 | SLA risk | **ML** | Conditionally ready — NYC 2010 only, `ML_READINESS.md` §3 |
-| Hotspot / incident risk | **ML or statistical** | Conditionally ready — beats persistence, `ML_READINESS.md` §4 |
+| Hotspot / incident risk | **ML or statistical** | Conditionally ready — beats persistence but **not** a 4-week moving average, `ML_READINESS.md` §4 |
 | Duplicate detection | **ML or algorithmic** | Labels ready, **evaluation is not** — `ML_READINESS.md` §5 |
 | SLA assignment from priority | **Business rule** — not ML | Config: P1 30h, P2 50h, P3 72h, P4 90h |
 | Severity | **Not predicted** | Out of scope; NULL everywhere |
@@ -95,6 +95,11 @@ a legitimate target. Details in `PRIORITY_METHODOLOGY.md`.
 
 Two honest caveats the builder records in its `.meta.json`:
 
+- **Instant-closure artifact.** 8.2% of the old target was a transactional write
+  rather than a service duration (Chicago closes thousands of cases at exactly
+  5-7 seconds; NYC's sub-minute population is entirely at 0 s). Those rows keep
+  their status and closed_at and carry `resolution_instant_closure = True`, but
+  their duration is NULL — it is below what the source timestamps can express.
 - **Right-censoring.** Open cases have no duration and are excluded, which biases
   the sample toward faster resolutions. Survival analysis is the correct
   treatment if long-running cases matter.

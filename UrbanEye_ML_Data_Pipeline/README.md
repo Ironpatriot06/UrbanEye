@@ -331,7 +331,10 @@ blocked by `ACTIVE-1`.
 3. **`OPEN_MANHOLE` has zero incidents** across all four cities. No US 311
    vocabulary has that category. It is in the taxonomy because UrbanEye+ needs it;
    training data must come from your own collection.
-4. **Right-censoring** in `resolution_dataset`: open cases are excluded, biasing
+4. **Instant-closure artifact**: 8.2% of closed cases were "resolved" in under a
+   minute — a transactional write, not service time. Their duration is now NULL
+   and they carry `resolution_instant_closure`; the rows themselves are kept.
+   Measured right-censoring is mild (0.82%). Open cases are excluded, biasing
    toward faster resolutions.
 5. **`priority_confidence` never reaches HIGH** on this corpus. It is MEDIUM for
    every row with a usable coordinate (category + density available, 36% of

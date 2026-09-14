@@ -69,11 +69,50 @@ def declared_predictors(m: dict) -> list[str]:
     return [c for c, v in block.items() if v.get("present")]
 
 
+SPLIT_COL = "split_global"     # overridden by --split-column
+CHOSEN_SPLIT: dict[str, str] = {}
+
+
+def choose_split_column(df: pd.DataFrame) -> str:
+    """
+    Pick the split column that matches the table.
+
+    `split_global` is the right answer for a POOLED model: one wall clock, so
+    no evaluation row predates a training row. But it only means anything when
+    the table actually spans several sources. On a SINGLE-source table it
+    degenerates — sla_ml is NYC-only and NYC is the earliest data in the corpus,
+    so a global cut puts every NYC row in train and leaves validation and test
+    empty. There the per-source column is already chronological on one clock and
+    is the correct choice, not a compromise.
+    """
+    if SPLIT_COL not in df.columns:
+        return "split"
+    # the grouping column is source_dataset on incident tables and city on the
+    # hotspot panel; both mean "which publisher's timeline is this row on"
+    grp = "source_dataset" if "source_dataset" in df.columns else (
+        "city" if "city" in df.columns else None)
+    n_src = df[grp].nunique() if grp else 1
+    if n_src <= 1:
+        return "split"
+    if not (df[SPLIT_COL] == "val").any() or not (df[SPLIT_COL] == "test").any():
+        return "split"
+    return SPLIT_COL
+
+
 def prepare(df: pd.DataFrame, cols: list[str]):
-    """Split into (X_train, X_val, X_test) with encoders fitted on train alone."""
-    tr = df[df["split"] == "train"]
-    va = df[df["split"] == "val"]
-    te = df[df["split"] == "test"]
+    """
+    Split into (X_train, X_val, X_test) with encoders fitted on train alone.
+
+    Uses SPLIT_COL. These baselines pool every city into one model, so the
+    default is `split_global` — the column whose train/val/test are ordered on a
+    single wall clock. Scoring a pooled model on the per-source `split` column
+    means evaluating partly on the past: 19.5% of resolution test rows fall
+    before the last training row there.
+    """
+    col = choose_split_column(df)
+    tr = df[df[col] == "train"]
+    va = df[df[col] == "val"]
+    te = df[df[col] == "test"]
     cat_cols = [c for c in cols if not pd.api.types.is_numeric_dtype(df[c])
                 or pd.api.types.is_bool_dtype(df[c])]
     num_cols = [c for c in cols if c not in cat_cols]
@@ -114,6 +153,7 @@ def prepare(df: pd.DataFrame, cols: list[str]):
                 out[c] = coded[:, i]
         return out[cols]
 
+    CHOSEN_SPLIT["last"] = col
     mask = [c in cat_cols for c in cols]
     return (tr, va, te), (build(tr), build(va), build(te)), mask
 
@@ -167,6 +207,7 @@ def run_resolution(max_rows: int) -> dict:
     fit_s = round(time.time() - t0, 1)
 
     out = {"rows_trained_on": int(len(tr)), "fit_seconds": fit_s,
+           "split_column": CHOSEN_SPLIT.get("last"),
            "target": "log1p(resolution_time_hours), metrics reported in hours",
            "naive_baseline": "median resolution time of the TRAIN split"}
     naive = float(np.median(pd.to_numeric(tr["resolution_time_hours"], errors="coerce")))
@@ -203,6 +244,7 @@ def run_sla(max_rows: int) -> dict:
     t0 = time.time()
     model.fit(Xtr, y_tr)
     out = {"rows_trained_on": int(len(tr)), "fit_seconds": round(time.time() - t0, 1),
+           "split_column": CHOSEN_SPLIT.get("last"),
            "naive_baseline": "predict the TRAIN positive rate for every row"}
     base_rate = float(y_tr.mean())
     for label, part, X in (("val", va, Xva), ("test", te, Xte)):
@@ -222,36 +264,98 @@ def run_sla(max_rows: int) -> dict:
     return out
 
 
+def rolling_mean_baseline(panel: pd.DataFrame, weeks: int = 4,
+                          lagged: bool = False) -> pd.Series:
+    """
+    Mean weekly count over the last `weeks` COMPLETED weeks, per series.
+
+    Two variants, and the difference matters for how the comparison reads:
+
+      lagged=False (default)  weeks t-3 .. t inclusive.
+          The hotspot manifest states the deployment assumption explicitly: the
+          forecast for week t+1 is produced at the END of week t, when week t is
+          complete. Under that assumption week t is available, so excluding it
+          would handicap the baseline and flatter the model — the exact error
+          this baseline exists to correct.
+
+      lagged=True             weeks t-4 .. t-1.
+          The strictly-lagged variant already shipped as the `rolling_4w_mean`
+          FEATURE, kept here so the model's inputs and this baseline can be
+          compared on the same footing.
+
+    Leakage: the window is trailing and ends at or before week t, while the
+    target is week t+1, so no future or current-target information can enter.
+    The window is computed on the full sorted panel, not within a split, because
+    truncating history at a fold boundary would silently weaken the baseline.
+    """
+    keys = ["city", "zone_type", "zone_id", "category"]
+    d = panel.sort_values(keys + ["week_start"], kind="stable")
+    counts = pd.to_numeric(d["incident_count"], errors="coerce")
+    g = counts.groupby([d[k] for k in keys], observed=True)
+    if lagged:
+        roll = g.transform(lambda x: x.shift(1).rolling(weeks, min_periods=1).mean())
+    else:
+        roll = g.transform(lambda x: x.rolling(weeks, min_periods=1).mean())
+    return roll.reindex(panel.index)
+
+
 def run_hotspot(max_rows: int) -> dict:
     df, m = load_task("hotspot_ml")
     if df is None:
         return {}
     cols = declared_predictors(m)
+    df = df.copy()
+    df["_roll4"] = rolling_mean_baseline(df, 4, lagged=False)
+    df["_roll4_lagged"] = rolling_mean_baseline(df, 4, lagged=True)
+
     (tr, va, te), (Xtr, Xva, Xte), cat_mask = prepare(df, cols)
     y_tr = pd.to_numeric(tr["future_incident_count"], errors="coerce").to_numpy(float)
     model = HistGradientBoostingRegressor(loss="poisson", max_iter=300, learning_rate=0.1,
                                           categorical_features=cat_mask, random_state=0)
     t0 = time.time()
     model.fit(Xtr, np.clip(y_tr, 0, None))
-    out = {"rows_trained_on": int(len(tr)), "fit_seconds": round(time.time() - t0, 1),
-           "naive_baseline": "future_incident_count = this week's incident_count (persistence)"}
-    for label, part, X in (("val", va, Xva), ("test", te, Xte)):
+    out = {
+        "rows_trained_on": int(len(tr)), "fit_seconds": round(time.time() - t0, 1),
+        "split_column": CHOSEN_SPLIT.get("last"),
+        "baselines": {
+            "persistence": "future_incident_count = this week's incident_count",
+            "rolling_4w_mean": "mean weekly count over weeks t-3..t (PRIMARY benchmark)",
+            "rolling_4w_mean_lagged": "mean weekly count over weeks t-4..t-1",
+        },
+    }
+    eps = 1e-9
+    for label, part in (("val", va), ("test", te)):
         if not len(part):
             continue
+        X = {"val": Xva, "test": Xte}[label]
         y = pd.to_numeric(part["future_incident_count"], errors="coerce").to_numpy(float)
-        pred = np.clip(model.predict(X), 0, None)
-        naive = pd.to_numeric(part["incident_count"], errors="coerce").to_numpy(float)
-        entry = {"model": _reg_metrics(y, pred), "naive_persistence": _reg_metrics(y, naive)}
-        eps = 1e-9
-        entry["model"]["poisson_deviance"] = float(
-            mean_poisson_deviance(np.clip(y, eps, None), np.clip(pred, eps, None)))
-        entry["naive_persistence"]["poisson_deviance"] = float(
-            mean_poisson_deviance(np.clip(y, eps, None), np.clip(naive, eps, None)))
+        preds = {
+            "model": np.clip(model.predict(X), 0, None),
+            "persistence": pd.to_numeric(part["incident_count"], errors="coerce").to_numpy(float),
+            "rolling_4w_mean": part["_roll4"].fillna(
+                pd.to_numeric(part["incident_count"], errors="coerce")).to_numpy(float),
+            "rolling_4w_mean_lagged": part["_roll4_lagged"].fillna(
+                pd.to_numeric(part["incident_count"], errors="coerce")).to_numpy(float),
+        }
+        entry = {}
+        for name, pr in preds.items():
+            entry[name] = _reg_metrics(y, pr)
+            entry[name]["poisson_deviance"] = float(
+                mean_poisson_deviance(np.clip(y, eps, None), np.clip(pr, eps, None)))
+        base = entry["rolling_4w_mean"]["MAE"]
+        entry["model_vs_rolling_4w_mean_MAE_improvement"] = round(
+            1 - entry["model"]["MAE"] / base, 4) if base else None
+        entry["model_vs_persistence_MAE_improvement"] = round(
+            1 - entry["model"]["MAE"] / entry["persistence"]["MAE"], 4) \
+            if entry["persistence"]["MAE"] else None
         out[label] = entry
     out["interpretation"] = (
-        "Persistence is a strong baseline on a weekly panel. A model that does not beat it "
-        "is not yet worth deploying. Poisson deviance is the right loss-aligned metric for a "
-        "count target; MAE is included because it is the one an operator can read.")
+        "The ROLLING 4-WEEK MEAN is the primary benchmark. Persistence is retained because it "
+        "is the simplest thing an operator would try, but it is the weaker of the two and "
+        "quoting only the improvement over it overstates the model. A smoothed trailing mean "
+        "is what any competent forecaster would reach for first on a weekly count panel, so "
+        "that is the bar. Poisson deviance is the loss-aligned metric for a count target; MAE "
+        "is included because it is the one an operator can read.")
     return out
 
 
@@ -267,6 +371,7 @@ def run_duplicate(max_rows: int) -> dict:
     t0 = time.time()
     model.fit(Xtr, y_tr)
     out = {"rows_trained_on": int(len(tr)), "fit_seconds": round(time.time() - t0, 1),
+           "split_column": CHOSEN_SPLIT.get("last"),
            "naive_baseline": "predict the TRAIN positive rate for every pair"}
     base = float(y_tr.mean())
     for label, part, X in (("val", va, Xva), ("test", te, Xte)):
@@ -304,7 +409,13 @@ def main() -> int:
                     choices=["resolution", "sla", "hotspot", "duplicate"])
     ap.add_argument("--max-train-rows", type=int, default=400_000,
                     help="cap on training rows, for runtime only")
+    ap.add_argument("--split-column", default="split_global",
+                    choices=["split_global", "split"],
+                    help="split_global = one wall clock (correct for these POOLED baselines); "
+                         "split = per-source chronological (correct for per-city models)")
     args = ap.parse_args()
+    global SPLIT_COL
+    SPLIT_COL = args.split_column
 
     if not HAVE_SKLEARN:
         log.error("scikit-learn is not installed. It is NOT a pipeline dependency — the "
@@ -340,6 +451,11 @@ def main() -> int:
         "purpose": ("evidence of dataset readiness, not production models. Every model here "
                     "is an out-of-the-box gradient-boosted tree with default-ish settings."),
         "protocol": {
+            "split_column_requested": SPLIT_COL,
+            "split_rationale": ("these baselines pool every city into one model, so they are "
+                                "scored on split_global, whose train/val/test are ordered on a "
+                                "single wall clock. On the per-source `split` column a pooled "
+                                "model is evaluated partly on the past."),
             "predictors": "taken from each task manifest — never 'all columns except the target'",
             "preprocessing": ("ordinal encoding fitted on TRAIN only; the 250 most frequent "
                               "train levels are kept and the tail folded into __OTHER__; "

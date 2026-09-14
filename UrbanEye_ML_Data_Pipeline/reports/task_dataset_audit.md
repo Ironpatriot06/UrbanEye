@@ -1,6 +1,6 @@
 # UrbanEye+ task dataset & leakage audit
 
-Generated 2026-09-14T12:38:52.167417+00:00
+Generated 2026-09-14T18:14:33.401080+00:00
 
 **78/80 checks passed, 0 failed, 2 skipped.**
 
@@ -8,11 +8,11 @@ Generated 2026-09-14T12:38:52.167417+00:00
 
 | Task | Rows | Target | Predictors | Split |
 |---|---|---|---|---|
-| `resolution_ml` | 1,026,596 | resolution_time_hours | 20 | per-source chronological |
-| `sla_ml` | 20,224 | sla_breach | 17 | per-source chronological |
+| `resolution_ml` | 942,325 | resolution_time_hours | 20 | chronological |
+| `sla_ml` | 20,213 | sla_breach | 17 | chronological |
 | `hotspot_ml` | 67,092 | future_incident_count | 13 | per-city chronological on week_start |
 | `duplicate_ml` | 455,460 | same_incident | 3 | connected-component chronological |
-| `priority_features` | 1,900,000 | **none** | 19 | per-source chronological |
+| `priority_features` | 1,900,000 | **none** | 19 | chronological |
 
 ## Checks
 
@@ -21,14 +21,14 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | TASK-1 | resolution_ml | every declared predictor exists in the table | PASS | missing=[] |
 | TASK-2 | resolution_ml | no declared predictor is constant | PASS | constant=[] |
 | TASK-3 | resolution_ml | the target is declared | PASS | target=resolution_time_hours |
-| TASK-4 | resolution_ml | the target column exists and has values | PASS | rows_with_target=1026596 |
+| TASK-4 | resolution_ml | the target column exists and has values | PASS | rows_with_target=942325 |
 | TL-6 | resolution_ml | every predictor states when its value becomes known | PASS | undeclared=[] |
 | TL-1 | resolution_ml | no predictor is the target or a derivative of it | PASS | found=[] |
 | TL-2 | resolution_ml | no post-resolution column is a predictor | PASS | found=[] |
 | TL-12 | resolution_ml | target-support columns are not offered to the wrong task | PASS | found=[] |
 | TL-3 | resolution_ml | the priority policy output is not a predictor | PASS | found=[] |
 | TL-4 | resolution_ml | raw coordinates are not predictors | PASS | found=[] |
-| TL-5 | resolution_ml | no predictor is a global frequency/target encoding | PASS | named=[] detected=[]; structural co-linearity (not leakage): ['year is constant within subcategory (4 values / 248 levels)'] |
+| TL-5 | resolution_ml | no predictor is a global frequency/target encoding | PASS | named=[] detected=[]; structural co-linearity (not leakage): ['year is constant within subcategory (4 values / 266 levels)'] |
 | TL-7 | resolution_ml | joined history features match the feature table exactly | PASS | mismatched=[] over 50,000 sampled rows |
 | TL-11 | resolution_ml | train, val and test are all non-empty | PASS | present=['test', 'train', 'val'] |
 | TL-8 | resolution_ml | no entity appears in more than one split | PASS | entities_in_two_splits=0 |
@@ -37,7 +37,7 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | TASK-1 | sla_ml | every declared predictor exists in the table | PASS | missing=[] |
 | TASK-2 | sla_ml | no declared predictor is constant | PASS | constant=[] |
 | TASK-3 | sla_ml | the target is declared | PASS | target=sla_breach |
-| TASK-4 | sla_ml | the target column exists and has values | PASS | rows_with_target=20224 |
+| TASK-4 | sla_ml | the target column exists and has values | PASS | rows_with_target=20213 |
 | TL-6 | sla_ml | every predictor states when its value becomes known | PASS | undeclared=[] |
 | TL-1 | sla_ml | no predictor is the target or a derivative of it | PASS | found=[] |
 | TL-2 | sla_ml | no post-resolution column is a predictor | PASS | found=[] |
@@ -45,7 +45,7 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | TL-3 | sla_ml | the priority policy output is not a predictor | PASS | found=[] |
 | TL-4 | sla_ml | raw coordinates are not predictors | PASS | found=[] |
 | TL-5 | sla_ml | no predictor is a global frequency/target encoding | PASS | named=[] detected=[] |
-| TL-7 | sla_ml | joined history features match the feature table exactly | PASS | mismatched=[] over 20,224 sampled rows |
+| TL-7 | sla_ml | joined history features match the feature table exactly | PASS | mismatched=[] over 20,213 sampled rows |
 | TL-11 | sla_ml | train, val and test are all non-empty | PASS | present=['test', 'train', 'val'] |
 | TL-8 | sla_ml | no entity appears in more than one split | PASS | entities_in_two_splits=0 |
 | TL-11b | sla_ml | splits are chronological within each source_dataset | PASS |  |
@@ -104,11 +104,11 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | Task | Column | Role | Null % | Distinct | Known at prediction time | When |
 |---|---|---|---|---|---|---|
 | resolution_ml | `category` | predictor | 0.0 | 12 | True | citizen selects it in the app at submission |
-| resolution_ml | `subcategory` | predictor | 80.48 | 344 | True | publisher's second-level label, assigned at intake |
+| resolution_ml | `subcategory` | predictor | 79.49 | 343 | True | publisher's second-level label, assigned at intake |
 | resolution_ml | `city` | predictor | 0.0 | 3 | True | known from the coordinate / the deployment |
 | resolution_ml | `source_dataset` | predictor | 0.0 | 3 | True | known: which system the report arrived through |
 | resolution_ml | `department` | predictor | 0.0 | 121 | True | assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for tha |
-| resolution_ml | `zone_key` | predictor | 0.544 | 168 | True | administrative unit of the report location, resolved at intake |
+| resolution_ml | `zone_key` | predictor | 0.481 | 168 | True | administrative unit of the report location, resolved at intake |
 | resolution_ml | `zone_type` | predictor | 0.0 | 3 | True | names which administrative unit zone_key refers to |
 | resolution_ml | `report_channel` | predictor | 0.0 | 7 | True | the channel the citizen used, known at submission |
 | resolution_ml | `hour` | predictor | 0.0 | 24 | True | function of reported_at alone |
@@ -117,16 +117,16 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | resolution_ml | `year` | predictor | 0.0 | 4 | True | function of reported_at alone |
 | resolution_ml | `is_weekend` | predictor | 0.0 | 2 | True | function of reported_at alone |
 | resolution_ml | `is_night` | predictor | 0.0 | 2 | True | function of reported_at alone |
-| resolution_ml | `nearby_similar_incidents_24h` | predictor | 1.719 | 111 | True | counts only reports strictly earlier than this one |
-| resolution_ml | `nearby_similar_incidents_7d` | predictor | 1.719 | 319 | True | counts only reports strictly earlier than this one |
-| resolution_ml | `nearby_similar_incidents_30d` | predictor | 1.719 | 626 | True | counts only reports strictly earlier than this one |
-| resolution_ml | `local_incident_density` | predictor | 1.719 | 1317 | True | counts only reports strictly earlier than this one |
-| resolution_ml | `category_incident_density` | predictor | 1.719 | 8409 | True | ratio of two strictly-backward counts |
-| resolution_ml | `hours_since_previous_similar_incident` | predictor | 15.542 | 420424 | True | gap to the most recent strictly earlier report |
+| resolution_ml | `nearby_similar_incidents_24h` | predictor | 1.511 | 111 | True | counts only reports strictly earlier than this one |
+| resolution_ml | `nearby_similar_incidents_7d` | predictor | 1.511 | 319 | True | counts only reports strictly earlier than this one |
+| resolution_ml | `nearby_similar_incidents_30d` | predictor | 1.511 | 626 | True | counts only reports strictly earlier than this one |
+| resolution_ml | `local_incident_density` | predictor | 1.511 | 1317 | True | counts only reports strictly earlier than this one |
+| resolution_ml | `category_incident_density` | predictor | 1.511 | 8317 | True | ratio of two strictly-backward counts |
+| resolution_ml | `hours_since_previous_similar_incident` | predictor | 16.0 | 402776 | True | gap to the most recent strictly earlier report |
 | resolution_ml | `resolution_time_hours` | target | None | None | False | observed only after the fact — this is the label |
 | sla_ml | `category` | predictor | 0.0 | 6 | True | citizen selects it in the app at submission |
-| sla_ml | `subcategory` | predictor | 0.0 | 90 | True | publisher's second-level label, assigned at intake |
-| sla_ml | `department` | predictor | 0.0 | 4 | True | assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for tha |
+| sla_ml | `subcategory` | predictor | 0.0 | 89 | True | publisher's second-level label, assigned at intake |
+| sla_ml | `department` | predictor | 0.0 | 3 | True | assigned by the 311 routing rules at intake. If a municipality assigns it at closure instead, it must be dropped for tha |
 | sla_ml | `zone_key` | predictor | 0.0 | 75 | True | administrative unit of the report location, resolved at intake |
 | sla_ml | `report_channel` | predictor | 0.0 | 3 | True | the channel the citizen used, known at submission |
 | sla_ml | `hour` | predictor | 0.0 | 24 | True | function of reported_at alone |
@@ -134,13 +134,13 @@ Generated 2026-09-14T12:38:52.167417+00:00
 | sla_ml | `month` | predictor | 0.0 | 3 | True | function of reported_at alone |
 | sla_ml | `is_weekend` | predictor | 0.0 | 2 | True | function of reported_at alone |
 | sla_ml | `is_night` | predictor | 0.0 | 2 | True | function of reported_at alone |
-| sla_ml | `sla_target_hours` | predictor | 0.0 | 4318 | True | the deadline, set by the publisher at intake. Only legitimate for the SLA task, where the question is whether this known |
-| sla_ml | `nearby_similar_incidents_24h` | predictor | 4.193 | 22 | True | counts only reports strictly earlier than this one |
-| sla_ml | `nearby_similar_incidents_7d` | predictor | 4.193 | 34 | True | counts only reports strictly earlier than this one |
-| sla_ml | `nearby_similar_incidents_30d` | predictor | 4.193 | 46 | True | counts only reports strictly earlier than this one |
-| sla_ml | `local_incident_density` | predictor | 4.193 | 173 | True | counts only reports strictly earlier than this one |
-| sla_ml | `category_incident_density` | predictor | 4.193 | 890 | True | ratio of two strictly-backward counts |
-| sla_ml | `hours_since_previous_similar_incident` | predictor | 37.816 | 10992 | True | gap to the most recent strictly earlier report |
+| sla_ml | `sla_target_hours` | predictor | 0.0 | 4307 | True | the deadline, set by the publisher at intake. Only legitimate for the SLA task, where the question is whether this known |
+| sla_ml | `nearby_similar_incidents_24h` | predictor | 4.195 | 22 | True | counts only reports strictly earlier than this one |
+| sla_ml | `nearby_similar_incidents_7d` | predictor | 4.195 | 34 | True | counts only reports strictly earlier than this one |
+| sla_ml | `nearby_similar_incidents_30d` | predictor | 4.195 | 46 | True | counts only reports strictly earlier than this one |
+| sla_ml | `local_incident_density` | predictor | 4.195 | 173 | True | counts only reports strictly earlier than this one |
+| sla_ml | `category_incident_density` | predictor | 4.195 | 890 | True | ratio of two strictly-backward counts |
+| sla_ml | `hours_since_previous_similar_incident` | predictor | 37.802 | 10991 | True | gap to the most recent strictly earlier report |
 | sla_ml | `sla_breach` | target | None | None | False | observed only after the fact — this is the label |
 | hotspot_ml | `city` | predictor | 0.0 | 3 | True | known from the coordinate / the deployment |
 | hotspot_ml | `zone_key` | predictor | 0.0 | 168 | True | administrative unit of the report location, resolved at intake |

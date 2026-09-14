@@ -542,3 +542,269 @@ def test_postgis_provider_refuses_rather_than_returning_nulls():
     inc = pd.DataFrame({"incident_id": ["a"], "latitude": [13.08], "longitude": [80.27]})
     with pytest.raises(NotImplementedError):
         IndiaPostGISProvider().poi_features(inc)
+
+
+# ---------------------------------------------------------------------------
+# instant-closure artifact (resolution target)
+# ---------------------------------------------------------------------------
+def _closure_frame(pairs):
+    """pairs: list of (reported, closed) ISO strings or None."""
+    return pd.DataFrame({
+        "reported_at": pd.to_datetime([a for a, _ in pairs], utc=True),
+        "closed_at": pd.to_datetime([b for _, b in pairs], utc=True),
+    })
+
+
+def test_instant_closure_is_flagged_and_target_nulled():
+    """
+    A closure written seconds after intake is a transactional artifact, not a
+    service duration. Chicago closes 18,279 cases at exactly 7 seconds.
+    """
+    from scripts.utils.cleaning import CleaningStats, compute_resolution_hours, instant_closure_flag
+
+    df = _closure_frame([
+        ("2020-01-01T00:00:00Z", "2020-01-01T00:00:00Z"),   # exactly 0s  (NYC signature)
+        ("2020-01-01T00:00:00Z", "2020-01-01T00:00:07Z"),   # 7s          (Chicago signature)
+        ("2020-01-01T00:00:00Z", "2020-01-01T00:00:59Z"),   # 59s         (still unmeasurable)
+    ])
+    flag = instant_closure_flag(df, "reported_at", "closed_at")
+    assert list(flag) == [True, True, True]
+
+    stats = CleaningStats(dataset="t")
+    hrs = compute_resolution_hours(df, "reported_at", "closed_at", stats)
+    assert hrs.isna().all(), "instant closures must leave no duration behind"
+    assert stats.nulled.get("resolution_time_instant_closure") == 3
+
+
+def test_normal_short_resolutions_are_kept():
+    """The fix must not be 'delete short durations'. A 90-second job is real."""
+    from scripts.utils.cleaning import CleaningStats, compute_resolution_hours, instant_closure_flag
+
+    df = _closure_frame([
+        ("2020-01-01T00:00:00Z", "2020-01-01T00:01:00Z"),   # exactly 60s — boundary, KEPT
+        ("2020-01-01T00:00:00Z", "2020-01-01T00:01:30Z"),   # 90s
+        ("2020-01-01T00:00:00Z", "2020-01-01T02:00:00Z"),   # 2h
+    ])
+    assert list(instant_closure_flag(df, "reported_at", "closed_at")) == [False, False, False]
+    hrs = compute_resolution_hours(df, "reported_at", "closed_at", CleaningStats(dataset="t"))
+    assert hrs.notna().all()
+    assert np.allclose(hrs.to_numpy(float), [60 / 3600, 90 / 3600, 2.0])
+
+
+def test_open_and_invalid_cases_flag_null_not_false():
+    """'We cannot tell' is not 'this was not an instant closure'."""
+    from scripts.utils.cleaning import CleaningStats, compute_resolution_hours, instant_closure_flag
+
+    df = _closure_frame([
+        ("2020-01-01T00:00:00Z", None),                      # still open
+        (None, "2020-01-02T00:00:00Z"),                      # missing report time
+        ("2020-01-02T00:00:00Z", "2020-01-01T00:00:00Z"),    # negative duration
+    ])
+    flag = instant_closure_flag(df, "reported_at", "closed_at")
+    assert pd.isna(flag.iloc[0]) and pd.isna(flag.iloc[1])
+    # a NEGATIVE duration is an inconsistent record, not an instant closure:
+    # it gets its own rule and must not inflate the instant-closure population
+    assert bool(flag.iloc[2]) is False
+
+    stats = CleaningStats(dataset="t")
+    hrs = compute_resolution_hours(df, "reported_at", "closed_at", stats)
+    assert hrs.isna().all()
+    assert stats.nulled.get("resolution_time_negative") == 1
+
+
+def test_instant_closure_rule_is_config_driven():
+    """The threshold is a documented config value, not a literal in the code."""
+    import yaml
+    cfg = yaml.safe_load(open("config/dataset_config.yaml"))
+    assert cfg["cleaning"]["resolution_time"]["min_observable_seconds"] == 60
+
+
+def test_instant_closure_rows_survive_in_the_incident_table():
+    """The row is not deleted — only its duration is unobserved."""
+    from scripts.utils.cleaning import CleaningStats, compute_resolution_hours, instant_closure_flag
+
+    df = _closure_frame([("2020-01-01T00:00:00Z", "2020-01-01T00:00:07Z")])
+    df["status"] = "closed"
+    df["resolution_instant_closure"] = instant_closure_flag(df, "reported_at", "closed_at")
+    df["resolution_time_hours"] = compute_resolution_hours(
+        df, "reported_at", "closed_at", CleaningStats(dataset="t"))
+    assert len(df) == 1
+    assert df["status"].iloc[0] == "closed"
+    assert pd.notna(df["closed_at"].iloc[0])
+    assert bool(df["resolution_instant_closure"].iloc[0]) is True
+    assert pd.isna(df["resolution_time_hours"].iloc[0])
+
+
+# ---------------------------------------------------------------------------
+# split policy: per-source vs global chronology
+# ---------------------------------------------------------------------------
+def _two_city_frame():
+    """Two cities on disjoint timelines — the situation that makes the two policies differ."""
+    early = pd.Timestamp("2010-01-01", tz="UTC")
+    late = pd.Timestamp("2018-01-01", tz="UTC")
+    rows = ([{"source_dataset": "nyc311", "reported_at": early + pd.Timedelta(days=i)}
+             for i in range(100)] +
+            [{"source_dataset": "chicago311", "reported_at": late + pd.Timedelta(days=i)}
+             for i in range(100)])
+    return pd.DataFrame(rows)
+
+
+def test_global_split_is_chronological_on_one_wall_clock():
+    from scripts.preprocess._ml_common import dual_chronological_split
+
+    df = _two_city_frame()
+    per_src, glob, meta = dual_chronological_split(df)
+    ts = pd.to_datetime(df["reported_at"], utc=True)
+    assert ts[glob == "train"].max() <= ts[glob == "val"].min()
+    assert ts[glob == "val"].max() <= ts[glob == "test"].min()
+    assert meta["global"]["globally_chronological"] is True
+
+
+def test_per_source_split_is_chronological_within_each_source():
+    from scripts.preprocess._ml_common import dual_chronological_split
+
+    df = _two_city_frame()
+    per_src, glob, _ = dual_chronological_split(df)
+    ts = pd.to_datetime(df["reported_at"], utc=True)
+    for src, g in df.groupby("source_dataset"):
+        s = per_src.loc[g.index]
+        t = ts.loc[g.index]
+        assert t[s == "train"].max() <= t[s == "val"].min()
+        assert t[s == "val"].max() <= t[s == "test"].min()
+
+
+def test_per_source_split_is_NOT_globally_chronological_and_global_one_is():
+    """
+    The exact trade-off, pinned down: the per-source column keeps every city in
+    every fold but is not globally ordered; the global column is ordered but
+    loses a city from val/test. Neither is a bug; picking silently would be.
+    """
+    from scripts.preprocess._ml_common import dual_chronological_split
+
+    df = _two_city_frame()
+    per_src, glob, _ = dual_chronological_split(df)
+    ts = pd.to_datetime(df["reported_at"], utc=True)
+
+    # per-source: test rows exist that predate the last training row
+    assert (ts[per_src == "test"] < ts[per_src == "train"].max()).any()
+    assert df.loc[per_src == "test", "source_dataset"].nunique() == 2
+
+    # global: no such row, and the early city has vanished from test
+    assert not (ts[glob == "test"] < ts[glob == "train"].max()).any()
+    assert df.loc[glob == "test", "source_dataset"].nunique() == 1
+
+
+def test_baseline_preprocessing_is_fitted_on_train_only():
+    """A category seen only in test must not create a new encoder level."""
+    from scripts.baselines.run_baselines import prepare
+
+    df = pd.DataFrame({
+        "source_dataset": ["a311"] * 5 + ["b311"] * 5,       # multi-source -> split_global
+        "split": ["train"] * 6 + ["val"] * 2 + ["test"] * 2,
+        "split_global": ["train"] * 6 + ["val"] * 2 + ["test"] * 2,
+        "cat": ["a", "a", "b", "b", "a", "b", "a", "b", "ZZZ_unseen", "a"],
+        "num": np.arange(10, dtype=float),
+    })
+    (tr, va, te), (Xtr, Xva, Xte), mask = prepare(df, ["cat", "num"])
+    assert len(tr) == 6 and len(va) == 2 and len(te) == 2
+    # the level that appears only in test is encoded as the reserved unknown code
+    assert Xte["cat"].iloc[0] == -1
+    assert set(Xtr["cat"].unique()) == {0.0, 1.0}
+
+
+def test_pooled_tables_use_the_global_split_column():
+    """A multi-city table must be scored on one wall clock."""
+    from scripts.baselines.run_baselines import choose_split_column
+
+    df = pd.DataFrame({
+        "source_dataset": ["a311"] * 4 + ["b311"] * 4,
+        "split": ["train"] * 8,
+        "split_global": ["train"] * 4 + ["val"] * 2 + ["test"] * 2,
+    })
+    assert choose_split_column(df) == "split_global"
+
+
+def test_single_source_tables_fall_back_to_the_per_source_split():
+    """
+    sla_ml is NYC-only and NYC is the earliest data in the corpus, so a global
+    cut puts every row in train. There the per-source column is already
+    chronological on one clock and is the correct choice.
+    """
+    from scripts.baselines.run_baselines import choose_split_column
+
+    df = pd.DataFrame({
+        "source_dataset": ["nyc311"] * 8,
+        "split": ["train"] * 4 + ["val"] * 2 + ["test"] * 2,
+        "split_global": ["train"] * 8,          # degenerate
+    })
+    assert choose_split_column(df) == "split"
+
+
+# ---------------------------------------------------------------------------
+# hotspot rolling-4-week baseline
+# ---------------------------------------------------------------------------
+def _hotspot_panel():
+    weeks = pd.date_range("2020-01-06", periods=8, freq="7D")
+    counts = [10, 20, 30, 40, 50, 60, 70, 80]
+    return pd.DataFrame({
+        "city": "Chicago", "zone_type": "ward", "zone_id": "1", "category": "POTHOLE",
+        "week_start": weeks, "incident_count": counts,
+        "future_incident_count": counts[1:] + [np.nan],
+    })
+
+
+def test_rolling_baseline_uses_only_completed_weeks():
+    from scripts.baselines.run_baselines import rolling_mean_baseline
+
+    p = _hotspot_panel()
+    roll = rolling_mean_baseline(p, 4, lagged=False)
+    # row 4 (week 5, count 50) -> mean of weeks t-3..t = 20,30,40,50
+    assert roll.iloc[4] == pytest.approx((20 + 30 + 40 + 50) / 4)
+    # never touches the target column
+    assert roll.iloc[4] != p["future_incident_count"].iloc[4]
+
+
+def test_rolling_baseline_is_blind_to_the_target():
+    """Rewriting every future value must not move a single baseline prediction."""
+    from scripts.baselines.run_baselines import rolling_mean_baseline
+
+    p = _hotspot_panel()
+    before = rolling_mean_baseline(p, 4, lagged=False).to_numpy(float)
+    tampered = p.copy()
+    tampered["future_incident_count"] = 99999.0
+    after = rolling_mean_baseline(tampered, 4, lagged=False).to_numpy(float)
+    assert np.allclose(before, after, equal_nan=True)
+
+
+def test_rolling_baseline_never_reads_a_later_week():
+    """Truncating the panel after week t must not change the prediction at t."""
+    from scripts.baselines.run_baselines import rolling_mean_baseline
+
+    p = _hotspot_panel()
+    full = rolling_mean_baseline(p, 4, lagged=False).to_numpy(float)
+    for t in range(1, len(p)):
+        truncated = rolling_mean_baseline(p.iloc[: t + 1].copy(), 4, lagged=False).to_numpy(float)
+        assert truncated[t] == pytest.approx(full[t]), f"week {t} changed when the future was cut"
+
+
+def test_lagged_rolling_variant_excludes_the_current_week():
+    from scripts.baselines.run_baselines import rolling_mean_baseline
+
+    p = _hotspot_panel()
+    lag = rolling_mean_baseline(p, 4, lagged=True)
+    # row 4 -> weeks t-4..t-1 = 10,20,30,40
+    assert lag.iloc[4] == pytest.approx((10 + 20 + 30 + 40) / 4)
+    assert pd.isna(lag.iloc[0])
+
+
+def test_rolling_baseline_is_computed_per_series():
+    """History must not bleed between zones or categories."""
+    from scripts.baselines.run_baselines import rolling_mean_baseline
+
+    a = _hotspot_panel()
+    b = _hotspot_panel()
+    b["zone_id"] = "2"
+    b["incident_count"] = [1000] * 8
+    both = pd.concat([a, b], ignore_index=True)
+    roll = rolling_mean_baseline(both, 4, lagged=False)
+    assert roll.iloc[:8].max() < 100, "zone 1 picked up zone 2's counts"

@@ -28,9 +28,9 @@ is downloaded.
 | PostGIS geospatial enrichment | **Deterministic computation** — not ML | Interface defined; India layer not yet plugged in |
 | Priority (baseline) | **Deterministic rule engine** — not ML | Implemented, explainable, config-driven |
 | Priority (learned) | **ML** | **Blocked — no genuine labels exist** |
-| Resolution time | **ML** | Conditionally ready — see `ML_READINESS.md` §2 |
-| SLA risk | **ML** | Conditionally ready — NYC 2010 only, `ML_READINESS.md` §3 |
-| Hotspot / incident risk | **ML or statistical** | Conditionally ready — beats persistence but **not** a 4-week moving average, `ML_READINESS.md` §4 |
+| Resolution time | **ML** | Trained. Beats the median baseline on MAE, loses on median AE — `ML_READINESS.md` §8 |
+| SLA risk | **ML** | Trained. PR-AUC 0.249 vs a 0.104 base rate (x2.4), NYC 2010 only — `ML_READINESS.md` §8 |
+| Hotspot / incident risk | **ML or statistical** | Trained. Still does not stably beat a 4-week moving average — ship the baseline, `ML_READINESS.md` §8 |
 | Duplicate detection | **ML or algorithmic** | Labels ready, **evaluation is not** — `ML_READINESS.md` §5 |
 | SLA assignment from priority | **Business rule** — not ML | Config: P1 30h, P2 50h, P3 72h, P4 90h |
 | Severity | **Not predicted** | Out of scope; NULL everywhere |

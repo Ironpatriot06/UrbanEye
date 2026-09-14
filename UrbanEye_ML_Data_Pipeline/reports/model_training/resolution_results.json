@@ -1,0 +1,256 @@
+{
+  "task": "resolution",
+  "dataset": "resolution_ml",
+  "target": "resolution_time_hours",
+  "trained_at_utc": "2026-09-14T19:53:56.446214+00:00",
+  "environment": {
+    "python": "3.11.8",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "joblib": "1.5.1",
+    "seed": 20260915
+  },
+  "split_column": "split_global",
+  "split_counts": {
+    "train": 659627,
+    "val": 141349,
+    "test": 141349
+  },
+  "rows": {
+    "train": 659627,
+    "val": 141349,
+    "test": 141349
+  },
+  "rows_dropped_missing_target": 0,
+  "n_features": 20,
+  "features": [
+    "category",
+    "subcategory",
+    "city",
+    "source_dataset",
+    "department",
+    "zone_key",
+    "zone_type",
+    "report_channel",
+    "hour",
+    "day_of_week",
+    "month",
+    "year",
+    "is_weekend",
+    "is_night",
+    "nearby_similar_incidents_24h",
+    "nearby_similar_incidents_7d",
+    "nearby_similar_incidents_30d",
+    "local_incident_density",
+    "category_incident_density",
+    "hours_since_previous_similar_incident"
+  ],
+  "preprocessing": {
+    "n_predictors": 20,
+    "categorical": [
+      "category",
+      "subcategory",
+      "city",
+      "source_dataset",
+      "department",
+      "zone_key",
+      "zone_type",
+      "report_channel",
+      "is_weekend",
+      "is_night"
+    ],
+    "numeric": [
+      "hour",
+      "day_of_week",
+      "month",
+      "year",
+      "nearby_similar_incidents_24h",
+      "nearby_similar_incidents_7d",
+      "nearby_similar_incidents_30d",
+      "local_incident_density",
+      "category_incident_density",
+      "hours_since_previous_similar_incident"
+    ],
+    "max_levels_per_categorical": 250,
+    "vocabulary_sizes": {
+      "category": 12,
+      "subcategory": 251,
+      "city": 3,
+      "source_dataset": 3,
+      "department": 121,
+      "zone_key": 169,
+      "zone_type": 3,
+      "report_channel": 7,
+      "is_weekend": 2,
+      "is_night": 2
+    },
+    "missing_policy": "categorical NULL -> explicit __MISSING__ level",
+    "rare_level_policy": "levels outside the train top-250 -> __OTHER__",
+    "unknown_policy": "levels unseen at fit time -> -1",
+    "fitted_on": "training fold only"
+  },
+  "selected_config": "C_log1p_deeper",
+  "selection_metric": "validation MAE",
+  "model_params": {
+    "loss": "squared_error",
+    "max_iter": 500,
+    "learning_rate": 0.06,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 20,
+    "l2_regularization": 1.0
+  },
+  "target_transform": "log1p",
+  "notes": [
+    "split column: split_global \u2014 multi-source table (3 sources) \u2014 pooled evaluation on one wall clock"
+  ],
+  "artifacts": {
+    "model": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/model.joblib",
+    "preprocessor": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/preprocessor.joblib",
+    "metadata": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/metadata.json"
+  },
+  "baseline": {
+    "definition": "predict the TRAINING median for every row",
+    "train_median_hours": 115.49083333333333,
+    "val": {
+      "n": 141349,
+      "MAE": 866.6050527300041,
+      "RMSE": 3684.0064348536534,
+      "median_AE": 108.7511111111111,
+      "R2": -0.045653991142177386,
+      "p90_AE": 1288.6085,
+      "p99_AE": 14117.109533333314,
+      "RMSE_log1p": 2.4289791851537763
+    },
+    "test": {
+      "n": 141349,
+      "MAE": 1034.8018234142282,
+      "RMSE": 3684.1563759850264,
+      "median_AE": 115.45388888888888,
+      "R2": -0.0728113422969523,
+      "p90_AE": 1687.3051666666652,
+      "p99_AE": 18044.77991111111,
+      "RMSE_log1p": 2.4026922322550104
+    }
+  },
+  "metrics": {
+    "val": {
+      "n": 141349,
+      "MAE": 734.4971596450849,
+      "RMSE": 3101.8648886460196,
+      "median_AE": 84.21565410602199,
+      "R2": 0.25870171919143226,
+      "p90_AE": 1151.07774916179,
+      "p99_AE": 11939.424837984781,
+      "RMSE_log1p": 1.809039079356973
+    },
+    "test": {
+      "n": 141349,
+      "MAE": 896.5124757228067,
+      "RMSE": 3153.75985517696,
+      "median_AE": 133.32163371457602,
+      "R2": 0.2138516880967739,
+      "p90_AE": 1575.886926842918,
+      "p99_AE": 17380.60218274514,
+      "RMSE_log1p": 1.8816055260535816
+    }
+  },
+  "per_city_test": {
+    "Chicago": {
+      "model": {
+        "n": 141349,
+        "MAE": 896.5124757228067,
+        "RMSE": 3153.75985517696,
+        "median_AE": 133.32163371457602,
+        "R2": 0.2138516880967739,
+        "p90_AE": 1575.886926842918,
+        "p99_AE": 17380.60218274514,
+        "RMSE_log1p": 1.8816055260535816
+      },
+      "baseline_train_median": {
+        "n": 141349,
+        "MAE": 1034.8018234142282,
+        "RMSE": 3684.1563759850264,
+        "median_AE": 115.45388888888888,
+        "R2": -0.0728113422969523,
+        "p90_AE": 1687.3051666666652,
+        "p99_AE": 18044.77991111111,
+        "RMSE_log1p": 2.4026922322550104
+      }
+    }
+  },
+  "experiments": {
+    "A_log1p_squared": {
+      "question": "does the natural shape of the target (log) model it best?",
+      "target_transform": "log1p",
+      "params": {
+        "loss": "squared_error",
+        "max_iter": 250,
+        "learning_rate": 0.1,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 40,
+        "l2_regularization": 0.0
+      },
+      "fit_seconds": 5.8,
+      "val": {
+        "n": 141349,
+        "MAE": 743.8762310215267,
+        "RMSE": 3191.7927959090666,
+        "median_AE": 83.05708191962168,
+        "R2": 0.21509586041966167,
+        "p90_AE": 1124.323128453531,
+        "p99_AE": 12251.563219305643,
+        "RMSE_log1p": 1.8030880795659046
+      }
+    },
+    "B_raw_absolute": {
+      "question": "does optimising MAE directly beat optimising it indirectly?",
+      "target_transform": "none",
+      "params": {
+        "loss": "absolute_error",
+        "max_iter": 250,
+        "learning_rate": 0.1,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 40,
+        "l2_regularization": 0.0
+      },
+      "fit_seconds": 8.2,
+      "val": {
+        "n": 141349,
+        "MAE": 794.3001693214891,
+        "RMSE": 3224.954425413033,
+        "median_AE": 132.8467353865841,
+        "R2": 0.19870136580913522,
+        "p90_AE": 1388.3754267437785,
+        "p99_AE": 12095.654589576197,
+        "RMSE_log1p": 2.2494319305316957
+      }
+    },
+    "C_log1p_deeper": {
+      "question": "is configuration A limited by capacity?",
+      "target_transform": "log1p",
+      "params": {
+        "loss": "squared_error",
+        "max_iter": 500,
+        "learning_rate": 0.06,
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 20,
+        "l2_regularization": 1.0
+      },
+      "fit_seconds": 13.8,
+      "val": {
+        "n": 141349,
+        "MAE": 734.4971596450849,
+        "RMSE": 3101.8648886460196,
+        "median_AE": 84.21565410602199,
+        "R2": 0.25870171919143226,
+        "p90_AE": 1151.07774916179,
+        "p99_AE": 11939.424837984781,
+        "RMSE_log1p": 1.809039079356973
+      }
+    }
+  },
+  "verdict": "beats the median baseline on MAE but LOSES on median absolute error \u2014 it wins on the tail and loses in the middle",
+  "honesty_note": "Selection used validation only. The test fold was scored once, with the already-chosen configuration. Per-city numbers are reported, not used to select."
+}

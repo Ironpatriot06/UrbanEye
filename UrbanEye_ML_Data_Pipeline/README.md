@@ -144,12 +144,29 @@ python scripts/validation/audit_statistics.py         # imbalance, drift, degene
 python scripts/validation/report_category_candidates.py
 ```
 
-Optional, and **not** part of the pipeline — baseline models, for evidence that
-a task is actually modellable (needs `pip install scikit-learn`):
+Optional, and **not** part of the pipeline — baselines and models. Both need
+`pip install scikit-learn`; the pipeline itself still trains nothing.
 
 ```bash
+# naive/statistical baselines — the bar every model must clear
 python scripts/baselines/run_baselines.py
+
+# train and evaluate every ready task (resolution, SLA, hotspot)
+python scripts/train/run_all.py
+
+# or one at a time
+python scripts/train/train_resolution.py
+python scripts/train/train_sla.py
+python scripts/train/train_hotspot.py
 ```
+
+Duplicate detection and priority are **not** trained — see
+[`ML_READINESS.md`](ML_READINESS.md) §8 for why, and why no amount of training
+would fix either.
+
+Models land in `models/<task>/` (model + preprocessor + metadata) and reports in
+`reports/model_training/`. Model artifacts are generated files and are excluded
+from version control by `.gitignore`, in line with the policy for `data/`.
 
 Useful flags: `--from 4-features`, `--only build_ml_dataset`, `--dry-run`,
 `--fixtures`. Sources with no raw files are skipped with a warning instead of
@@ -363,9 +380,9 @@ Full rebuild from an empty `data/processed/`:
 
 | Suite | Result |
 |---|---|
-| `run_pipeline.py` (real data, from scratch) | **22/22 steps OK in 522s** |
+| `run_pipeline.py` (real data, from scratch) | **22/22 steps OK in ~610s** |
 | `run_pipeline.py --fixtures` | **19/19 steps OK in 8s** |
-| `pytest tests` | **32/32 passed** |
+| `pytest tests` | **90/90 passed** (48 pipeline + 42 training) |
 | `audit_pipeline.py` | **56/56 checks** |
 | `audit_task_datasets.py` | **78/80 checks** (2 skips: no joinable history columns) |
 | `audit_statistics.py` | 42 findings, classified; 1 `dangerous` (a documented regime change) |
@@ -409,6 +426,7 @@ UrbanEye_ML_Data_Pipeline/
 │   ├── preprocess/               4 city processors + 5 builders
 │   ├── features/                 consolidated + per-task ML dataset builders
 │   ├── baselines/                optional baseline models (not part of the pipeline)
+│   ├── train/                    model training + evaluation (not part of the pipeline)
 │   ├── validation/               7 validators + schema-doc generator
 │   ├── utils/                    paths, schema, cleaning, mapping, manifest
 │   └── run_pipeline.py           orchestrator

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-14T17:59:13.044692+00:00",
+  "generated_at_utc": "2026-09-14T19:45:30.943057+00:00",
   "purpose": "evidence of dataset readiness, not production models. Every model here is an out-of-the-box gradient-boosted tree with default-ish settings.",
   "protocol": {
     "split_column_requested": "split_global",
@@ -11,7 +11,7 @@
   "results": {
     "resolution": {
       "rows_trained_on": 400000,
-      "fit_seconds": 4.8,
+      "fit_seconds": 3.6,
       "split_column": "split_global",
       "target": "log1p(resolution_time_hours), metrics reported in hours",
       "naive_baseline": "median resolution time of the TRAIN split",
@@ -69,7 +69,7 @@
     },
     "sla": {
       "rows_trained_on": 13209,
-      "fit_seconds": 0.6,
+      "fit_seconds": 0.4,
       "split_column": "split",
       "naive_baseline": "predict the TRAIN positive rate for every row",
       "val": {
@@ -120,7 +120,7 @@
     },
     "hotspot": {
       "rows_trained_on": 47092,
-      "fit_seconds": 1.4,
+      "fit_seconds": 1.0,
       "split_column": "split_global",
       "baselines": {
         "persistence": "future_incident_count = this week's incident_count",
@@ -203,7 +203,7 @@
     },
     "duplicate": {
       "rows_trained_on": 324501,
-      "fit_seconds": 1.7,
+      "fit_seconds": 1.2,
       "split_column": "split",
       "naive_baseline": "predict the TRAIN positive rate for every pair",
       "val": {

@@ -19,9 +19,9 @@ Generated artefacts behind this document:
 
 | Task | Dataset | Rows | Target | Verdict |
 |---|---|---|---|---|
-| Resolution time | `resolution_ml.parquet` | 942,325 | `resolution_time_hours` | **CONDITIONALLY READY** |
-| SLA breach | `sla_ml.parquet` | 20,224 | `sla_breach` | **CONDITIONALLY READY** |
-| Hotspot | `hotspot_ml.parquet` | 67,092 | `future_incident_count` | **CONDITIONALLY READY** — does not beat a 4-week moving average |
+| Resolution time | `resolution_ml.parquet` | 942,325 | `resolution_time_hours` | **CONDITIONALLY READY** — trained; wins on MAE, loses on median AE |
+| SLA breach | `sla_ml.parquet` | 20,213 | `sla_breach` | **CONDITIONALLY READY** — trained; 2.4x lift over the base rate |
+| Hotspot | `hotspot_ml.parquet` | 67,092 | `future_incident_count` | **CONDITIONALLY READY** — trained; still does not stably beat a 4-week moving average |
 | Duplicate detection | `duplicate_ml.parquet` | 455,460 | `same_incident` | **NOT READY for evaluation** |
 | Priority | `priority_features.parquet` | 1,900,000 | none | **NOT READY — and not a supervised task** |
 
@@ -276,7 +276,106 @@ map to a reserved code.
 
 ---
 
-## 8. Cross-cutting limits
+---
+
+## 8. Trained models — status and results
+
+`scripts/train/` fits one model per ready task. Everything below was produced by
+`python scripts/train/run_all.py`; the full reports live in
+`reports/model_training/`.
+
+### Ready for training — and trained
+
+| Task | Model | Test headline | Baseline (test) | Clears its baseline? |
+|---|---|---|---|---|
+| **Resolution** | HGB, squared_error on log1p | MAE **896.5** · median AE **133.3** · R² 0.214 | median 1034.8 / 115.5 | on MAE yes, **on median AE no** |
+| **SLA** | HGB, default | PR-AUC **0.249** · ROC-AUC 0.683 · recall 0.361 | base rate 0.104 | **yes, x2.40 lift** |
+| **Hotspot** | HGB, squared_error on log1p | MAE **10.31** | rolling 4-week mean 10.89 | **not stably — loses on validation** |
+
+### NOT ready — not trained, and no amount of training fixes them
+
+| Task | Why |
+|---|---|
+| **Duplicate detection** | The labels are genuine but the evaluation set is not. In the realistic candidate population (same category, ≤200 m, ≤7 days) the test fold holds **23,480 positives and zero negatives**, and a depth-2 decision tree scores PR-AUC 0.967. Any headline metric measures the negative-sampling rule. Needs adjudicated hard negatives. |
+| **Priority** | No public 311 dataset records an operational priority. `priority_baseline` is a deterministic function of `config/priority_config.yaml`, so a model fitted to it would reproduce the YAML and any accuracy quoted from it would be circular. Needs operator-assigned priorities and the override flag. |
+
+`scripts/train/run_all.py` refuses to train either and records the reason in
+`training_summary.json`.
+
+### Hotspot: the rolling 4-week mean is the benchmark, and it is strong
+
+| Fold | Model | Rolling 4-week mean | Rolling 4-week, lagged | Persistence |
+|---|---|---|---|---|
+| validation | 7.457 | **6.978** | 7.323 | 7.926 |
+| test | **10.314** | 10.885 | 11.762 | 12.623 |
+
+The model **loses to the rolling mean on validation by 6.9%** and beats it on
+test by 5.2%. A win on one fold and a loss on the other is not an improvement,
+it is noise, and the verdict in `hotspot_results.json` is **derived from the
+numbers in code** rather than written by hand so that it cannot drift into
+optimism. `tests/test_training.py::test_hotspot_report_does_not_claim_a_win_it_did_not_earn`
+asserts exactly that.
+
+**Validation performance must never be hidden when the ML model loses to the
+baseline.** If only the test number were quoted, this model would look like a
+5% improvement. It is not one. The current recommendation is to **ship the
+rolling 4-week mean** and treat the model as unproven.
+
+### Resolution: a known median-error limitation
+
+The model wins on MAE (−13.4% against the training-median baseline) and **loses
+on median absolute error** (133.3 h vs 115.5 h). It is better on the long tail
+and worse in the middle of the distribution, which is where most operational
+decisions live. The same pattern does not appear on validation (model 84.2 h vs
+baseline 108.8 h), so the reversal is a property of the test period — Chicago's
+2020 window — not a stable model characteristic.
+
+Anyone quoting a single resolution number must quote both, and must say which
+period it covers.
+
+Configurations tried, all scored on validation MAE:
+
+| Config | Question | val MAE |
+|---|---|---|
+| A_log1p_squared | does the natural shape of the target model it best? | 743.9 |
+| B_raw_absolute | does optimising MAE directly beat optimising it indirectly? | 794.3 |
+| **C_log1p_deeper** | is A capacity-limited? | **734.5** |
+
+B is the informative failure: fitting `absolute_error` on raw hours optimises
+the headline metric directly and still does worse than fitting squared error on
+`log1p`. The target's shape matters more than the loss function's name.
+
+### SLA: real signal on a narrow population
+
+PR-AUC 0.249 against a 0.104 base rate is a **2.4x lift**, with ROC-AUC 0.683.
+Class weighting (`class_weight='balanced'`) made it *worse* (val PR-AUC 0.263 vs
+0.279), so the selected model is the unweighted one; imbalance is never handled
+by resampling, which would move validation and test away from the prevalence a
+deployment would see. The decision threshold (0.167) is chosen by maximising F1
+on **validation** and frozen before test is scored.
+
+Accuracy is deliberately not a headline. At a ~10% positive rate, "never
+breaches" scores ~90% accuracy and catches nothing.
+
+The constraint is the population, not the model: NYC only, January–March 2010,
+and only the complaint types that carry a Due Date.
+
+### Split policy in training
+
+The training framework uses the same `choose_split_column` rule as the
+baselines, so a model is never scored on a different footing from the baseline
+it is compared against:
+
+- **`split_global`** for resolution and hotspot — multi-city tables, pooled
+  models, one wall clock.
+- **`split`** for SLA — the table is NYC-only, so a global cut would put every
+  row in train and leave validation and test empty.
+
+The two columns answer different questions and neither is a compromise. See §7.
+
+---
+
+## 9. Cross-cutting limits
 
 1. **Chicago is 84% of the corpus.** Any pooled metric is a Chicago metric.
 2. **The cities barely overlap in time** — NYC Jan–Mar 2010, SF Jan–May 2018,

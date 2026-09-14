@@ -21,6 +21,8 @@ Empty until you run the pipeline. Generated here:
 | `category_mapping_candidates.csv` / `.md` / `.json` | `validation/report_category_candidates.py` — ranked proposals, **applied to nothing** |
 | `task_datasets_index.json` | `features/build_task_datasets.py` |
 | `baseline_models.json` / `.md` | `baselines/run_baselines.py` — optional, not part of the pipeline |
+| `model_training/<task>_results.json` / `.md` | `train/train_<task>.py` — per-task training + evaluation |
+| `model_training/training_summary.json` / `.md` | `train/run_all.py` — cross-task summary, including the tasks deliberately not trained |
 | `unmapped_categories.csv` | the preprocessors — **your work queue for extending category_mapping.csv** |
 | `pipeline_run.json` | `run_pipeline.py` |
 

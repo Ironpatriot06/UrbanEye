@@ -1,6 +1,6 @@
 # Baseline models
 
-Generated 2026-09-14T17:59:13.044692+00:00
+Generated 2026-09-14T19:45:30.943057+00:00
 
 evidence of dataset readiness, not production models. Every model here is an out-of-the-box gradient-boosted tree with default-ish settings.
 
@@ -14,7 +14,7 @@ evidence of dataset readiness, not production models. Every model here is an out
 
 ## resolution
 
-Trained on 400,000 rows in 4.8s. Naive baseline: median resolution time of the TRAIN split.
+Trained on 400,000 rows in 3.6s. Naive baseline: median resolution time of the TRAIN split.
 
 **val**
 
@@ -41,7 +41,7 @@ Trained on 400,000 rows in 4.8s. Naive baseline: median resolution time of the T
 
 ## sla
 
-Trained on 13,209 rows in 0.6s. Naive baseline: predict the TRAIN positive rate for every row.
+Trained on 13,209 rows in 0.4s. Naive baseline: predict the TRAIN positive rate for every row.
 
 **val**
 
@@ -74,7 +74,7 @@ Trained on 13,209 rows in 0.6s. Naive baseline: predict the TRAIN positive rate 
 
 ## hotspot
 
-Trained on 47,092 rows in 1.4s. Naive baseline: None.
+Trained on 47,092 rows in 1.0s. Naive baseline: None.
 
 **val**
 
@@ -103,7 +103,7 @@ Trained on 47,092 rows in 1.4s. Naive baseline: None.
 
 ## duplicate
 
-Trained on 324,501 rows in 1.7s. Naive baseline: predict the TRAIN positive rate for every pair.
+Trained on 324,501 rows in 1.2s. Naive baseline: predict the TRAIN positive rate for every pair.
 
 **val**
 

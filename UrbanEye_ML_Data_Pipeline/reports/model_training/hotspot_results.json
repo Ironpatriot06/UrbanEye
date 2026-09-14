@@ -1,0 +1,314 @@
+{
+  "task": "hotspot",
+  "dataset": "hotspot_ml",
+  "target": "future_incident_count",
+  "trained_at_utc": "2026-09-14T19:54:03.739119+00:00",
+  "environment": {
+    "python": "3.11.8",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "joblib": "1.5.1",
+    "seed": 20260915
+  },
+  "split_column": "split_global",
+  "split_counts": {
+    "train": 47092,
+    "val": 10000,
+    "test": 10000
+  },
+  "rows": {
+    "train": 47092,
+    "val": 10000,
+    "test": 10000
+  },
+  "rows_dropped_missing_target": 0,
+  "n_features": 13,
+  "features": [
+    "city",
+    "zone_key",
+    "zone_type",
+    "category",
+    "month",
+    "year",
+    "week_of_year",
+    "incident_count",
+    "previous_period_count",
+    "rolling_4w_count",
+    "rolling_12w_count",
+    "rolling_4w_mean",
+    "trend_4w"
+  ],
+  "preprocessing": {
+    "n_predictors": 13,
+    "categorical": [
+      "city",
+      "zone_key",
+      "zone_type",
+      "category"
+    ],
+    "numeric": [
+      "month",
+      "year",
+      "week_of_year",
+      "incident_count",
+      "previous_period_count",
+      "rolling_4w_count",
+      "rolling_12w_count",
+      "rolling_4w_mean",
+      "trend_4w"
+    ],
+    "max_levels_per_categorical": 250,
+    "vocabulary_sizes": {
+      "city": 3,
+      "zone_key": 168,
+      "zone_type": 3,
+      "category": 12
+    },
+    "missing_policy": "categorical NULL -> explicit __MISSING__ level",
+    "rare_level_policy": "levels outside the train top-250 -> __OTHER__",
+    "unknown_policy": "levels unseen at fit time -> -1",
+    "fitted_on": "training fold only"
+  },
+  "selected_config": "C_log1p_squared",
+  "selection_metric": "validation MAE",
+  "model_params": {
+    "loss": "squared_error",
+    "max_iter": 300,
+    "learning_rate": 0.1,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.0
+  },
+  "target_transform": "log1p",
+  "primary_benchmark": "rolling_4w_mean",
+  "notes": [
+    "split column: split_global \u2014 multi-source table (3 sources) \u2014 pooled evaluation on one wall clock"
+  ],
+  "artifacts": {
+    "model": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/model.joblib",
+    "preprocessor": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/preprocessor.joblib",
+    "metadata": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/metadata.json"
+  },
+  "baseline_definitions": {
+    "persistence": "future_incident_count = this week's incident_count",
+    "rolling_4w_mean": "mean weekly count over weeks t-3..t (PRIMARY benchmark)",
+    "rolling_4w_mean_lagged": "mean weekly count over weeks t-4..t-1"
+  },
+  "baselines": {
+    "val": {
+      "persistence": {
+        "n": 10000,
+        "MAE": 7.9257,
+        "RMSE": 15.128684675146085,
+        "median_AE": 4.0,
+        "R2": 0.49049962984210005,
+        "p90_AE": 19.0,
+        "p99_AE": 59.01000000000022,
+        "RMSE_log1p": 0.7827644668153773,
+        "poisson_deviance": 14.234058868857433
+      },
+      "rolling_4w_mean": {
+        "n": 10000,
+        "MAE": 6.977875,
+        "RMSE": 13.01246877998176,
+        "median_AE": 3.5,
+        "R2": 0.6230692549959411,
+        "p90_AE": 16.5,
+        "p99_AE": 52.25,
+        "RMSE_log1p": 0.683102500070187,
+        "poisson_deviance": 6.139147801873871
+      },
+      "rolling_4w_mean_lagged": {
+        "n": 10000,
+        "MAE": 7.3226,
+        "RMSE": 13.679686582667017,
+        "median_AE": 3.75,
+        "R2": 0.5834237977212937,
+        "p90_AE": 17.0,
+        "p99_AE": 53.25,
+        "RMSE_log1p": 0.7086615308111773,
+        "poisson_deviance": 6.694811021386413
+      }
+    },
+    "test": {
+      "persistence": {
+        "n": 10000,
+        "MAE": 12.6231,
+        "RMSE": 37.10458327484625,
+        "median_AE": 5.0,
+        "R2": 0.09280250743412433,
+        "p90_AE": 26.0,
+        "p99_AE": 108.02000000000044,
+        "RMSE_log1p": 0.8422029145143625,
+        "poisson_deviance": 23.877913920631766
+      },
+      "rolling_4w_mean": {
+        "n": 10000,
+        "MAE": 10.885,
+        "RMSE": 31.64848515332132,
+        "median_AE": 5.0,
+        "R2": 0.3399868637400121,
+        "p90_AE": 22.75,
+        "p99_AE": 85.50750000000016,
+        "RMSE_log1p": 0.733112022367634,
+        "poisson_deviance": 14.47541502596829
+      },
+      "rolling_4w_mean_lagged": {
+        "n": 10000,
+        "MAE": 11.76215,
+        "RMSE": 33.382876411417875,
+        "median_AE": 5.25,
+        "R2": 0.2656649904915962,
+        "p90_AE": 24.75,
+        "p99_AE": 95.75250000000005,
+        "RMSE_log1p": 0.7632999211490246,
+        "poisson_deviance": 16.55584286717254
+      }
+    }
+  },
+  "metrics": {
+    "val": {
+      "n": 10000,
+      "MAE": 7.457111489309407,
+      "RMSE": 14.219959532231893,
+      "median_AE": 3.5194821704722,
+      "R2": 0.5498690421007563,
+      "p90_AE": 18.257945128113207,
+      "p99_AE": 55.66450668840271,
+      "RMSE_log1p": 0.6973338335942494,
+      "poisson_deviance": 7.2053922844372185
+    },
+    "test": {
+      "n": 10000,
+      "MAE": 10.314467448067894,
+      "RMSE": 32.41339646301305,
+      "median_AE": 4.37037366380933,
+      "R2": 0.3076976479563165,
+      "p90_AE": 20.623964523715685,
+      "p99_AE": 87.24893021026621,
+      "RMSE_log1p": 0.6819869612933304,
+      "poisson_deviance": 14.778467463099956
+    }
+  },
+  "comparison": {
+    "val": {
+      "persistence": {
+        "model_MAE": 7.457111489309407,
+        "baseline_MAE": 7.9257,
+        "mae_improvement": 0.0591,
+        "model_wins": true
+      },
+      "rolling_4w_mean": {
+        "model_MAE": 7.457111489309407,
+        "baseline_MAE": 6.977875,
+        "mae_improvement": -0.0687,
+        "model_wins": false
+      },
+      "rolling_4w_mean_lagged": {
+        "model_MAE": 7.457111489309407,
+        "baseline_MAE": 7.3226,
+        "mae_improvement": -0.0184,
+        "model_wins": false
+      }
+    },
+    "test": {
+      "persistence": {
+        "model_MAE": 10.314467448067894,
+        "baseline_MAE": 12.6231,
+        "mae_improvement": 0.1829,
+        "model_wins": true
+      },
+      "rolling_4w_mean": {
+        "model_MAE": 10.314467448067894,
+        "baseline_MAE": 10.885,
+        "mae_improvement": 0.0524,
+        "model_wins": true
+      },
+      "rolling_4w_mean_lagged": {
+        "model_MAE": 10.314467448067894,
+        "baseline_MAE": 11.76215,
+        "mae_improvement": 0.1231,
+        "model_wins": true
+      }
+    }
+  },
+  "verdict": "LOSES to the rolling 4-week mean on validation (-6.87%) and beats it only on test (+5.24%) \u2014 not a stable improvement",
+  "recommendation": "ship the rolling 4-week mean; the model has not demonstrated a real edge",
+  "experiments": {
+    "A_poisson": {
+      "question": "the loss that matches a count target",
+      "params": {
+        "loss": "poisson",
+        "max_iter": 300,
+        "learning_rate": 0.1,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.0
+      },
+      "target_transform": "none",
+      "fit_seconds": 1.0,
+      "val": {
+        "n": 10000,
+        "MAE": 7.757294351022892,
+        "RMSE": 14.17415763158795,
+        "median_AE": 4.00213676305259,
+        "R2": 0.5527640785245069,
+        "p90_AE": 18.585849264684025,
+        "p99_AE": 53.71063837934141,
+        "RMSE_log1p": 0.7374731329412618,
+        "poisson_deviance": 7.10946422384681
+      }
+    },
+    "B_poisson_regularised": {
+      "question": "the model loses to a 4-week mean despite having that mean as a feature \u2014 is it over-fitting the panel?",
+      "params": {
+        "loss": "poisson",
+        "max_iter": 300,
+        "learning_rate": 0.05,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 100,
+        "l2_regularization": 5.0
+      },
+      "target_transform": "none",
+      "fit_seconds": 0.9,
+      "val": {
+        "n": 10000,
+        "MAE": 7.729711314714352,
+        "RMSE": 14.246592912993739,
+        "median_AE": 3.9247387303559114,
+        "R2": 0.54818131069031,
+        "p90_AE": 18.247355616153246,
+        "p99_AE": 56.85968813372195,
+        "RMSE_log1p": 0.7323326219142238,
+        "poisson_deviance": 6.774603360452753
+      }
+    },
+    "C_log1p_squared": {
+      "question": "does modelling log1p(count) behave better than a Poisson loss here?",
+      "params": {
+        "loss": "squared_error",
+        "max_iter": 300,
+        "learning_rate": 0.1,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.0
+      },
+      "target_transform": "log1p",
+      "fit_seconds": 0.8,
+      "val": {
+        "n": 10000,
+        "MAE": 7.457111489309407,
+        "RMSE": 14.219959532231893,
+        "median_AE": 3.5194821704722,
+        "R2": 0.5498690421007563,
+        "p90_AE": 18.257945128113207,
+        "p99_AE": 55.66450668840271,
+        "RMSE_log1p": 0.6973338335942494,
+        "poisson_deviance": 7.2053922844372185
+      }
+    }
+  },
+  "leakage_note": "Every predictor is a trailing quantity ending at or before week t, while the target is week t+1. The rolling baselines are computed on the full sorted panel so that history is not truncated at a fold boundary. tests/test_pipeline.py asserts the rolling baseline does not move when every future value is rewritten."
+}

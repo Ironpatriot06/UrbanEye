@@ -20,9 +20,10 @@ numpy>=1.24               # verified on 2.4.4 — haversine + scoring maths
 # Tests only (not needed to run the pipeline):
 #   pip install pytest         # verified on 8.3.3 — python -m pytest tests -q
 #
-# Baseline models only (scripts/baselines/, NOT part of the pipeline — the
-# pipeline still trains nothing):
-#   pip install scikit-learn   # verified on 1.6.1
+# Baselines and model training only (scripts/baselines/ and scripts/train/,
+# NOT part of the pipeline — the pipeline itself still trains nothing):
+#   pip install scikit-learn   # verified on 1.6.1; brings joblib, used to
+#                              # persist models and their preprocessors
 
 # Everything else the pipeline uses is in the standard library:
 # argparse collections concurrent.futures dataclasses datetime functools hashlib

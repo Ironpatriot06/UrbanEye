@@ -1,0 +1,110 @@
+{
+  "generated_at_utc": "2026-09-14T19:54:03.859581+00:00",
+  "environment": {
+    "python": "3.11.8",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "joblib": "1.5.1",
+    "seed": 20260915
+  },
+  "total_seconds": 43.6,
+  "runs": {
+    "resolution": {
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/train/train_resolution.py",
+      "returncode": 0,
+      "seconds": 36.1,
+      "status": "OK"
+    },
+    "sla": {
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/train/train_sla.py",
+      "returncode": 0,
+      "seconds": 2.6,
+      "status": "OK"
+    },
+    "hotspot": {
+      "command": "/Users/ratishkapoor/.pyenv/versions/3.11.8/bin/python3 scripts/train/train_hotspot.py",
+      "returncode": 0,
+      "seconds": 4.4,
+      "status": "OK"
+    }
+  },
+  "trained": {
+    "resolution": {
+      "dataset": "resolution_ml",
+      "target": "resolution_time_hours",
+      "split_column": "split_global",
+      "rows": {
+        "train": 659627,
+        "val": 141349,
+        "test": 141349
+      },
+      "n_features": 20,
+      "selected_config": "C_log1p_deeper",
+      "artifacts": {
+        "model": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/model.joblib",
+        "preprocessor": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/preprocessor.joblib",
+        "metadata": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/resolution/metadata.json"
+      },
+      "test_MAE": 896.5124757228067,
+      "test_median_AE": 133.32163371457602,
+      "test_R2": 0.2138516880967739,
+      "baseline_test_MAE": 1034.8018234142282,
+      "baseline_test_median_AE": 115.45388888888888,
+      "verdict": "beats the median baseline on MAE but LOSES on median absolute error \u2014 it wins on the tail and loses in the middle"
+    },
+    "sla": {
+      "dataset": "sla_ml",
+      "target": "sla_breach",
+      "split_column": "split",
+      "rows": {
+        "train": 13209,
+        "val": 3131,
+        "test": 3873
+      },
+      "n_features": 17,
+      "selected_config": "A_default",
+      "artifacts": {
+        "model": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/sla/model.joblib",
+        "preprocessor": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/sla/preprocessor.joblib",
+        "metadata": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/sla/metadata.json"
+      },
+      "test_PR_AUC": 0.2489402071435166,
+      "test_ROC_AUC": 0.6829078462484466,
+      "test_precision": 0.22036474164133737,
+      "test_recall": 0.36069651741293535,
+      "test_f1": 0.27358490566037735,
+      "base_rate_test": 0.10379550735863671,
+      "pr_auc_lift": 2.3983716971811937
+    },
+    "hotspot": {
+      "dataset": "hotspot_ml",
+      "target": "future_incident_count",
+      "split_column": "split_global",
+      "rows": {
+        "train": 47092,
+        "val": 10000,
+        "test": 10000
+      },
+      "n_features": 13,
+      "selected_config": "C_log1p_squared",
+      "artifacts": {
+        "model": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/model.joblib",
+        "preprocessor": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/preprocessor.joblib",
+        "metadata": "/Users/ratishkapoor/Desktop/UrbanEye/UrbanEye_ML_Data_Pipeline/models/hotspot/metadata.json"
+      },
+      "test_MAE": 10.314467448067894,
+      "val_MAE": 7.457111489309407,
+      "baseline_rolling_4w_test_MAE": 10.885,
+      "baseline_rolling_4w_val_MAE": 6.977875,
+      "baseline_persistence_test_MAE": 12.6231,
+      "verdict": "LOSES to the rolling 4-week mean on validation (-6.87%) and beats it only on test (+5.24%) \u2014 not a stable improvement",
+      "recommendation": "ship the rolling 4-week mean; the model has not demonstrated a real edge"
+    }
+  },
+  "not_trained": {
+    "duplicate": "NOT READY \u2014 the labels are genuine but the evaluation set is not. In the realistic candidate population (same category, <=200 m, <=7 days) the test fold contains 23,480 positives and zero negatives, and a depth-2 decision tree scores PR-AUC 0.967. Any headline metric measures the negative-sampling rule. Needs adjudicated hard negatives from real operations.",
+    "priority": "NOT READY and NOT A SUPERVISED TASK \u2014 no public 311 dataset records an operational priority. priority_baseline is a deterministic function of config/priority_config.yaml, so training on it would reproduce the YAML. Needs operator-assigned priorities and the override flag."
+  }
+}

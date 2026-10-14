@@ -1,0 +1,192 @@
+{
+  "resolution": {
+    "hour": {
+      "p01": 1.0,
+      "p99": 23.0,
+      "missing_share": 0.0
+    },
+    "day_of_week": {
+      "p01": 0.0,
+      "p99": 6.0,
+      "missing_share": 0.0
+    },
+    "wl_backlog_open": {
+      "p01": 178.0,
+      "p99": 18990.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_intake_7d": {
+      "p01": 102.0,
+      "p99": 4305.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_intake_30d": {
+      "p01": 498.0,
+      "p99": 16432.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_closed_7d": {
+      "p01": 89.0,
+      "p99": 4571.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_backlog_days": {
+      "p01": 1.241549652820075,
+      "p99": 69.03347595509952,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_recent_closures_30d": {
+      "p01": 308.0,
+      "p99": 13019.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_recent_mean_log_res": {
+      "p01": 1.656915565006103,
+      "p99": 6.981374106344601,
+      "missing_share": 0.0991776441026422
+    },
+    "wl_recent_median_res_h": {
+      "p01": 2.3222222222222224,
+      "p99": 2349.886666666666,
+      "missing_share": 0.09918145130587071
+    },
+    "wl_city_backlog_open": {
+      "p01": 8306.0,
+      "p99": 105235.0,
+      "missing_share": 0.0991738368994137
+    },
+    "wl_city_intake_7d": {
+      "p01": 8418.2,
+      "p99": 30896.0,
+      "missing_share": 0.0991738368994137
+    },
+    "sp_samecat_box750_7d": {
+      "p01": 0.0,
+      "p99": 103.0,
+      "missing_share": 0.11270463717353232
+    },
+    "sp_samecat_box750_30d": {
+      "p01": 0.0,
+      "p99": 415.0,
+      "missing_share": 0.11270463717353232
+    },
+    "sp_samecat_box750_90d": {
+      "p01": 0.0,
+      "p99": 1029.0,
+      "missing_share": 0.2611474910530724
+    },
+    "sp_samecat_box750_open_now": {
+      "p01": 0.0,
+      "p99": 51.0,
+      "missing_share": 0.11270463717353232
+    },
+    "sp_all_box750_30d": {
+      "p01": 12.0,
+      "p99": 1389.4400000000023,
+      "missing_share": 0.11270463717353232
+    }
+  },
+  "sla": {
+    "sla_hours": {
+      "p01": 4.0,
+      "p99": 168.0,
+      "missing_share": 0.0
+    },
+    "hour": {
+      "p01": 1.0,
+      "p99": 23.0,
+      "missing_share": 0.0
+    },
+    "day_of_week": {
+      "p01": 0.0,
+      "p99": 6.0,
+      "missing_share": 0.0
+    },
+    "month": {
+      "p01": 1.0,
+      "p99": 12.0,
+      "missing_share": 0.0
+    },
+    "hist_breach_rate_own": {
+      "p01": 0.027212779790099378,
+      "p99": 0.9981818181818182,
+      "missing_share": 0.009558269370748032
+    },
+    "wl_backlog_open": {
+      "p01": 180.0,
+      "p99": 18982.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_intake_7d": {
+      "p01": 97.0,
+      "p99": 4301.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_intake_30d": {
+      "p01": 479.0,
+      "p99": 16401.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_closed_7d": {
+      "p01": 86.0,
+      "p99": 4556.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_backlog_days": {
+      "p01": 1.244541484716157,
+      "p99": 68.87665198237886,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_recent_closures_30d": {
+      "p01": 296.0,
+      "p99": 13015.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_recent_mean_log_res": {
+      "p01": 1.657136954738285,
+      "p99": 6.9792721119699,
+      "missing_share": 0.09598206685727378
+    },
+    "wl_recent_median_res_h": {
+      "p01": 2.333333333333334,
+      "p99": 2349.886666666666,
+      "missing_share": 0.09598574771579724
+    },
+    "wl_city_backlog_open": {
+      "p01": 8323.0,
+      "p99": 105214.0,
+      "missing_share": 0.09597838599875035
+    },
+    "wl_city_intake_7d": {
+      "p01": 8540.0,
+      "p99": 32284.0,
+      "missing_share": 0.09597838599875035
+    },
+    "sp_samecat_box750_7d": {
+      "p01": 0.0,
+      "p99": 102.0,
+      "missing_share": 0.10946689205790358
+    },
+    "sp_samecat_box750_30d": {
+      "p01": 0.0,
+      "p99": 412.0,
+      "missing_share": 0.10946689205790358
+    },
+    "sp_samecat_box750_90d": {
+      "p01": 0.0,
+      "p99": 1023.0,
+      "missing_share": 0.2530976725011342
+    },
+    "sp_samecat_box750_open_now": {
+      "p01": 0.0,
+      "p99": 51.0,
+      "missing_share": 0.10946689205790358
+    },
+    "sp_all_box750_30d": {
+      "p01": 12.0,
+      "p99": 1378.0,
+      "missing_share": 0.10946689205790358
+    }
+  },
+  "note": "1st-99th percentile of each numeric input over the rows the final model was trained on (UrbanEye categories). An input outside this range is outside the evaluated regime; it does not by itself make a prediction wrong."
+}

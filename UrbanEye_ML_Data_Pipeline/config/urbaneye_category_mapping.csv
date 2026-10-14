@@ -1,0 +1,58 @@
+# Phase 2B — raw publisher category -> UrbanEye backend category.
+#
+# WHY A SECOND MAPPING FILE
+# category_mapping.csv maps publisher categories to the pipeline's 15-way
+# canonical taxonomy. That taxonomy is coarser than UrbanEye's in some places and
+# semantically wrong for it in others: canonical GARBAGE_DUMPING contains
+# Chicago "Garbage Cart Maintenance" (84,697 cart repairs/deliveries — not a
+# garbage complaint), and canonical WATER_LEAKAGE_WATERLOGGING is mostly
+# hydrants, basement water and low water pressure, none of which is a FLOOD.
+# Meanwhile Chicago "Fly Dumping Complaint" and "Missed Garbage Pick-Up
+# Complaint" — the closest US analogues of UrbanEye GARBAGE — are UNMAPPED in
+# the canonical file. So this mapping is defined on the RAW publisher category
+# (and, where the raw category is too broad, the publisher subcategory).
+#
+# RULES
+# - Rows are matched top to bottom; the first match wins. A specific
+#   subcategory row must therefore come before a '*' row for the same raw
+#   category.
+# - urbaneye_category = UNSUPPORTED means "deliberately not mapped": the rows
+#   stay usable as auxiliary training data under their canonical category but
+#   are never presented as evidence about an UrbanEye category.
+# - confidence: EXACT (same civic issue), STRONG (same issue, publisher scope
+#   slightly wider), PARTIAL (overlapping but materially different scope).
+# - Nothing maps to FIRE_HAZARD or OTHER. See reports/phase2b/domain_alignment.md.
+source_dataset,source_category_raw,subcategory,urbaneye_category,confidence,notes
+chicago311,Pothole in Street Complaint,*,POTHOLE,EXACT,
+chicago311,Alley Pothole Complaint,*,POTHOLE,EXACT,alley rather than street
+nyc311,Street Condition,Pothole,POTHOLE,EXACT,
+nyc311,Highway Condition,Pothole - Highway,POTHOLE,EXACT,
+sf311,Street Defects,Pavement_Defect,POTHOLE,PARTIAL,pavement defects include cracks and sunken pavement as well as potholes
+chicago311,Street Light Out Complaint,*,STREETLIGHT,EXACT,
+nyc311,Street Light Condition,*,STREETLIGHT,EXACT,includes cycling/dayburning lamps
+sf311,Streetlights,*,STREETLIGHT,EXACT,
+chicago311,Fly Dumping Complaint,*,GARBAGE,EXACT,illegal dumping on public way
+chicago311,Missed Garbage Pick-Up Complaint,*,GARBAGE,STRONG,uncollected garbage
+chicago311,Sanitation Code Violation,*,GARBAGE,PARTIAL,dumping/overflowing/improper storage plus other code violations
+chicago311,Street Cleaning Request,*,GARBAGE,PARTIAL,litter/debris on street; sweeping is a scheduled service
+chicago311,Garbage Cart Maintenance,*,UNSUPPORTED,,cart repair/delivery — not a garbage complaint
+sf311,Street and Sidewalk Cleaning,City_garbage_can_overflowing,GARBAGE,EXACT,
+sf311,Street and Sidewalk Cleaning,Bulky Items,GARBAGE,STRONG,dumped bulky items on street
+sf311,Street and Sidewalk Cleaning,General Cleaning,GARBAGE,STRONG,litter/debris on street or sidewalk
+sf311,Street and Sidewalk Cleaning,*,UNSUPPORTED,,human/animal waste; hazardous or medical waste — no UrbanEye equivalent
+sf311,Litter Receptacles,Debris_box_maintenance_overflowing,GARBAGE,STRONG,
+sf311,Litter Receptacles,*,UNSUPPORTED,,bin repair/maintenance — not a garbage complaint
+nyc311,Dirty Conditions,E15 Illegal Postering,UNSUPPORTED,,posters — not garbage
+nyc311,Dirty Conditions,E8 Canine Violation,UNSUPPORTED,,dog waste — not garbage
+nyc311,Dirty Conditions,E4 18" Law,UNSUPPORTED,,storefront sweeping ordinance
+nyc311,Dirty Conditions,*,GARBAGE,PARTIAL,improper disposal / dumping / loose rubbish / dirty sidewalk
+chicago311,Water On Street Complaint,*,FLOOD,STRONG,water pooling or flowing on the street (waterlogging); includes main-break water
+nyc311,Sewer,Street Flooding (SJ),FLOOD,EXACT,
+nyc311,Sewer,Catch Basin Clogged/Flooding (Use Comments) (SC),FLOOD,STRONG,clogged drain with flooding
+nyc311,Sewer,Manhole Overflow (Use Comments) (SA1),FLOOD,PARTIAL,sewer overflow onto street
+sf311,Sewer Issues,Flooding,FLOOD,EXACT,
+chicago311,Water in Basement Complaint,*,UNSUPPORTED,,private-property water — not a civic flood report
+chicago311,Open Fire Hydrant Complaint,*,UNSUPPORTED,,hydrant running — a different service
+chicago311,Sewer Cleaning Inspection Request,*,UNSUPPORTED,,drain inspection; flooding not established from the record
+chicago311,Commercial Fire Safety Inspection Request,*,UNSUPPORTED,,inspection request — not a citizen fire-hazard report; 710 rows
+sf311,General Request - FIRE DEPARTMENT,*,UNSUPPORTED,,34 rows; content unknown

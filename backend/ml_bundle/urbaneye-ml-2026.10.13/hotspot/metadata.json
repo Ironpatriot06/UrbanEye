@@ -1,0 +1,361 @@
+{
+  "model_version": "hotspot_v2.0.0",
+  "task": "hotspot_next_week_count",
+  "created_at_utc": "2026-10-13T16:13:55.039811+00:00",
+  "method": "ewma",
+  "is_ml": false,
+  "ewma_alpha": 0.3,
+  "min_history_weeks": 4,
+  "formula": "s_0 = y_0; s_t = alpha * y_t + (1 - alpha) * s_{t-1}; forecast(t+1) = s_t (pandas ewm(alpha, adjust=False)), over complete weeks, oldest first",
+  "unit": "UrbanEye category x 1 km grid cell x ISO week (Monday start)",
+  "grid": {
+    "cell_m": 1000.0,
+    "origin_lat": 41.644646547946664,
+    "origin_lon": -87.92928495,
+    "ref_lat": 41.857153872133075
+  },
+  "grid_note": "the Chicago origin is illustrative; UrbanEye must anchor its own grid (e.g. ST_SnapToGrid on a local UTM projection) per city",
+  "supported_categories": [
+    "POTHOLE",
+    "FLOOD",
+    "GARBAGE",
+    "STREETLIGHT"
+  ],
+  "alpha_selection": {
+    "panel": "C (Chicago, UrbanEye categories, 1 km cells)",
+    "rows": 142464,
+    "weeks": [
+      "2019-05-27",
+      "2020-08-10"
+    ],
+    "criterion": "MAE of the one-week-ahead forecast",
+    "mae_by_alpha": {
+      "0.1": 1.524536011411354,
+      "0.2": 1.5019634607581756,
+      "0.3": 1.4994094172454924,
+      "0.5": 1.5242213564865978
+    },
+    "san_francisco_mae_by_alpha": {
+      "0.1": 5.6125685387988,
+      "0.2": 5.219131230469364,
+      "0.3": 5.112327825216415,
+      "0.5": 5.1198323115021225
+    },
+    "per_origin_test_mae": {
+      "2019-09-02": {
+        "ewma_0.1": 1.642867919522561,
+        "ewma_0.2": 1.6324812359808907,
+        "ewma_0.3": 1.63214316873377,
+        "ewma_0.5": 1.6621077463044054,
+        "rolling_4w_mean": 1.6934636118598383
+      },
+      "2019-11-11": {
+        "ewma_0.1": 1.4767632797115222,
+        "ewma_0.2": 1.3992502671462395,
+        "ewma_0.3": 1.3701410325271368,
+        "ewma_0.5": 1.3681902603008096,
+        "rolling_4w_mean": 1.409433962264151
+      },
+      "2020-01-20": {
+        "ewma_0.1": 1.4096981878411563,
+        "ewma_0.2": 1.3721141917203745,
+        "ewma_0.3": 1.3728891747681042,
+        "ewma_0.5": 1.4009919795199306,
+        "rolling_4w_mean": 1.4224281221922732
+      },
+      "2020-03-30": {
+        "ewma_0.1": 1.4728660863587515,
+        "ewma_0.2": 1.4460659304224592,
+        "ewma_0.3": 1.4495511117118833,
+        "ewma_0.5": 1.4787196222826264,
+        "rolling_4w_mean": 1.4984613656783468
+      },
+      "2020-06-08": {
+        "ewma_0.1": 1.444510012158999,
+        "ewma_0.2": 1.435911680084269,
+        "ewma_0.3": 1.438948159676334,
+        "ewma_0.5": 1.4646069891334912,
+        "rolling_4w_mean": 1.5053683737646002
+      }
+    }
+  },
+  "why_not_ml": "Within Chicago the gradient-boosted forecaster beats the trained EWMA by ~4% MAE on panel C (2-10% by fold), but trained on Chicago and applied to San Francisco it is 37-52% worse than SF's own EWMA. UrbanEye would apply a US-trained model to an unseen city, which is the transfer case.",
+  "evidence_summaries": {
+    "C_grid1km_rolling": {
+      "B0_persistence": {
+        "MAE": 1.6207816711590297,
+        "RMSE": 3.2495841454920487,
+        "poisson_deviance": 16.354458478266388,
+        "topdecile_hit": 0.28927927927927927
+      },
+      "B1_rolling_4w_mean": {
+        "MAE": 1.5058310871518419,
+        "RMSE": 2.873716794651258,
+        "poisson_deviance": 4.716873145493588,
+        "topdecile_hit": 0.29387387387387387
+      },
+      "B2_rolling_8w_mean": {
+        "MAE": 1.4987365229110514,
+        "RMSE": 2.8001931778086937,
+        "poisson_deviance": 3.1669984660446415,
+        "topdecile_hit": 0.29
+      },
+      "B3_rolling_12w_mean": {
+        "MAE": 1.5126317759808325,
+        "RMSE": 2.790363937061079,
+        "poisson_deviance": 2.824014282970624,
+        "topdecile_hit": 0.2898198198198198
+      },
+      "B4_ewma_trained(ewm01)": {
+        "MAE": 1.5598155996170417,
+        "RMSE": 2.868624172748623,
+        "poisson_deviance": 2.293608990037133,
+        "topdecile_hit": 0.3130630630630631
+      },
+      "B4_ewma_trained(ewm03)": {
+        "MAE": 1.4204628153854406,
+        "RMSE": 2.6282741190774033,
+        "poisson_deviance": 2.5794472403137254,
+        "topdecile_hit": 0.3093093093093093
+      },
+      "ML_H1_poisson": {
+        "MAE": 1.4178344273763728,
+        "RMSE": 2.648767352467494,
+        "poisson_deviance": 2.300436343249149,
+        "topdecile_hit": 0.32063063063063063,
+        "folds_beating_roll4_sig": 5,
+        "folds_losing_to_roll4_sig": 0,
+        "folds_beating_ewma_sig": 5,
+        "folds_losing_to_ewma_sig": 0,
+        "folds": 5
+      },
+      "ML_H3_poisson_small": {
+        "MAE": 1.4152575414099868,
+        "RMSE": 2.6362016635952434,
+        "poisson_deviance": 2.2729741678533433,
+        "topdecile_hit": 0.3203603603603603,
+        "folds_beating_roll4_sig": 5,
+        "folds_losing_to_roll4_sig": 0,
+        "folds_beating_ewma_sig": 5,
+        "folds_losing_to_ewma_sig": 0,
+        "folds": 5
+      }
+    },
+    "A_rolling_full": {
+      "B0_persistence": {
+        "MAE": 9.653279999999999,
+        "RMSE": 21.17298734701179,
+        "poisson_deviance": 17.198527020913303,
+        "topdecile_hit": 0.3816
+      },
+      "B1_rolling_4w_mean": {
+        "MAE": 8.71503,
+        "RMSE": 19.428842610066077,
+        "poisson_deviance": 9.426519805837126,
+        "topdecile_hit": 0.4196000000000001
+      },
+      "B2_rolling_8w_mean": {
+        "MAE": 8.77228,
+        "RMSE": 19.312331139868125,
+        "poisson_deviance": 9.220968666868009,
+        "topdecile_hit": 0.414
+      },
+      "B3_rolling_12w_mean": {
+        "MAE": 9.080639999999999,
+        "RMSE": 19.565911051627886,
+        "poisson_deviance": 9.711669280819276,
+        "topdecile_hit": 0.4048000000000001
+      },
+      "B4_ewma_trained(ewm03)": {
+        "MAE": 8.41626047285607,
+        "RMSE": 18.96468370821039,
+        "poisson_deviance": 8.77130631029199,
+        "topdecile_hit": 0.43360000000000004
+      },
+      "ML_H1_poisson": {
+        "MAE": 8.47590951145054,
+        "RMSE": 19.14579765211722,
+        "poisson_deviance": 8.948426291573359,
+        "topdecile_hit": 0.41600000000000004,
+        "folds_beating_roll4_sig": 4,
+        "folds_losing_to_roll4_sig": 1,
+        "folds_beating_ewma_sig": 0,
+        "folds_losing_to_ewma_sig": 1,
+        "folds": 5
+      },
+      "ML_H2_absolute": {
+        "MAE": 8.213494495243374,
+        "RMSE": 19.05570189991391,
+        "poisson_deviance": 9.220793510146601,
+        "topdecile_hit": 0.4196,
+        "folds_beating_roll4_sig": 5,
+        "folds_losing_to_roll4_sig": 0,
+        "folds_beating_ewma_sig": 3,
+        "folds_losing_to_ewma_sig": 0,
+        "folds": 5
+      },
+      "ML_H3_poisson_small": {
+        "MAE": 8.439981175481488,
+        "RMSE": 18.96707138300362,
+        "poisson_deviance": 8.828918624953067,
+        "topdecile_hit": 0.4312,
+        "folds_beating_roll4_sig": 4,
+        "folds_losing_to_roll4_sig": 0,
+        "folds_beating_ewma_sig": 1,
+        "folds_losing_to_ewma_sig": 1,
+        "folds": 5
+      }
+    },
+    "A_transfer_chicago_to_sf": {
+      "B0_persistence": {
+        "MAE": 5.818817546090274,
+        "RMSE": 17.05887117670063,
+        "poisson_deviance": 11.345958194385414,
+        "topdecile_hit": 0.49145299145299143
+      },
+      "B1_rolling_4w_mean": {
+        "MAE": 5.230080525535071,
+        "RMSE": 15.006389911836104,
+        "poisson_deviance": 4.457073118942179,
+        "topdecile_hit": 0.5534188034188035
+      },
+      "B2_rolling_8w_mean": {
+        "MAE": 5.325002270456816,
+        "RMSE": 15.270640831899321,
+        "poisson_deviance": 3.838778558800767,
+        "topdecile_hit": 0.5726495726495726
+      },
+      "B3_rolling_12w_mean": {
+        "MAE": 5.223778173158339,
+        "RMSE": 14.765493655764509,
+        "poisson_deviance": 3.7277953335763745,
+        "topdecile_hit": 0.5833333333333334
+      },
+      "B4_ewma_trained(ewm03)": {
+        "MAE": 5.112327825216415,
+        "RMSE": 14.411797152820034,
+        "poisson_deviance": 3.720171028058864,
+        "topdecile_hit": 0.561965811965812
+      },
+      "ML_H1_poisson": {
+        "MAE": 7.7845272066294005,
+        "RMSE": 29.83671503918338,
+        "poisson_deviance": 7.712794127673008,
+        "topdecile_hit": 0.532051282051282,
+        "folds_beating_roll4_sig": 0,
+        "folds_losing_to_roll4_sig": 1,
+        "folds_beating_ewma_sig": 0,
+        "folds_losing_to_ewma_sig": 1,
+        "folds": 1
+      }
+    },
+    "A_transfer_chicago_to_sf_H2_H3": {
+      "B0_persistence": {
+        "MAE": 5.818817546090274,
+        "RMSE": 17.05887117670063,
+        "poisson_deviance": 11.345958194385414,
+        "topdecile_hit": 0.49145299145299143
+      },
+      "B1_rolling_4w_mean": {
+        "MAE": 5.230080525535071,
+        "RMSE": 15.006389911836104,
+        "poisson_deviance": 4.457073118942179,
+        "topdecile_hit": 0.5534188034188035
+      },
+      "B2_rolling_8w_mean": {
+        "MAE": 5.325002270456816,
+        "RMSE": 15.270640831899321,
+        "poisson_deviance": 3.838778558800767,
+        "topdecile_hit": 0.5726495726495726
+      },
+      "B3_rolling_12w_mean": {
+        "MAE": 5.223778173158339,
+        "RMSE": 14.765493655764509,
+        "poisson_deviance": 3.7277953335763745,
+        "topdecile_hit": 0.5833333333333334
+      },
+      "B4_ewma_trained(ewm03)": {
+        "MAE": 5.112327825216415,
+        "RMSE": 14.411797152820034,
+        "poisson_deviance": 3.720171028058864,
+        "topdecile_hit": 0.561965811965812
+      },
+      "ML_H2_absolute": {
+        "MAE": 6.986649991493989,
+        "RMSE": 28.739709840053738,
+        "poisson_deviance": 6.821092489473969,
+        "topdecile_hit": 0.5512820512820513,
+        "folds_beating_roll4_sig": 0,
+        "folds_losing_to_roll4_sig": 1,
+        "folds_beating_ewma_sig": 0,
+        "folds_losing_to_ewma_sig": 1,
+        "folds": 1
+      },
+      "ML_H3_poisson_small": {
+        "MAE": 7.797014711883377,
+        "RMSE": 29.832844217759465,
+        "poisson_deviance": 7.638029843125322,
+        "topdecile_hit": 0.532051282051282,
+        "folds_beating_roll4_sig": 0,
+        "folds_losing_to_roll4_sig": 1,
+        "folds_beating_ewma_sig": 0,
+        "folds_losing_to_ewma_sig": 1,
+        "folds": 1
+      }
+    },
+    "A_ward_holdout": {
+      "B0_persistence": {
+        "MAE": 9.653279999999999,
+        "RMSE": 21.17298734701179,
+        "poisson_deviance": 17.198527020913303,
+        "topdecile_hit": 0.3836
+      },
+      "B1_rolling_4w_mean": {
+        "MAE": 8.71503,
+        "RMSE": 19.428842610066077,
+        "poisson_deviance": 9.426519805837126,
+        "topdecile_hit": 0.42000000000000004
+      },
+      "B2_rolling_8w_mean": {
+        "MAE": 8.77228,
+        "RMSE": 19.312331139868125,
+        "poisson_deviance": 9.220968666868009,
+        "topdecile_hit": 0.4124
+      },
+      "B3_rolling_12w_mean": {
+        "MAE": 9.080639999999999,
+        "RMSE": 19.565911051627886,
+        "poisson_deviance": 9.711669280819276,
+        "topdecile_hit": 0.40280000000000005
+      },
+      "B4_ewma_trained(ewm03)": {
+        "MAE": 8.41626047285607,
+        "RMSE": 18.96468370821039,
+        "poisson_deviance": 8.77130631029199,
+        "topdecile_hit": 0.4324
+      },
+      "ML_H1_poisson": {
+        "MAE": 8.552800669658897,
+        "RMSE": 19.218987376646044,
+        "poisson_deviance": 9.022112033757267,
+        "topdecile_hit": 0.40800000000000003,
+        "folds_beating_roll4_sig": 2,
+        "folds_losing_to_roll4_sig": 1,
+        "folds_beating_ewma_sig": 0,
+        "folds_losing_to_ewma_sig": 2,
+        "folds": 5
+      }
+    }
+  },
+  "software_versions": {
+    "python": "3.11.8",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.17.1",
+    "joblib": "1.5.1",
+    "pyarrow": "20.0.0",
+    "seed": 20260915
+  }
+}

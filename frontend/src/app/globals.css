@@ -1220,3 +1220,23 @@ tbody tr.row-static { cursor: default; }
   overflow-wrap: anywhere;
 }
 .audit-item__meta { font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }
+
+/* ── ML predictions (Phase 2C) ────────────────────────────── */
+.prediction {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: .6rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card-2);
+}
+.prediction__head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.prediction__title { font-size: .82rem; font-weight: 600; color: var(--text-primary); }
+.prediction__value { font-size: .95rem; font-weight: 600; color: var(--text-primary); }
+.prediction__sub { font-size: .8rem; font-weight: 400; color: var(--text-secondary); }
+.prediction__reasons { font-size: .76rem; color: var(--text-muted); padding-left: 1rem; list-style: disc; }
+.prediction__code { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: .7rem; }
+.prediction__meta { font-size: .74rem; color: var(--text-muted); line-height: 1.5; }
+.prediction__inputs summary { cursor: pointer; font-size: .78rem; color: var(--text-secondary); }
+.prediction__inputs .field-grid { margin-top: .5rem; }

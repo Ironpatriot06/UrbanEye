@@ -1,0 +1,105 @@
+{
+  "generated_at_utc": "2026-10-03T18:37:44.557568+00:00",
+  "connection": "read-only (default_transaction_read_only=on, readonly session)",
+  "tables": {
+    "incident_history": 47,
+    "incident_images": 4,
+    "incidents": 6,
+    "spatial_ref_sys": 8500,
+    "user_audit_log": 20,
+    "users": 15
+  },
+  "incident_columns": [
+    "id",
+    "title",
+    "description",
+    "category",
+    "source",
+    "status",
+    "severity",
+    "priority",
+    "latitude",
+    "longitude",
+    "location",
+    "created_at",
+    "updated_at",
+    "reported_by",
+    "assigned_agent_id",
+    "priority_level",
+    "sla_hours",
+    "sla_deadline",
+    "sla_status"
+  ],
+  "has_resolved_at_column": false,
+  "has_zone_or_ward_column": false,
+  "incidents": {
+    "n": 6,
+    "created_at_min": "2026-09-15 19:45:54.247181+00:00",
+    "created_at_max": "2026-10-03 17:25:28.823586+00:00",
+    "history_span_weeks": 2.56,
+    "by_category": {
+      "STREETLIGHT": 1,
+      "POTHOLE": 3,
+      "FLOOD": 2
+    },
+    "by_source": {
+      "CITIZEN": 6
+    },
+    "by_status": {
+      "ASSIGNED": 2,
+      "IN_PROGRESS": 3,
+      "CLOSED": 1
+    },
+    "by_priority": {
+      "P3": 2,
+      "P2": 2,
+      "P1": 2
+    },
+    "sla_hours_values": {
+      "72": 2,
+      "24": 1,
+      "12": 1,
+      "4": 2
+    },
+    "by_city_bbox": {
+      "Chennai": 3,
+      "Bengaluru": 3
+    }
+  },
+  "resolved": {
+    "n": 1,
+    "by_category": {
+      "POTHOLE": 1
+    },
+    "resolution_hours": [
+      4.4e-05
+    ]
+  },
+  "history_transitions": {
+    "STATUS_CHANGED": 10,
+    "SLA_CREATED": 6,
+    "AGENT_ASSIGNED": 6,
+    "SLA_UPDATED": 6,
+    "INCIDENT_CREATED": 6,
+    "PRIORITY_CHANGED": 5,
+    "IMAGE_ADDED": 4,
+    "AGENT_REASSIGNED": 2,
+    "INCIDENT_CLOSED": 1,
+    "INCIDENT_RESOLVED": 1
+  },
+  "incident_indexes": [
+    "CREATE UNIQUE INDEX incidents_pkey ON public.incidents USING btree (id)",
+    "CREATE INDEX idx_incidents_location ON public.incidents USING gist (location)",
+    "CREATE INDEX ix_incidents_id ON public.incidents USING btree (id)",
+    "CREATE INDEX ix_incidents_priority_level ON public.incidents USING btree (priority_level)",
+    "CREATE INDEX ix_incidents_sla_deadline ON public.incidents USING btree (sla_deadline)"
+  ],
+  "requirements": {
+    "min_resolved_per_category": 500,
+    "min_weeks_of_history": 26
+  },
+  "verdict": {
+    "trainable": false,
+    "reason": "6 incidents over 2.6 weeks, 1 resolved; needs >= 500 resolved incidents per supported category and >= 26 weeks of history"
+  }
+}

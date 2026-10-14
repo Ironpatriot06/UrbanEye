@@ -38,27 +38,28 @@ export function ImageUploadField({ onChange }: Props) {
     return undefined;
   };
 
+  // The parent is notified from the event handler, not from inside a
+  // setEntries updater: updaters run during render, and setting the parent's
+  // state there is a React error ("Cannot update a component while rendering
+  // a different component").
+  const commit = (updated: FileEntry[]) => {
+    setEntries(updated);
+    onChange(updated.filter((e) => !e.error).map((e) => e.file));
+  };
+
   const addFiles = (newFiles: File[]) => {
     const added: FileEntry[] = newFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
       error: validate(file),
     }));
-    setEntries((prev) => {
-      const updated = [...prev, ...added];
-      onChange(updated.filter((e) => !e.error).map((e) => e.file));
-      return updated;
-    });
+    commit([...entries, ...added]);
   };
 
   const remove = (idx: number) => {
-    setEntries((prev) => {
-      const target = prev[idx];
-      if (target) URL.revokeObjectURL(target.preview);
-      const updated = prev.filter((_, i) => i !== idx);
-      onChange(updated.filter((e) => !e.error).map((e) => e.file));
-      return updated;
-    });
+    const target = entries[idx];
+    if (target) URL.revokeObjectURL(target.preview);
+    commit(entries.filter((_, i) => i !== idx));
   };
 
   const errors = entries.filter((e) => e.error);

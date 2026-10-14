@@ -152,6 +152,9 @@ class PriorityEngine:
     def signals(self, row: dict) -> dict[str, float | None]:
         s: dict[str, float | None] = {}
         cat = row.get("category")
+        # pandas >= 3 hands a missing string as NaN (truthy), not None
+        if not isinstance(cat, str):
+            cat = None
         s["category"] = float(self.base.get(cat, self.base.get("OTHER", 0.35))) if cat else None
 
         for feat, tkey in PROXIMITY_FEATURES.items():

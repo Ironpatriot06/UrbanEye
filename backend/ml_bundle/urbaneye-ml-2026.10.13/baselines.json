@@ -1,0 +1,95 @@
+{
+  "source": "Phase 2B training rows known at 2020-09-01 (Chicago, San Francisco, New York City 311). US data: these are NOT UrbanEye statistics.",
+  "resolution_category_median_hours": {
+    "FLOOD": {
+      "median_hours": 34.35861111111112,
+      "n": 12774
+    },
+    "GARBAGE": {
+      "median_hours": 22.257916666666667,
+      "n": 105202
+    },
+    "POTHOLE": {
+      "median_hours": 148.99777777777777,
+      "n": 89357
+    },
+    "STREETLIGHT": {
+      "median_hours": 352.6952777777778,
+      "n": 55327
+    }
+  },
+  "sla_category_breach_rate": {
+    "POTHOLE": {
+      "4": {
+        "breach_rate": 0.9091567489271546,
+        "n": 92511
+      },
+      "24": {
+        "breach_rate": 0.8217076888153841,
+        "n": 92511
+      },
+      "72": {
+        "breach_rate": 0.6540627601042038,
+        "n": 92511
+      },
+      "168": {
+        "breach_rate": 0.49441625466215633,
+        "n": 92232
+      }
+    },
+    "FLOOD": {
+      "4": {
+        "breach_rate": 0.8784223366766061,
+        "n": 14756
+      },
+      "24": {
+        "breach_rate": 0.6349959338574139,
+        "n": 14756
+      },
+      "72": {
+        "breach_rate": 0.4520195174844131,
+        "n": 14756
+      },
+      "168": {
+        "breach_rate": 0.3368642629184491,
+        "n": 14727
+      }
+    },
+    "GARBAGE": {
+      "4": {
+        "breach_rate": 0.6812511180785056,
+        "n": 106209
+      },
+      "24": {
+        "breach_rate": 0.4844410549011854,
+        "n": 106209
+      },
+      "72": {
+        "breach_rate": 0.32673313937613574,
+        "n": 106209
+      },
+      "168": {
+        "breach_rate": 0.18801520078650835,
+        "n": 105784
+      }
+    },
+    "STREETLIGHT": {
+      "4": {
+        "breach_rate": 0.9796688934069125,
+        "n": 58531
+      },
+      "24": {
+        "breach_rate": 0.9231518340708342,
+        "n": 58531
+      },
+      "72": {
+        "breach_rate": 0.8386496044830944,
+        "n": 58531
+      },
+      "168": {
+        "breach_rate": 0.7030497592295345,
+        "n": 57939
+      }
+    }
+  }
+}

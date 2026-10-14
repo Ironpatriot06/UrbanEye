@@ -1,0 +1,53 @@
+{
+  "bundle_version": "urbaneye-ml-2026.10.13",
+  "created_at_utc": "2026-10-13T17:44:23.974391+00:00",
+  "models": {
+    "resolution": "resolution_v2.0.0",
+    "sla": "sla_v2.0.0",
+    "hotspot": "hotspot_v2.0.0"
+  },
+  "training_data_through": "2020-08-28",
+  "training_cities": [
+    "Chicago",
+    "San Francisco",
+    "New York City"
+  ],
+  "runtime_requirements": {
+    "python": "3.11.8",
+    "numpy": "2.2.6",
+    "scikit_learn": "1.6.1",
+    "joblib": "1.5.1",
+    "scipy": "1.17.1"
+  },
+  "source_artifacts_sha256": {
+    "resolution": {
+      "model.joblib": "dad7eec18a87aa7b8b9253feee05a5f2c1e5559437f89b02656eb6a8db82e29a",
+      "preprocessor.joblib": "70906fd9e0539d8f8c8959d71a8397e7906d23316a37232821a86d4d83a0444f",
+      "metadata.json": "86a1f7091cf715bf72b2b9cc12bac2960ad3dae8f37fb5ddf40879312bcaca9a"
+    },
+    "sla": {
+      "model.joblib": "d6c446c3246b17db60d1e52db6f502ffa4647da9b6e9399ccd0de4a176f170a5",
+      "preprocessor.joblib": "424c8fb37d7d23888f9812bd485bdec3433a7b0042eb22ed0f7c06bc31088ad4",
+      "metadata.json": "2fcfab85b88d951aa7c15d5c7dc7becec83dc8c60b96e2f103d399a95661f5bd"
+    },
+    "hotspot": {
+      "metadata.json": "52fd10ceaedf8911c4c59dd1c19767427804fcffe099e9653c7673e363dfc48a"
+    }
+  },
+  "files_sha256": {
+    "baselines.json": "c505f8fc8b9b9d50e05fa8690c4bbb4bb60010f63516af315284eb62ffaf893c",
+    "feature_ranges.json": "747c2d90893c90f2c65c95ae1da036170a5c23f04f81159fdb1fa590e1a71f28",
+    "hotspot/metadata.json": "52fd10ceaedf8911c4c59dd1c19767427804fcffe099e9653c7673e363dfc48a",
+    "resolution/metadata.json": "86a1f7091cf715bf72b2b9cc12bac2960ad3dae8f37fb5ddf40879312bcaca9a",
+    "resolution/model.joblib": "dad7eec18a87aa7b8b9253feee05a5f2c1e5559437f89b02656eb6a8db82e29a",
+    "resolution/preprocessor.json": "c990eec2441d6fa91fbbcb288befade4be0df1fc8c842c3206ac7313750b7961",
+    "fixtures/feature_parity.json": "5908205f7db857a97d73bf72bb2ab8c365c809b6bb7bda931407ecf858d12f8b",
+    "fixtures/golden_predictions.json": "7ae210f5f0e788dedc473e4c1a15b0b0a6c3e95482c9106d4ebe6ec5bf6e904a",
+    "sla/metadata.json": "2fcfab85b88d951aa7c15d5c7dc7becec83dc8c60b96e2f103d399a95661f5bd",
+    "sla/model.joblib": "d6c446c3246b17db60d1e52db6f502ffa4647da9b6e9399ccd0de4a176f170a5",
+    "sla/preprocessor.json": "4f86ac0c3e69def3ec32ca3acd92fe361b0cdd88293d4bccde6d3383e7db6467"
+  },
+  "pipeline_git_commit": "a5a0b717c81617257991feccd034d0f5522919c5",
+  "exported_by": "UrbanEye_ML_Data_Pipeline/scripts/phase2c/export_serving_bundle.py",
+  "warning": "joblib files are pickles: load only after verifying files_sha256."
+}

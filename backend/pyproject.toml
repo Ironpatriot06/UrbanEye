@@ -3,3 +3,6 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+# The ML boosters were fitted on pandas frames; app/ml/predictors.py silences
+# this one message at import, but pytest resets warning filters per test.
+filterwarnings = ["ignore:X does not have valid feature names:UserWarning"]

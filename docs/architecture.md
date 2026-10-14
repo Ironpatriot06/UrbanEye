@@ -184,14 +184,14 @@ WHERE ST_DWithin(
 | Phase | Focus | Status |
 |---|---|---|
 | **Phase 1** | Foundation + Incident Core | ✅ **Implemented** |
-| Phase 2 | Authentication + User Management | 🔲 Planned |
+| Phase 2 | Authentication + User Management | ✅ **Implemented** (JWT, roles, Google sign-in, admin console) |
 | Phase 3 | AI/NLP Classification | 🔲 Planned |
-| Phase 4 | Computer Vision / Camera Integration | 🔲 Planned |
-| Phase 5 | ML Priority Engine | 🔲 Planned |
-| Phase 6 | Department Routing + SLA | 🔲 Planned |
+| Phase 4 | Computer Vision / Camera Integration | 🔲 Planned (hardware — out of the software-only release) |
+| Phase 5 | ML Priority Engine | ◐ ML decision support implemented (resolution time, SLA risk, EWMA hotspots — experimental, see `docs/PHASE_2C_REPORT.md`); priority itself stays rule-based |
+| Phase 6 | Department Routing + SLA | ◐ SLA tracking and admin overrides implemented; routing planned |
 | Phase 7 | Notifications (email, SMS, push) | 🔲 Planned |
-| Phase 8 | IoT Integration | 🔲 Planned |
-| Phase 9 | Frontend / Mobile App | 🔲 Planned |
+| Phase 8 | IoT Integration | 🔲 Planned (hardware — out of the software-only release) |
+| Phase 9 | Frontend / Mobile App | ✅ **Web app implemented** (Next.js); native mobile app planned |
 | Phase 10 | Production Infrastructure (k8s) | 🔲 Planned |
 
 ---

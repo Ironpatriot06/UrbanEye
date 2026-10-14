@@ -1,0 +1,661 @@
+{
+  "model_version": "sla_v2.0.0",
+  "task": "sla_breach_risk",
+  "created_at_utc": "2026-10-13T16:04:15.642229+00:00",
+  "artifact_layout": {
+    "model.joblib": "HistGradientBoostingClassifier",
+    "preprocessor.joblib": "scripts.train._common.FeaturePreprocessor"
+  },
+  "features": [
+    "ue_category",
+    "sla_hours",
+    "hour",
+    "day_of_week",
+    "month",
+    "is_weekend",
+    "is_night",
+    "hist_breach_rate_own",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "feature_set": "S7_multihorizon_spatial",
+  "categorical_features": [
+    "ue_category",
+    "is_weekend",
+    "is_night"
+  ],
+  "numeric_features": [
+    "sla_hours",
+    "hour",
+    "day_of_week",
+    "month",
+    "hist_breach_rate_own",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "category_column": "ue_category",
+  "multi_horizon": true,
+  "sla_hours_trained": [
+    4,
+    24,
+    72,
+    168
+  ],
+  "sla_hours_range": [
+    4,
+    168
+  ],
+  "monotonic_constraint": "P(breach) non-increasing in sla_hours",
+  "supported_categories": [
+    "POTHOLE",
+    "FLOOD",
+    "GARBAGE",
+    "STREETLIGHT"
+  ],
+  "unsupported_categories": [
+    "FIRE_HAZARD",
+    "OTHER"
+  ],
+  "target": "breach = resolution_time_hours >= sla_hours, or still open past the deadline (mirrors backend incident_service: breach at/after created_at + sla_hours)",
+  "preprocessing": {
+    "encoder": {
+      "n_predictors": 23,
+      "categorical": [
+        "ue_category",
+        "is_weekend",
+        "is_night"
+      ],
+      "numeric": [
+        "sla_hours",
+        "hour",
+        "day_of_week",
+        "month",
+        "hist_breach_rate_own",
+        "wl_backlog_open",
+        "wl_intake_7d",
+        "wl_intake_30d",
+        "wl_closed_7d",
+        "wl_backlog_days",
+        "wl_recent_closures_30d",
+        "wl_recent_mean_log_res",
+        "wl_recent_median_res_h",
+        "wl_city_backlog_open",
+        "wl_city_intake_7d",
+        "sp_samecat_box750_7d",
+        "sp_samecat_box750_30d",
+        "sp_samecat_box750_90d",
+        "sp_samecat_box750_open_now",
+        "sp_all_box750_30d"
+      ],
+      "max_levels_per_categorical": 250,
+      "vocabulary_sizes": {
+        "ue_category": 4,
+        "is_weekend": 2,
+        "is_night": 2
+      },
+      "missing_policy": "categorical NULL -> explicit __MISSING__ level",
+      "rare_level_policy": "levels outside the train top-250 -> __OTHER__",
+      "unknown_policy": "levels unseen at fit time -> -1",
+      "fitted_on": "training fold only"
+    },
+    "missing_numeric": "NaN (native HGB missing branch)",
+    "calendar": "local time (Asia/Kolkata at inference)"
+  },
+  "algorithm": "HistGradientBoostingClassifier",
+  "model_name": "C1_slow",
+  "hyperparameters": {
+    "max_iter": 400,
+    "learning_rate": 0.05,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 100,
+    "l2_regularization": 1.0,
+    "early_stopping": false
+  },
+  "random_seed": 20260915,
+  "decision_threshold": 0.28665353904570906,
+  "risk_bands": {
+    "medium": 0.28665353904570906,
+    "high": 0.8407742737403642,
+    "rule": "HIGH if p >= high; MEDIUM if p >= medium (decision threshold); else LOW. high = smallest probability with validation precision >= 0.90"
+  },
+  "threshold_selection": {
+    "chosen_on": "2020-05",
+    "evaluated_on": "2020-07",
+    "rule": "max F1 on the validation fold (cost of a missed breach is undefined; provisional until UrbanEye defines it)",
+    "threshold": 0.28665353904570906,
+    "test_at_threshold": {
+      "n": 21316,
+      "positive_rate": 0.6816945017826984,
+      "threshold": 0.28665353904570906,
+      "PR_AUC": 0.9364427967444603,
+      "precision": 0.765870673463912,
+      "recall": 0.9821760374372033,
+      "f1": 0.8606404148827113,
+      "confusion_matrix": {
+        "tn": 2422,
+        "fp": 4363,
+        "fn": 259,
+        "tp": 14272
+      },
+      "brier": 0.12076241960342937,
+      "ROC_AUC": 0.8915148955803938
+    },
+    "test_at_0.5": {
+      "n": 21316,
+      "positive_rate": 0.6816945017826984,
+      "threshold": 0.5,
+      "PR_AUC": 0.9364427967444603,
+      "precision": 0.8346008743038505,
+      "recall": 0.9591218773656321,
+      "f1": 0.8925392251040666,
+      "confusion_matrix": {
+        "tn": 4023,
+        "fp": 2762,
+        "fn": 594,
+        "tp": 13937
+      },
+      "brier": 0.12076241960342937,
+      "ROC_AUC": 0.8915148955803938
+    },
+    "baseline_threshold": 0.34041980624327234,
+    "baseline_test_at_its_threshold": {
+      "n": 21316,
+      "positive_rate": 0.6816945017826984,
+      "threshold": 0.34041980624327234,
+      "PR_AUC": 0.9003735601651437,
+      "precision": 0.6816945017826984,
+      "recall": 1.0,
+      "f1": 0.8107233520238792,
+      "confusion_matrix": {
+        "tn": 0,
+        "fp": 6785,
+        "fn": 0,
+        "tp": 14531
+      },
+      "brier": 0.15114225081293595,
+      "ROC_AUC": 0.8165770920371648
+    },
+    "test_flag_rate": 0.8742259335710265,
+    "risk_bands": {
+      "medium": 0.28665353904570906,
+      "high": 0.8407742737403642,
+      "rule": "HIGH if p >= high; MEDIUM if p >= medium (decision threshold); else LOW. high = smallest probability with validation precision >= 0.90"
+    },
+    "test_band_rates": {
+      "HIGH": {
+        "share": 0.4954963407768812,
+        "breach_rate": 0.9341033895095626
+      },
+      "MEDIUM": {
+        "share": 0.37872959279414525,
+        "breach_rate": 0.5457698501176762
+      },
+      "LOW": {
+        "share": 0.12577406642897354,
+        "breach_rate": 0.09660574412532637
+      }
+    }
+  },
+  "training_data": {
+    "table": "data/processed/phase2b/sla_v2.parquet",
+    "sha256": "d9aaefcb73d89bd0af512f5382f8bc46bc999d5383964b7ddfd09e12eba8b239",
+    "built_at_utc": "2026-10-03T18:41:29.113562+00:00",
+    "filters": {
+      "chicago_clean_from": "2019-03-01 (targets only; earlier rows remain history)",
+      "valid_resolution": "status closed, not is_duplicate, 1 min <= duration <= 87,600 h",
+      "resolution_categories": "model_category not in OUT_OF_SCOPE/UNMAPPED/REVIEW_REQUIRED",
+      "sla_population": "UrbanEye-mapped rows, not duplicates, clean period; closed with a valid duration OR open with the deadline passed by the extract end",
+      "sla_target": "resolution_time_hours >= sla_hours(default priority of UE category), or still open past the deadline (backend: breach at/after deadline)"
+    },
+    "rows": 1086703,
+    "incidents": 272007,
+    "period": [
+      "2010-01-01 05:46:00+00:00",
+      "2020-08-28 12:50:52+00:00"
+    ],
+    "rows_by_source": {
+      "chicago311": 742627,
+      "sf311": 228244,
+      "nyc311": 115832
+    },
+    "label_policy": "deadline (reported_at + sla_hours) < 2020-09-01",
+    "fit_seconds": 17.9
+  },
+  "evaluation_split": {
+    "protocol": "rolling origin, 6 two-month Chicago test windows, scored at each incident's default SLA",
+    "origins": [
+      "2019-09-01",
+      "2019-11-01",
+      "2020-01-01",
+      "2020-03-01",
+      "2020-05-01",
+      "2020-07-01",
+      "2020-09-01"
+    ]
+  },
+  "metrics": {
+    "rolling_origin_summary": {
+      "PR_AUC": 0.8783130567614004,
+      "ROC_AUC": 0.8446843265309959,
+      "brier": 0.14720224437392412,
+      "log_loss": 0.45616635944054656,
+      "precision": 0.7950519431422459,
+      "recall": 0.8637100804777423,
+      "f1": 0.8262555187328932,
+      "positive_rate": 0.6220059568682236
+    },
+    "rolling_origin_by_fold": {
+      "2019-09": {
+        "PR_AUC": 0.9316006075722444,
+        "ROC_AUC": 0.8713821561747706,
+        "brier": 0.11506425468589492,
+        "log_loss": 0.37817853772466475,
+        "positive_rate": 0.7230975527991954
+      },
+      "2019-11": {
+        "PR_AUC": 0.9285767450602087,
+        "ROC_AUC": 0.8817321282497137,
+        "brier": 0.12245989121111556,
+        "log_loss": 0.3969296141975553,
+        "positive_rate": 0.6732011416554003
+      },
+      "2020-01": {
+        "PR_AUC": 0.8600578657592316,
+        "ROC_AUC": 0.8324499494752664,
+        "brier": 0.16689678690748844,
+        "log_loss": 0.5040307197600596,
+        "positive_rate": 0.5652374670184697
+      },
+      "2020-03": {
+        "PR_AUC": 0.7407569920255797,
+        "ROC_AUC": 0.7789048975026892,
+        "brier": 0.19274676418997047,
+        "log_loss": 0.5649127122538512,
+        "positive_rate": 0.42954748515267777
+      },
+      "2020-05": {
+        "PR_AUC": 0.8724433334066777,
+        "ROC_AUC": 0.8121219322031417,
+        "brier": 0.16528334964564598,
+        "log_loss": 0.5039921522654575,
+        "positive_rate": 0.6592575928008999
+      },
+      "2020-07": {
+        "PR_AUC": 0.9364427967444603,
+        "ROC_AUC": 0.8915148955803938,
+        "brier": 0.12076241960342937,
+        "log_loss": 0.3889544204416915,
+        "positive_rate": 0.6816945017826984
+      }
+    },
+    "by_horizon": {
+      "2019-09": {
+        "4h": {
+          "positive_rate": 0.962733266286736,
+          "PR_AUC": 0.9887425829916436,
+          "brier": 0.034666534195449995,
+          "baseline_recent_rate_PR_AUC": 0.983093189886451,
+          "baseline_recent_rate_brier": 0.035262341340178895
+        },
+        "24h": {
+          "positive_rate": 0.8928930606771707,
+          "PR_AUC": 0.969806424354374,
+          "brier": 0.08349378179856479,
+          "baseline_recent_rate_PR_AUC": 0.9628065670903141,
+          "baseline_recent_rate_brier": 0.0872510905905104
+        },
+        "72h": {
+          "positive_rate": 0.7849480388870265,
+          "PR_AUC": 0.9304830816337596,
+          "brier": 0.12290444958585692,
+          "baseline_recent_rate_PR_AUC": 0.914821117215211,
+          "baseline_recent_rate_brier": 0.13821184128280914
+        },
+        "168h": {
+          "positive_rate": 0.6616940440272656,
+          "PR_AUC": 0.853815866425566,
+          "brier": 0.151327997628143,
+          "baseline_recent_rate_PR_AUC": 0.8306312504905519,
+          "baseline_recent_rate_brier": 0.16244645420702147
+        }
+      },
+      "2019-11": {
+        "4h": {
+          "positive_rate": 0.9491512693405438,
+          "PR_AUC": 0.9855382617307327,
+          "brier": 0.04611458055678143,
+          "baseline_recent_rate_PR_AUC": 0.9761739314621314,
+          "baseline_recent_rate_brier": 0.047194704507904535
+        },
+        "24h": {
+          "positive_rate": 0.88267988583446,
+          "PR_AUC": 0.9646747088022911,
+          "brier": 0.09656582664434209,
+          "baseline_recent_rate_PR_AUC": 0.9516510233392079,
+          "baseline_recent_rate_brier": 0.096232238366812
+        },
+        "72h": {
+          "positive_rate": 0.7515397326122878,
+          "PR_AUC": 0.9216764735694338,
+          "brier": 0.14236954319061212,
+          "baseline_recent_rate_PR_AUC": 0.897683880049648,
+          "baseline_recent_rate_brier": 0.14918373813604063
+        },
+        "168h": {
+          "positive_rate": 0.6046267087276551,
+          "PR_AUC": 0.832350439211466,
+          "brier": 0.16485999182149605,
+          "baseline_recent_rate_PR_AUC": 0.8174086179262917,
+          "baseline_recent_rate_brier": 0.1683766548348098
+        }
+      },
+      "2020-01": {
+        "4h": {
+          "positive_rate": 0.8877308707124011,
+          "PR_AUC": 0.9745627391885214,
+          "brier": 0.08560073030410326,
+          "baseline_recent_rate_PR_AUC": 0.9568480714201195,
+          "baseline_recent_rate_brier": 0.09309532198705067
+        },
+        "24h": {
+          "positive_rate": 0.8023746701846965,
+          "PR_AUC": 0.9278883931692248,
+          "brier": 0.1403413091450533,
+          "baseline_recent_rate_PR_AUC": 0.8944882636727465,
+          "baseline_recent_rate_brier": 0.1497189906233198
+        },
+        "72h": {
+          "positive_rate": 0.6204485488126649,
+          "PR_AUC": 0.8498293606810222,
+          "brier": 0.1873532590516674,
+          "baseline_recent_rate_PR_AUC": 0.8024176355826166,
+          "baseline_recent_rate_brier": 0.2082177971087914
+        },
+        "168h": {
+          "positive_rate": 0.4178759894459103,
+          "PR_AUC": 0.7149174091421708,
+          "brier": 0.1857206710612898,
+          "baseline_recent_rate_PR_AUC": 0.6929341809157699,
+          "baseline_recent_rate_brier": 0.2011241522077804
+        }
+      },
+      "2020-03": {
+        "4h": {
+          "positive_rate": 0.9086561202501708,
+          "PR_AUC": 0.9622788116412837,
+          "brier": 0.07635092836964934,
+          "baseline_recent_rate_PR_AUC": 0.9438552400496292,
+          "baseline_recent_rate_brier": 0.0813970086279562
+        },
+        "24h": {
+          "positive_rate": 0.7617596047721659,
+          "PR_AUC": 0.8804614993721038,
+          "brier": 0.1659505931628168,
+          "baseline_recent_rate_PR_AUC": 0.8280269949035122,
+          "baseline_recent_rate_brier": 0.17530162512076852
+        },
+        "72h": {
+          "positive_rate": 0.48373364166710464,
+          "PR_AUC": 0.7196238731717945,
+          "brier": 0.21968912068587604,
+          "baseline_recent_rate_PR_AUC": 0.6604977468684661,
+          "baseline_recent_rate_brier": 0.2233996395266528
+        },
+        "168h": {
+          "positive_rate": 0.2479634204025858,
+          "PR_AUC": 0.574860715739312,
+          "brier": 0.153663155749053,
+          "baseline_recent_rate_PR_AUC": 0.5677488716003247,
+          "baseline_recent_rate_brier": 0.14503571651078784
+        }
+      },
+      "2020-05": {
+        "4h": {
+          "positive_rate": 0.9567154105736783,
+          "PR_AUC": 0.9891986096968759,
+          "brier": 0.03906079627808076,
+          "baseline_recent_rate_PR_AUC": 0.9776714328044483,
+          "baseline_recent_rate_brier": 0.040903683380135586
+        },
+        "24h": {
+          "positive_rate": 0.8489088863892014,
+          "PR_AUC": 0.9605385593854563,
+          "brier": 0.10699731553265246,
+          "baseline_recent_rate_PR_AUC": 0.9445565050871396,
+          "baseline_recent_rate_brier": 0.1155939004252432
+        },
+        "72h": {
+          "positive_rate": 0.6875590551181102,
+          "PR_AUC": 0.8763384010696526,
+          "brier": 0.16687830584095614,
+          "baseline_recent_rate_PR_AUC": 0.833936013351232,
+          "baseline_recent_rate_brier": 0.1896572524580788
+        },
+        "168h": {
+          "positive_rate": 0.517615298087739,
+          "PR_AUC": 0.6957785231264482,
+          "brier": 0.2260596635705496,
+          "baseline_recent_rate_PR_AUC": 0.6266231890549777,
+          "baseline_recent_rate_brier": 0.25066865194738525
+        }
+      },
+      "2020-07": {
+        "4h": {
+          "positive_rate": 0.9664571214111466,
+          "PR_AUC": 0.994835247261766,
+          "brier": 0.02998153009838566,
+          "baseline_recent_rate_PR_AUC": 0.9864280959132292,
+          "baseline_recent_rate_brier": 0.031661241975098196
+        },
+        "24h": {
+          "positive_rate": 0.8912553950084443,
+          "PR_AUC": 0.978485041792769,
+          "brier": 0.08058025777707711,
+          "baseline_recent_rate_PR_AUC": 0.9568269226355182,
+          "baseline_recent_rate_brier": 0.08979247949815963
+        },
+        "72h": {
+          "positive_rate": 0.7670763745543254,
+          "PR_AUC": 0.9393716356233088,
+          "brier": 0.12734327384823008,
+          "baseline_recent_rate_PR_AUC": 0.8971101404578867,
+          "baseline_recent_rate_brier": 0.15454307740781337
+        },
+        "168h": {
+          "positive_rate": 0.5990335897917057,
+          "PR_AUC": 0.8206120262016751,
+          "brier": 0.16936930128328645,
+          "baseline_recent_rate_PR_AUC": 0.780977645204707,
+          "baseline_recent_rate_brier": 0.20138266489416456
+        }
+      }
+    },
+    "pooled_bootstrap_vs_baseline": {
+      "gate": "S4_pooled_bootstrap_CIs_exclude_0",
+      "passed": true,
+      "rows": 108940,
+      "cluster": "report day (UTC)",
+      "PR_AUC_gain_ci95": [
+        0.01673479281441162,
+        0.023063188397311533
+      ],
+      "brier_gain_ci95": [
+        0.012698699674351034,
+        0.0175423090824502
+      ],
+      "PR_AUC_gain": 0.020063248742271278,
+      "brier_gain": 0.015165066722607534
+    },
+    "leave_one_city_out": {
+      "holdout_sf311": {
+        "PR_AUC": 0.46460135013563975,
+        "brier": 0.058887287658144,
+        "positive_rate": 0.08727502146825328
+      },
+      "holdout_nyc311": {
+        "PR_AUC": 0.4560124354276452,
+        "brier": 0.23328744668626708,
+        "positive_rate": 0.36760135368464675
+      },
+      "holdout_chicago311": {
+        "PR_AUC": 0.8592664190146007,
+        "brier": 0.18751976272680138,
+        "positive_rate": 0.663376131793449
+      }
+    },
+    "leave_one_city_out_baseline": {
+      "holdout_sf311": {
+        "PR_AUC": 0.43277650407704005,
+        "brier": 0.06055261158002249
+      },
+      "holdout_nyc311": {
+        "PR_AUC": 0.4267642516577321,
+        "brier": 0.23810684714374475
+      },
+      "holdout_chicago311": {
+        "PR_AUC": 0.8702579485290305,
+        "brier": 0.16650859551362054
+      }
+    }
+  },
+  "baseline_metrics": {
+    "name": "B3_recent_violation_rate",
+    "summary": {
+      "PR_AUC": 0.8491584515333163,
+      "ROC_AUC": 0.8013327097963837,
+      "brier": 0.1612190418938416,
+      "log_loss": 0.4894909650623125,
+      "precision": 0.8101992134715091,
+      "recall": 0.7845055795774402,
+      "f1": 0.791105762145626,
+      "positive_rate": 0.6220059568682236
+    },
+    "all_baselines_summary": {
+      "B0_base_rate": {
+        "PR_AUC": 0.6220059568682236,
+        "ROC_AUC": 0.5,
+        "brier": 0.25940062069210773,
+        "log_loss": 0.71202504173876,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "positive_rate": 0.6220059568682236
+      },
+      "B1_category_rate": {
+        "PR_AUC": 0.8147538216382223,
+        "ROC_AUC": 0.791071106400507,
+        "brier": 0.18497952039216478,
+        "log_loss": 0.5585499377363771,
+        "precision": 0.7792989889977883,
+        "recall": 0.8653239331077723,
+        "f1": 0.8097599605110664,
+        "positive_rate": 0.6220059568682236
+      },
+      "B2_category_x_city_rate": {
+        "PR_AUC": 0.8171146430563363,
+        "ROC_AUC": 0.7959499033036007,
+        "brier": 0.1809313032938243,
+        "log_loss": 0.5379353168556148,
+        "precision": 0.7792989889977883,
+        "recall": 0.8653239331077723,
+        "f1": 0.8097599605110664,
+        "positive_rate": 0.6220059568682236
+      },
+      "B3_recent_violation_rate": {
+        "PR_AUC": 0.8491584515333163,
+        "ROC_AUC": 0.8013327097963837,
+        "brier": 0.1612190418938416,
+        "log_loss": 0.4894909650623125,
+        "precision": 0.8101992134715091,
+        "recall": 0.7845055795774402,
+        "f1": 0.791105762145626,
+        "positive_rate": 0.6220059568682236
+      }
+    }
+  },
+  "gates": [
+    {
+      "gate": "S1_mean_PR_AUC_beats_baseline",
+      "passed": true,
+      "candidate": 0.8783130567614004,
+      "baseline": 0.8491584515333163
+    },
+    {
+      "gate": "S2_mean_Brier_beats_baseline",
+      "passed": true,
+      "candidate": 0.14720224437392412,
+      "baseline": 0.1612190418938416
+    },
+    {
+      "gate": "S3_fold_wins>=4of6_on_both",
+      "passed": true,
+      "pr_auc_wins": 6,
+      "brier_wins": 6,
+      "folds": 6
+    },
+    {
+      "gate": "S4_pooled_bootstrap_CIs_exclude_0",
+      "passed": true,
+      "rows": 108940,
+      "cluster": "report day (UTC)",
+      "PR_AUC_gain_ci95": [
+        0.01673479281441162,
+        0.023063188397311533
+      ],
+      "brier_gain_ci95": [
+        0.012698699674351034,
+        0.0175423090824502
+      ],
+      "PR_AUC_gain": 0.020063248742271278,
+      "brier_gain": 0.015165066722607534
+    }
+  ],
+  "reproducibility_check": {
+    "fold": "2020-07",
+    "recorded_PR_AUC": 0.9364427967444603,
+    "refit_PR_AUC": 0.9364427967444603,
+    "match": true
+  },
+  "software_versions": {
+    "python": "3.11.8",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.17.1",
+    "joblib": "1.5.1",
+    "pyarrow": "20.0.0",
+    "seed": 20260915
+  },
+  "limitations": [
+    "breach rates are Chicago's (62% at default SLAs); UrbanEye's are unknown",
+    "threshold is provisional: the cost of a missed breach is undefined; at a ~65% base rate the max-F1 threshold flags most incidents, so the risk bands carry more information than the binary flag",
+    "LOCO: beats the recent-violation rate on SF and NYC, not on Chicago"
+  ]
+}

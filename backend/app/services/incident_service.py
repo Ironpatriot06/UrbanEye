@@ -177,13 +177,18 @@ def _find_best_available_agent(db: Session) -> Optional[User]:
     Return the available agent who has been idle the longest.
 
     Selection rules:
-    1. Agent must have is_available = True.
+    1. Agent must have is_available = True and an active (not deactivated)
+       account — a deactivated agent cannot sign in to work the incident.
     2. Prefer agents with last_assigned_at = NULL (never assigned).
     3. Among assigned agents, choose the one with the oldest last_assigned_at.
     """
     agents = (
         db.query(User)
-        .filter(User.role == UserRole.AGENT, User.is_available == True)
+        .filter(
+            User.role == UserRole.AGENT,
+            User.is_available == True,
+            User.is_active.is_(True),
+        )
         .all()
     )
     if not agents:
@@ -526,11 +531,28 @@ def assign_agent(
     previous_status = incident.status
 
     if payload.agent_id is not None:
-        agent = db.query(User).filter(User.id == payload.agent_id).first()
+        # Only AGENT accounts can hold an assignment: a citizen or admin id
+        # is reported exactly like an id that does not exist.
+        agent = (
+            db.query(User)
+            .filter(User.id == payload.agent_id, User.role == UserRole.AGENT)
+            .first()
+        )
         if agent is None:
             raise HTTPException(
                 status_code=http_status.HTTP_404_NOT_FOUND,
                 detail=f"Agent with id={payload.agent_id} not found.",
+            )
+        # Not covered by override_availability: that flag bypasses the agent's
+        # own availability choice, whereas a deactivated account cannot sign
+        # in to work the incident at all.
+        if not agent.is_active:
+            raise HTTPException(
+                status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    f"Agent '{agent.name}' is deactivated and cannot be assigned. "
+                    "Reactivate the account in User Management first."
+                ),
             )
         if not agent.is_available and not payload.override_availability:
             raise HTTPException(

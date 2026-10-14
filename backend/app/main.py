@@ -10,6 +10,8 @@ Application layout
   /api/v1/incidents   — incident CRUD (role-filtered, auth-required)
   /api/v1/agents  — agent management
   /api/v1/admin   — admin user & role management
+  /api/v1/incidents/{id}/predictions, /api/v1/ml/status, /api/v1/hotspots
+                  — ML predictions (Phase 2C; see app/ml/__init__.py)
   /api/v1/        — image endpoints (mounted under incidents)
 
 Table creation
@@ -25,6 +27,7 @@ The Next.js frontend runs on http://localhost:3000 in development.
 We configure CORS to allow requests from that origin.
 """
 
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -41,14 +44,18 @@ from app.models import user as _user_models  # noqa: F401
 from app.models import image as _image_models  # noqa: F401
 from app.models import history as _history_models  # noqa: F401
 from app.models import user_audit as _user_audit_models  # noqa: F401
+from app.models import ml_prediction as _ml_prediction_models  # noqa: F401
 
 from app.api.auth import router as auth_router
 from app.api.incidents import router as incidents_router
 from app.api.images import router as images_router
 from app.api.agents import router as agents_router
 from app.api.admin_users import router as admin_users_router
+from app.api.predictions import router as predictions_router
+from app.ml.registry import load_registry
 
 settings = get_settings()
+INSECURE_DEFAULT_SECRET = "change-me-in-production"
 
 
 # ---------------------------------------------------------------------------
@@ -57,8 +64,20 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create database tables on startup (idempotent)."""
+    """Create database tables on startup (idempotent) and load the ML bundle.
+
+    load_registry() never raises: a missing or unverifiable model bundle makes
+    predictions UNAVAILABLE / FALLBACK and leaves every other route working.
+    """
+    if settings.SECRET_KEY == INSECURE_DEFAULT_SECRET:
+        # Tokens signed with a published key can be forged by anyone.  Allowed so a
+        # fresh clone runs locally; never acceptable on a shared or public server.
+        logging.getLogger("urbaneye").warning(
+            "SECRET_KEY is the published default %r - set a random SECRET_KEY in .env "
+            "before exposing this server (python -c \"import secrets; "
+            "print(secrets.token_hex(32))\").", INSECURE_DEFAULT_SECRET)
     Base.metadata.create_all(bind=engine)
+    load_registry()
     yield
 
 
@@ -149,3 +168,4 @@ app.include_router(incidents_router, prefix="/api/v1")
 app.include_router(images_router, prefix="/api/v1")
 app.include_router(agents_router, prefix="/api/v1")
 app.include_router(admin_users_router, prefix="/api/v1")
+app.include_router(predictions_router, prefix="/api/v1")

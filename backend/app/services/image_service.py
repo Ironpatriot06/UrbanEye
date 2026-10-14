@@ -50,6 +50,18 @@ def _validate_image(data: bytes, content_type: str) -> None:
         )
 
 
+async def validate_upload(file: UploadFile) -> None:
+    """
+    Validate an upload without persisting it, then rewind it for save_image.
+
+    Lets a caller reject every bad file before it writes anything, so a
+    request that fails validation leaves nothing behind.
+    """
+    data = await file.read()
+    _validate_image(data, file.content_type or "application/octet-stream")
+    await file.seek(0)
+
+
 async def save_image(
     db: Session,
     incident_id: int,

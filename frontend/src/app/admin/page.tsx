@@ -6,6 +6,7 @@ import { PriorityBadge, SlaBadge, StatusBadge } from '@/components/IncidentCard'
 import { IncidentImages } from '@/components/IncidentImages';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
 import { IncidentHistory } from '@/components/IncidentHistory';
+import { IncidentPredictions } from '@/components/IncidentPredictions';
 import {
   DetailHeader,
   Field,
@@ -567,6 +568,11 @@ export default function AdminPage() {
                   override never grants a fresh window.
                 </p>
               </SlaSummary>
+              <IncidentPredictions
+                incidentId={selected.id}
+                slaHours={selected.sla_hours ?? null}
+                showInputs
+              />
 
               {/* ── Priority override ────────────────────────── */}
               <section className="detail-section">

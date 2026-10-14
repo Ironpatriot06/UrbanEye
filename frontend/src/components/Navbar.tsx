@@ -26,9 +26,13 @@ const ROLE_LABEL: Record<Role, string> = {
  */
 const ROLE_LINKS: Record<Role, { href: string; label: string }[]> = {
   USER: [{ href: '/dashboard', label: 'My reports' }],
-  AGENT: [{ href: '/agent', label: 'My queue' }],
+  AGENT: [
+    { href: '/agent', label: 'My queue' },
+    { href: '/hotspots', label: 'Hotspots' },
+  ],
   ADMIN: [
     { href: '/admin', label: 'Incidents' },
+    { href: '/hotspots', label: 'Hotspots' },
     { href: '/admin/users', label: 'User Management' },
   ],
 };

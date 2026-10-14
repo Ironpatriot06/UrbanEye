@@ -1,0 +1,460 @@
+{
+  "model_version": "resolution_v2.0.0",
+  "task": "resolution_time",
+  "created_at_utc": "2026-10-13T16:06:16.239646+00:00",
+  "artifact_layout": {
+    "model.joblib": "dict {point, q10, q90} of HistGradientBoostingRegressor, all on log1p(hours)",
+    "preprocessor.joblib": "scripts.train._common.FeaturePreprocessor"
+  },
+  "features": [
+    "model_category",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "is_night",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "feature_set": "F4b_workload_spatial_no_month",
+  "categorical_features": [
+    "model_category",
+    "is_weekend",
+    "is_night"
+  ],
+  "numeric_features": [
+    "hour",
+    "day_of_week",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "category_column": "model_category",
+  "supported_categories": [
+    "POTHOLE",
+    "FLOOD",
+    "GARBAGE",
+    "STREETLIGHT"
+  ],
+  "unsupported_categories": [
+    "FIRE_HAZARD",
+    "OTHER"
+  ],
+  "target": "resolution_time_hours = closed_at - reported_at (hours); fit on log1p; point = expm1(prediction) clipped at 0 (absolute-error loss on log1p => a conditional MEDIAN estimate)",
+  "target_transform": "log1p",
+  "preprocessing": {
+    "encoder": {
+      "n_predictors": 20,
+      "categorical": [
+        "model_category",
+        "is_weekend",
+        "is_night"
+      ],
+      "numeric": [
+        "hour",
+        "day_of_week",
+        "wl_backlog_open",
+        "wl_intake_7d",
+        "wl_intake_30d",
+        "wl_closed_7d",
+        "wl_backlog_days",
+        "wl_recent_closures_30d",
+        "wl_recent_mean_log_res",
+        "wl_recent_median_res_h",
+        "wl_city_backlog_open",
+        "wl_city_intake_7d",
+        "sp_samecat_box750_7d",
+        "sp_samecat_box750_30d",
+        "sp_samecat_box750_90d",
+        "sp_samecat_box750_open_now",
+        "sp_all_box750_30d"
+      ],
+      "max_levels_per_categorical": 250,
+      "vocabulary_sizes": {
+        "model_category": 14,
+        "is_weekend": 2,
+        "is_night": 2
+      },
+      "missing_policy": "categorical NULL -> explicit __MISSING__ level",
+      "rare_level_policy": "levels outside the train top-250 -> __OTHER__",
+      "unknown_policy": "levels unseen at fit time -> -1",
+      "fitted_on": "training fold only"
+    },
+    "missing_numeric": "left as NaN (native HGB missing branch)",
+    "missing_categorical": "__MISSING__ level; unseen -> -1",
+    "calendar": "hour/day_of_week/is_weekend/is_night in local time (Asia/Kolkata at inference)"
+  },
+  "algorithm": "HistGradientBoostingRegressor",
+  "model_name": "M2_l1log",
+  "hyperparameters": {
+    "loss": "absolute_error",
+    "es": false,
+    "max_iter": 500,
+    "learning_rate": 0.06,
+    "max_leaf_nodes": 63,
+    "min_samples_leaf": 20,
+    "l2_regularization": 1.0
+  },
+  "interval_calibration": {
+    "nominal_coverage": 0.8,
+    "empirical_coverage_mean": 0.5964935295922927,
+    "empirical_coverage_range": [
+      0.27550564308861325,
+      0.8374384236453202
+    ],
+    "calibrated": false
+  },
+  "quantile_models": {
+    "q10": 0.1,
+    "q90": 0.9,
+    "hyperparameters": {
+      "max_iter": 500,
+      "learning_rate": 0.06,
+      "max_leaf_nodes": 63,
+      "min_samples_leaf": 20,
+      "l2_regularization": 1.0
+    }
+  },
+  "random_seed": 20260915,
+  "training_data": {
+    "table": "data/processed/phase2b/resolution_v2.parquet",
+    "sha256": "114d158b7339b6f14df0c695773ef152ad5df61b51ebe9f99dedccb363d0448c",
+    "built_at_utc": "2026-10-03T18:41:29.113562+00:00",
+    "inputs": {
+      "incidents": {
+        "path": "data/processed/incidents/all_incidents.parquet",
+        "sha256": "cac64bc79ee12d5f37d869be4eb853c741ec033ae937a7fae93b64df0814dae8"
+      },
+      "time_features": {
+        "path": "data/processed/features/incident_time_features.parquet",
+        "sha256": "a71c06c0fca05f2cf92f3b418facef711d9c36c05621eb4fc51f40ce86a25836"
+      },
+      "geo_features": {
+        "path": "data/processed/geo_features/incident_geo_features.parquet",
+        "sha256": "1203c012e9835b5a49bc77e276a78bb7d255a6836076335975fe3355123f3048"
+      }
+    },
+    "filters": {
+      "chicago_clean_from": "2019-03-01 (targets only; earlier rows remain history)",
+      "valid_resolution": "status closed, not is_duplicate, 1 min <= duration <= 87,600 h",
+      "resolution_categories": "model_category not in OUT_OF_SCOPE/UNMAPPED/REVIEW_REQUIRED",
+      "sla_population": "UrbanEye-mapped rows, not duplicates, clean period; closed with a valid duration OR open with the deadline passed by the extract end",
+      "sla_target": "resolution_time_hours >= sla_hours(default priority of UE category), or still open past the deadline (backend: breach at/after deadline)"
+    },
+    "rows": 682884,
+    "period": [
+      "2010-01-01 05:38:00+00:00",
+      "2020-08-28 12:50:52+00:00"
+    ],
+    "rows_by_source": {
+      "chicago311": 499580,
+      "sf311": 104501,
+      "nyc311": 78803
+    },
+    "ue_supported_rows": 262660,
+    "label_policy": "closed_at < 2020-09-01 (outcome known)",
+    "fit_seconds": 84.0
+  },
+  "evaluation_split": {
+    "protocol": "rolling origin, 6 two-month Chicago test windows",
+    "origins": [
+      "2019-09-01",
+      "2019-11-01",
+      "2020-01-01",
+      "2020-03-01",
+      "2020-05-01",
+      "2020-07-01",
+      "2020-09-01"
+    ],
+    "train": "all cleaned rows (any city) reported before the origin with closed_at before the origin",
+    "test": "Chicago rows in [origin, next origin); metrics on UrbanEye-supported categories"
+  },
+  "metrics": {
+    "rolling_origin_summary_ue": {
+      "MAE": 581.6634571157077,
+      "median_AE": 171.96938961347155,
+      "MAE_log1p": 1.507701919010341,
+      "RMSE": 1349.8830696458272,
+      "R2": -0.17128267641113262
+    },
+    "rolling_origin_by_fold_ue": {
+      "2019-09": {
+        "n": 17898,
+        "MAE": 1145.5044753623774,
+        "RMSE": 2005.5372499519597,
+        "median_AE": 395.11777617311054,
+        "R2": -0.43769636689428704,
+        "p90_AE": 3033.626117403703,
+        "p99_AE": 8775.354246333703,
+        "RMSE_log1p": 2.652831062720505,
+        "MAE_log1p": 2.1577698219020944
+      },
+      "2019-11": {
+        "n": 13314,
+        "MAE": 727.6548625298706,
+        "RMSE": 1429.3710169513247,
+        "median_AE": 234.7231649009512,
+        "R2": -0.2376442763025277,
+        "p90_AE": 1990.8305705954813,
+        "p99_AE": 6607.947333245479,
+        "RMSE_log1p": 2.1139710341567883,
+        "MAE_log1p": 1.7174121302250855
+      },
+      "2020-01": {
+        "n": 15159,
+        "MAE": 411.89411610549814,
+        "RMSE": 1217.1675465709457,
+        "median_AE": 85.59457361140782,
+        "R2": -0.09998393993157051,
+        "p90_AE": 1043.5470377565703,
+        "p99_AE": 6135.81757309343,
+        "RMSE_log1p": 2.058275722707576,
+        "MAE_log1p": 1.5511076148230314
+      },
+      "2020-03": {
+        "n": 19025,
+        "MAE": 255.46000052899856,
+        "RMSE": 1098.6508551302406,
+        "median_AE": 45.74337941844152,
+        "R2": -0.045573958583841945,
+        "p90_AE": 375.0223641933247,
+        "p99_AE": 6183.144663918181,
+        "RMSE_log1p": 1.7180563094486516,
+        "MAE_log1p": 1.241069268552283
+      },
+      "2020-05": {
+        "n": 22225,
+        "MAE": 557.277512382676,
+        "RMSE": 1423.79170266588,
+        "median_AE": 126.74126202338007,
+        "R2": -0.13027075841279756,
+        "p90_AE": 1501.8988486891146,
+        "p99_AE": 6934.01706195417,
+        "RMSE_log1p": 1.8221027666094531,
+        "MAE_log1p": 1.3439067941562637
+      },
+      "2020-07": {
+        "n": 21315,
+        "MAE": 392.1897757848255,
+        "RMSE": 924.7800466046126,
+        "median_AE": 143.8961815535381,
+        "R2": -0.07652675834177103,
+        "p90_AE": 912.9932832510339,
+        "p99_AE": 3566.787151393936,
+        "RMSE_log1p": 1.434590222312483,
+        "MAE_log1p": 1.0349458844032864
+      }
+    },
+    "pooled_bootstrap_vs_baseline": {
+      "gain_mean": 13.733619061935944,
+      "ci95": [
+        10.64626475356648,
+        17.340635666984667
+      ],
+      "significant": true
+    },
+    "interval_p10_p90": {
+      "2019-09": {
+        "coverage": 0.27550564308861325,
+        "median_width_h": 120.8884294975899
+      },
+      "2019-11": {
+        "coverage": 0.5193029893345351,
+        "median_width_h": 577.3673472895356
+      },
+      "2020-01": {
+        "coverage": 0.5778745299821888,
+        "median_width_h": 326.3738736371267
+      },
+      "2020-03": {
+        "coverage": 0.6957687253613666,
+        "median_width_h": 218.44273393900372
+      },
+      "2020-05": {
+        "coverage": 0.6730708661417323,
+        "median_width_h": 567.6847412437912
+      },
+      "2020-07": {
+        "coverage": 0.8374384236453202,
+        "median_width_h": 1168.0557110970947
+      }
+    },
+    "leave_one_city_out_all_rows": {
+      "holdout_sf311": {
+        "n": 105381,
+        "MAE": 1233.5140285410723,
+        "RMSE": 4208.572205020473,
+        "median_AE": 65.63792682533102,
+        "R2": -0.02660004973110386,
+        "p90_AE": 2076.552262555793,
+        "p99_AE": 20495.77425072906,
+        "RMSE_log1p": 2.5193488753189652,
+        "MAE_log1p": 2.0967395385181784
+      },
+      "holdout_nyc311": {
+        "n": 78803,
+        "MAE": 390.3087025308325,
+        "RMSE": 1759.979765375164,
+        "median_AE": 51.15381851603673,
+        "R2": -0.033365433575719416,
+        "p90_AE": 655.0479286541554,
+        "p99_AE": 5596.7465872802095,
+        "RMSE_log1p": 2.0234988330626136,
+        "MAE_log1p": 1.5790452238162687
+      },
+      "holdout_chicago311": {
+        "n": 541440,
+        "MAE": 1076.0095943441518,
+        "RMSE": 3810.601055980866,
+        "median_AE": 113.0317383964826,
+        "R2": -0.06317641756289616,
+        "p90_AE": 2370.1913174915994,
+        "p99_AE": 15883.737304615306,
+        "RMSE_log1p": 2.4713824005270184,
+        "MAE_log1p": 1.9535026266559568
+      }
+    }
+  },
+  "baseline_metrics": {
+    "name": "B1_category_median",
+    "summary_ue": {
+      "MAE": 592.854426614476,
+      "median_AE": 195.41710648148145,
+      "MAE_log1p": 1.6968042732536286,
+      "RMSE": 1351.7961909460782,
+      "R2": -0.17796195203994256
+    },
+    "all_baselines_summary_ue": {
+      "B0_global_median": {
+        "MAE": 626.2251225429405,
+        "median_AE": 195.0979861111111,
+        "MAE_log1p": 1.8615535281639544,
+        "RMSE": 1391.7463353047995,
+        "R2": -0.2509195693993626
+      },
+      "B1_category_median": {
+        "MAE": 592.854426614476,
+        "median_AE": 195.41710648148145,
+        "MAE_log1p": 1.6968042732536286,
+        "RMSE": 1351.7961909460782,
+        "R2": -0.17796195203994256
+      },
+      "B2_category_x_city_median": {
+        "MAE": 595.8557545527066,
+        "median_AE": 242.13163194444442,
+        "MAE_log1p": 1.4874786749743378,
+        "RMSE": 1326.2614985146704,
+        "R2": -0.13501432838883962
+      },
+      "B3_category_x_department_median": {
+        "MAE": 595.8557545527066,
+        "median_AE": 242.13163194444442,
+        "MAE_log1p": 1.4874786749743378,
+        "RMSE": 1326.2614985146704,
+        "R2": -0.13501432838883962
+      },
+      "B4_recent_30d_category_median": {
+        "MAE": 679.0546745661412,
+        "median_AE": 313.28310952669585,
+        "MAE_log1p": 1.4614646176750827,
+        "RMSE": 1355.441360059458,
+        "R2": -0.20521722148631252
+      }
+    }
+  },
+  "gates": [
+    {
+      "gate": "R1_mean_MAE_beats_best_baseline",
+      "passed": true,
+      "candidate": 581.6634571157077,
+      "baseline": 592.854426614476
+    },
+    {
+      "gate": "R2_fold_wins>=4of6",
+      "passed": true,
+      "wins": 5,
+      "folds": 6,
+      "candidate_by_fold": {
+        "2019-09": 1145.5044753623774,
+        "2019-11": 727.6548625298706,
+        "2020-01": 411.89411610549814,
+        "2020-03": 255.46000052899856,
+        "2020-05": 557.277512382676,
+        "2020-07": 392.1897757848255
+      },
+      "baseline_by_fold": {
+        "2019-09": 1146.6426721561068,
+        "2019-11": 729.7971063563,
+        "2020-01": 394.0774322551327,
+        "2020-03": 277.04904949627684,
+        "2020-05": 585.476594344457,
+        "2020-07": 424.08370507858314
+      }
+    },
+    {
+      "gate": "R3_median_AE_not_worse",
+      "passed": true,
+      "candidate": 171.96938961347155,
+      "baseline": 195.41710648148145
+    },
+    {
+      "gate": "R4_pooled_bootstrap_CI_excludes_0",
+      "passed": true,
+      "rows": 108936,
+      "cluster": "report day (UTC)",
+      "gain_mean": 13.733619061935944,
+      "ci95": [
+        10.64626475356648,
+        17.340635666984667
+      ],
+      "significant": true
+    }
+  ],
+  "reproducibility_check": {
+    "fold": "2020-07",
+    "recorded_MAE_ue": 392.1897757848255,
+    "refit_MAE_ue": 392.1897757848255,
+    "match": true
+  },
+  "software_versions": {
+    "python": "3.11.8",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.17.1",
+    "joblib": "1.5.1",
+    "pyarrow": "20.0.0",
+    "seed": 20260915
+  },
+  "limitations": [
+    "trained on Chicago/SF/NYC 311 data; no Indian incidents",
+    "LOCO shows category-level knowledge transfers poorly between cities",
+    "p10-p90 interval is under-covered (see interval_calibration); do not present it as an 80% interval",
+    "history features must be computed by the caller (see inference.py)"
+  ]
+}

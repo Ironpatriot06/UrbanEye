@@ -12,6 +12,7 @@ import { IncidentImages } from '@/components/IncidentImages';
 import { ResolutionProofUpload } from '@/components/ResolutionProofUpload';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
 import { IncidentHistory } from '@/components/IncidentHistory';
+import { IncidentPredictions } from '@/components/IncidentPredictions';
 import {
   DetailHeader,
   IncidentMetadata,
@@ -306,6 +307,10 @@ export default function AgentPage() {
                   system and can only be changed by an admin.
                 </p>
               </SlaSummary>
+              <IncidentPredictions
+                incidentId={selected.id}
+                slaHours={selected.sla_hours ?? null}
+              />
               <IncidentMetadata incident={selected} />
               <IncidentImages
                 incidentId={selected.id}

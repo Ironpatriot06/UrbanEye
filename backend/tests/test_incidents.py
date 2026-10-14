@@ -1198,3 +1198,82 @@ def test_multiple_images_are_all_retrievable(client, db_session):
         )
         assert raw.status_code == 200
         assert raw.headers["content-type"] == img["content_type"]
+
+
+# ---------------------------------------------------------------------------
+# Regression: assignment must only ever target an active AGENT account, and a
+# rejected image must not leave a half-created incident behind.
+# ---------------------------------------------------------------------------
+
+def test_deactivated_agent_is_not_auto_assigned(client, db_session):
+    _disable_all_existing_agents(db_session)
+    agent = _create_user_in_db(db_session, "deact_queue@test.com", role=UserRole.AGENT)
+    agent.is_active = False  # still is_available=True, never assigned
+    db_session.flush()
+
+    user = _create_user_in_db(db_session, "deact_queue_user@test.com")
+    resp = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    )
+    assert resp.status_code == 201
+    body = resp.json()
+    assert body["assigned_agent_id"] is None
+    assert body["status"] == "REPORTED"
+
+
+def test_admin_cannot_assign_non_agent(client, db_session):
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "nonagent_admin@test.com", role=UserRole.ADMIN)
+    user = _create_user_in_db(db_session, "nonagent_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    for target in (user, admin):
+        resp = client.put(
+            f"/api/v1/incidents/{incident_id}/assign",
+            json={"agent_id": target.id, "override_availability": True},
+            headers=_auth(admin),
+        )
+        assert resp.status_code == 404, resp.text
+
+    detail = client.get(f"/api/v1/incidents/{incident_id}", headers=_auth(admin)).json()
+    assert detail["assigned_agent_id"] is None
+
+
+def test_admin_cannot_assign_deactivated_agent_even_with_override(client, db_session):
+    _disable_all_existing_agents(db_session)
+    admin = _create_user_in_db(db_session, "deact_admin@test.com", role=UserRole.ADMIN)
+    agent = _create_user_in_db(db_session, "deact_target@test.com", role=UserRole.AGENT)
+    agent.is_active = False
+    agent.is_available = False
+    db_session.flush()
+    user = _create_user_in_db(db_session, "deact_target_user@test.com")
+    incident_id = client.post(
+        "/api/v1/incidents/", files=_multipart_incident(), headers=_auth(user)
+    ).json()["id"]
+
+    resp = client.put(
+        f"/api/v1/incidents/{incident_id}/assign",
+        json={"agent_id": agent.id, "override_availability": True},
+        headers=_auth(admin),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+def test_rejected_image_does_not_create_incident(client, db_session):
+    from app.models.incident import Incident
+
+    user = _create_user_in_db(db_session, "atomic_img@test.com")
+    before = db_session.query(Incident).count()
+    resp = client.post(
+        "/api/v1/incidents/",
+        files=[
+            ("data", (None, json.dumps(VALID_INCIDENT), "application/json")),
+            ("images", ("ok.jpg", io.BytesIO(_make_jpeg_bytes()), "image/jpeg")),
+            ("images", ("bad.exe", io.BytesIO(b"MZ\x00\x00"), "application/octet-stream")),
+        ],
+        headers=_auth(user),
+    )
+    assert resp.status_code == 422
+    assert db_session.query(Incident).count() == before

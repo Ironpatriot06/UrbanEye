@@ -1,0 +1,120 @@
+{
+  "generated_at_utc": "2026-10-13T18:59:11.868855+00:00",
+  "environment": {
+    "python": "3.11.8",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.17.1",
+    "joblib": "1.5.1",
+    "pyarrow": "20.0.0",
+    "seed": 20260915
+  },
+  "tasks": {
+    "resolution": {
+      "match": true,
+      "test_rows": 141349,
+      "metrics": {
+        "MAE": {
+          "reported": 896.5124757228067,
+          "reproduced": 896.5124757228067,
+          "match": true
+        },
+        "RMSE": {
+          "reported": 3153.75985517696,
+          "reproduced": 3153.75985517696,
+          "match": true
+        },
+        "median_AE": {
+          "reported": 133.32163371457602,
+          "reproduced": 133.32163371457602,
+          "match": true
+        },
+        "R2": {
+          "reported": 0.2138516880967739,
+          "reproduced": 0.2138516880967739,
+          "match": true
+        }
+      },
+      "artifact_sha256": {
+        "metadata.json": "f4d67850f600d6aebbc78c7316b384aac465a1e5e927aa6d637c978b252e36c7",
+        "model.joblib": "d37c2a1a165d3acbc21f0ffd1c5db88f200c8fa864a016387a5ea9f1d616c391",
+        "preprocessor.joblib": "0cddb5437e8974b6174c7190a891e5c4fde827d0fbbb2bcc99a88c852589b546"
+      }
+    },
+    "sla": {
+      "match": true,
+      "test_rows": 3873,
+      "metrics": {
+        "PR_AUC": {
+          "reported": 0.2489402071435166,
+          "reproduced": 0.2489402071435166,
+          "match": true
+        },
+        "ROC_AUC": {
+          "reported": 0.6829078462484466,
+          "reproduced": 0.6829078462484466,
+          "match": true
+        },
+        "precision": {
+          "reported": 0.22036474164133737,
+          "reproduced": 0.22036474164133737,
+          "match": true
+        },
+        "recall": {
+          "reported": 0.36069651741293535,
+          "reproduced": 0.36069651741293535,
+          "match": true
+        },
+        "f1": {
+          "reported": 0.27358490566037735,
+          "reproduced": 0.27358490566037735,
+          "match": true
+        },
+        "brier": {
+          "reported": 0.09026939443583397,
+          "reproduced": 0.09026939443583397,
+          "match": true
+        }
+      },
+      "artifact_sha256": {
+        "metadata.json": "d0f3641013348e078d66d77f3dc2c9ca28691c5195049a8eef313d9e74656ddd",
+        "model.joblib": "7e6d4f2f5a8ac2422d89ad49448a69501bc0f67674de8a22fea82e3f7428b6bb",
+        "preprocessor.joblib": "6822eb59287fa614997a485dd4c7222ddc46bb9b78b666b72c9ea6d074e046e5"
+      }
+    },
+    "hotspot": {
+      "match": true,
+      "test_rows": 10000,
+      "metrics": {
+        "MAE": {
+          "reported": 10.314467448067894,
+          "reproduced": 10.314467448067894,
+          "match": true
+        },
+        "RMSE": {
+          "reported": 32.41339646301305,
+          "reproduced": 32.41339646301305,
+          "match": true
+        },
+        "median_AE": {
+          "reported": 4.37037366380933,
+          "reproduced": 4.37037366380933,
+          "match": true
+        },
+        "R2": {
+          "reported": 0.3076976479563165,
+          "reproduced": 0.3076976479563165,
+          "match": true
+        }
+      },
+      "artifact_sha256": {
+        "metadata.json": "ba32d74aa4583c365567833b57d25b15d029d91a883561c764196be5ec069f2e",
+        "model.joblib": "e7a6184c34891c42bea5d6f09f6cd6c16358ecf54255306f77f0591bf733a921",
+        "preprocessor.joblib": "1a6784d7b1098c633b994aaf0cb3edb08d2479c8ec989ee0fad0c04ad9ebce3a"
+      }
+    }
+  },
+  "all_reproduced": true
+}

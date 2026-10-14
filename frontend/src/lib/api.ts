@@ -820,3 +820,130 @@ export function formatDeadlineDelta(iso?: string | null): string {
 
   return overdue ? `${span} overdue` : `${span} remaining`;
 }
+
+// ── ML predictions (Phase 2C) ─────────────────────────────────
+/*
+ * Every prediction carries its status and the method that produced it. Nothing
+ * here is a validated estimate: `local_reliability_established` is false until
+ * predictions have been compared with real UrbanEye outcomes. The UI must show
+ * `warnings` and must not present a FALLBACK as an ML prediction.
+ */
+export type PredictionStatus = 'AVAILABLE' | 'EXPERIMENTAL' | 'FALLBACK' | 'UNAVAILABLE';
+export type RiskBand = 'LOW' | 'MEDIUM' | 'HIGH';
+
+export interface PredictionReason {
+  code: string;
+  message: string;
+  detail?: unknown;
+}
+
+interface PredictionBase {
+  status: PredictionStatus;
+  method: string | null; // 'ML_MODEL' | 'BASELINE_*'
+  method_description: string | null;
+  reasons: PredictionReason[];
+  fallback_reason: string | null;
+  model_version: string | null;
+  bundle_version: string | null;
+  local_reliability_established: boolean;
+  warnings: string[];
+  baseline_sample_size: number | null;
+}
+
+export interface ResolutionPrediction extends PredictionBase {
+  task: 'resolution';
+  estimate_hours: number | null;
+  range_p10_hours: number | null;
+  range_p90_hours: number | null;
+  range_nominal_coverage: number | null;
+  range_empirical_coverage: number | null;
+  range_calibrated: boolean | null;
+}
+
+export interface SlaPrediction extends PredictionBase {
+  task: 'sla';
+  sla_hours: number | null;
+  breach_probability: number | null; // ML_MODEL only
+  risk_band: RiskBand | null; // ML_MODEL only
+  decision_threshold: number | null;
+  historical_breach_rate: number | null; // FALLBACK only
+}
+
+export interface IncidentPredictions {
+  incident_id: number;
+  generated_at: string;
+  features_as_of: string;
+  incident_status: string;
+  sla_deadline: string | null;
+  service_area: string | null;
+  bundle_version: string | null;
+  resolution: ResolutionPrediction;
+  sla: SlaPrediction;
+  inputs: Record<string, unknown> | null; // admins only, on request
+  logged: boolean;
+}
+
+export interface HotspotCell {
+  cell_id: string;
+  center_lat: number;
+  center_lon: number;
+  bounds: { south: number; west: number; north: number; east: number };
+  predicted_next_week_count: number;
+  last_week_count: number;
+  mean_last_4_weeks: number;
+  reports_in_history: number;
+}
+
+export interface HotspotForecast {
+  area: string | null;
+  category: string;
+  method: string;
+  status: PredictionStatus;
+  reasons: PredictionReason[];
+  alpha: number | null;
+  min_history_weeks: number | null;
+  cell_size_m: number | null;
+  week_definition: string | null;
+  first_complete_week: string | null;
+  last_complete_week: string | null;
+  forecast_week: string | null;
+  weeks_of_history: number;
+  cells: HotspotCell[];
+  cells_total: number;
+  available_areas: string[];
+  model_version: string | null;
+  bundle_version: string | null;
+  baseline_comparison: string | null;
+  generated_at: string;
+}
+
+/** Same access rule as the incident itself (own / assigned / any). */
+export async function apiGetPredictions(
+  incidentId: number,
+  includeInputs = false,
+): Promise<IncidentPredictions> {
+  const q = includeInputs ? '?include_inputs=true' : '';
+  return apiFetch<IncidentPredictions>(`/api/v1/incidents/${incidentId}/predictions${q}`);
+}
+
+/** Admins and agents only. EWMA statistic, not an ML model. */
+export async function apiGetHotspots(
+  category: string,
+  area?: string,
+  limit = 50,
+): Promise<HotspotForecast> {
+  const p = new URLSearchParams({ category, limit: String(limit) });
+  if (area) p.set('area', area);
+  return apiFetch<HotspotForecast>(`/api/v1/hotspots?${p.toString()}`);
+}
+
+/** "≈ 2 d 5 h" / "≈ 40 min" for a duration in hours. */
+export function formatHours(hours?: number | null): string {
+  if (hours == null || !Number.isFinite(hours)) return '—';
+  const minutes = Math.round(hours * 60);
+  if (minutes < 60) return `≈ ${minutes} min`;
+  const d = Math.floor(minutes / 1440);
+  const h = Math.round((minutes % 1440) / 60);
+  if (!d) return `≈ ${h} h`;
+  return h ? `≈ ${d} d ${h} h` : `≈ ${d} d`;
+}

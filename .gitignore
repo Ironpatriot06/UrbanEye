@@ -1,6 +1,7 @@
 # Environment
+# Real environment files stay ignored everywhere.  The *.example templates hold
+# placeholders only and are tracked so a fresh clone can be configured.
 .env
-.env.example
 
 # Python
 __pycache__/

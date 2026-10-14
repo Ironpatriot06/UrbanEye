@@ -6,17 +6,30 @@ New settings should be added here rather than scattered across the codebase.
 """
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# backend/app/core/config.py -> backend/ -> repository root
+_BACKEND_DIR = Path(__file__).resolve().parents[2]
+_REPO_ROOT = _BACKEND_DIR.parent
+
+#: .env files, resolved to absolute paths so the same configuration loads
+#: whether the backend is started from the repository root or from backend/
+#: (as the README instructs).  A bare ".env" would be resolved against the
+#: current working directory and silently fall back to the insecure defaults
+#: below.  Later files take precedence; missing files are skipped.
+ENV_FILES = (_REPO_ROOT / ".env", _BACKEND_DIR / ".env")
 
 
 class Settings(BaseSettings):
     """
     Central settings object.
 
-    Pydantic-settings reads values from the environment first, then from a
-    .env file in the project root.  The lru_cache wrapper (see get_settings)
-    ensures we only parse the environment once.
+    Pydantic-settings reads values from the environment first, then from the
+    files in ENV_FILES (the repository-root .env, optionally overridden by
+    backend/.env).  The lru_cache wrapper (see get_settings) ensures we only
+    parse the environment once.
     """
 
     # ------------------------------------------------------------------
@@ -77,9 +90,40 @@ class Settings(BaseSettings):
     DEMO_AGENT_PASSWORD_2: str = "Agent2@1234"
     DEMO_AGENT_NAME_2: str = "Field Agent 2"
 
+    DEMO_AGENT_EMAIL_3: str = "agent3@urbaneye.local"
+    DEMO_AGENT_PASSWORD_3: str = "Agent3@1234"
+    DEMO_AGENT_NAME_3: str = "Field Agent 3"
+
+    DEMO_AGENT_EMAIL_4: str = "agent4@urbaneye.local"
+    DEMO_AGENT_PASSWORD_4: str = "Agent4@1234"
+    DEMO_AGENT_NAME_4: str = "Field Agent 4"
+
     DEMO_USER_EMAIL: str = "user@urbaneye.local"
     DEMO_USER_PASSWORD: str = "User@1234"
     DEMO_USER_NAME: str = "Demo Citizen"
+
+    # ------------------------------------------------------------------
+    # ML inference (Phase 2C) — see app/ml/__init__.py
+    # ------------------------------------------------------------------
+    #: Master switch.  False -> every prediction is UNAVAILABLE (ML_DISABLED)
+    #: and no model file is opened; incident workflows are unaffected.
+    ML_ENABLED: bool = True
+    #: Directory of the serving bundle exported by
+    #: UrbanEye_ML_Data_Pipeline/scripts/phase2c/export_serving_bundle.py.
+    ML_BUNDLE_DIR: str = str(_BACKEND_DIR / "ml_bundle" / "urbaneye-ml-2026.10.13")
+    #: SHA-256 of the bundle's MANIFEST.json.  The manifest in turn lists the
+    #: SHA-256 of every file, so a bundle whose files or manifest differ from
+    #: the reviewed one is refused before any pickle is opened.
+    ML_BUNDLE_MANIFEST_SHA256: str = (
+        "b89f0e3266c9e677bffdd22134355087dfeaf8cd262cc8281bb10f3926187c7e"
+    )
+    #: JSON list of service areas ({"name", "lat_min", "lat_max", "lon_min",
+    #: "lon_max"}).  Empty -> the built-in Bengaluru and Chennai boxes.
+    ML_SERVICE_AREAS: str = ""
+    #: Log predictions automatically after an incident is created or its SLA /
+    #: priority changes (best effort; never blocks the write).  Predictions are
+    #: also logged when viewed, and by scripts/ml_log_predictions.py.
+    ML_LOG_ON_WRITE: bool = True
 
     # ------------------------------------------------------------------
     # Application metadata
@@ -89,7 +133,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILES,
         env_file_encoding="utf-8",
         case_sensitive=True,
     )

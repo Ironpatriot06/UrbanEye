@@ -1,0 +1,698 @@
+{
+  "generated_at_utc": "2026-10-03T19:46:35.028199+00:00",
+  "mapping_file": "config/urbaneye_category_mapping.csv",
+  "mapping_rules": [
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Pothole in Street Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "POTHOLE",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 116465,
+      "canonical_categories": [
+        "POTHOLE"
+      ],
+      "median_resolution_h": 284.8
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Alley Pothole Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "POTHOLE",
+      "confidence": "EXACT",
+      "notes": "alley rather than street",
+      "rows": 21790,
+      "canonical_categories": [
+        "POTHOLE"
+      ],
+      "median_resolution_h": 790.8
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Street Condition",
+      "subcategory": "Pothole",
+      "urbaneye_category": "POTHOLE",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 16085,
+      "canonical_categories": [
+        "POTHOLE"
+      ],
+      "median_resolution_h": 38.0
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Highway Condition",
+      "subcategory": "Pothole - Highway",
+      "urbaneye_category": "POTHOLE",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 717,
+      "canonical_categories": [
+        "ROAD_DAMAGE"
+      ],
+      "median_resolution_h": 8.1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Street Defects",
+      "subcategory": "Pavement_Defect",
+      "urbaneye_category": "POTHOLE",
+      "confidence": "PARTIAL",
+      "notes": "pavement defects include cracks and sunken pavement as well as potholes",
+      "rows": 2850,
+      "canonical_categories": [
+        "POTHOLE"
+      ],
+      "median_resolution_h": 115.3
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Street Light Out Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "STREETLIGHT",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 140211,
+      "canonical_categories": [
+        "STREETLIGHT_FAULT"
+      ],
+      "median_resolution_h": 554.3
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Street Light Condition",
+      "subcategory": "*",
+      "urbaneye_category": "STREETLIGHT",
+      "confidence": "EXACT",
+      "notes": "includes cycling/dayburning lamps",
+      "rows": 19696,
+      "canonical_categories": [
+        "STREETLIGHT_FAULT"
+      ],
+      "median_resolution_h": 41.8
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Streetlights",
+      "subcategory": "*",
+      "urbaneye_category": "STREETLIGHT",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 2423,
+      "canonical_categories": [
+        "STREETLIGHT_FAULT"
+      ],
+      "median_resolution_h": 68.7
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Fly Dumping Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "EXACT",
+      "notes": "illegal dumping on public way",
+      "rows": 16272,
+      "canonical_categories": [
+        "UNMAPPED"
+      ],
+      "median_resolution_h": 121.6
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Missed Garbage Pick-Up Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "STRONG",
+      "notes": "uncollected garbage",
+      "rows": 9863,
+      "canonical_categories": [
+        "UNMAPPED"
+      ],
+      "median_resolution_h": 68.6
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Sanitation Code Violation",
+      "subcategory": "*",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "PARTIAL",
+      "notes": "dumping/overflowing/improper storage plus other code violations",
+      "rows": 22401,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 97.4
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Street Cleaning Request",
+      "subcategory": "*",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "PARTIAL",
+      "notes": "litter/debris on street; sweeping is a scheduled service",
+      "rows": 6769,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 67.1
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Garbage Cart Maintenance",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "cart repair/delivery \u2014 not a garbage complaint",
+      "rows": 84697,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 314.5
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Street and Sidewalk Cleaning",
+      "subcategory": "City_garbage_can_overflowing",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 4970,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 1.2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Street and Sidewalk Cleaning",
+      "subcategory": "Bulky Items",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "STRONG",
+      "notes": "dumped bulky items on street",
+      "rows": 29499,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 2.2
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Street and Sidewalk Cleaning",
+      "subcategory": "General Cleaning",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "STRONG",
+      "notes": "litter/debris on street or sidewalk",
+      "rows": 21950,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 6.8
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Street and Sidewalk Cleaning",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "human/animal waste; hazardous or medical waste \u2014 no UrbanEye equivalent",
+      "rows": 15582,
+      "canonical_categories": [
+        "OUT_OF_SCOPE",
+        "PUBLIC_INFRASTRUCTURE_DAMAGE",
+        "REVIEW_REQUIRED"
+      ],
+      "median_resolution_h": 20.1
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Litter Receptacles",
+      "subcategory": "Debris_box_maintenance_overflowing",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "STRONG",
+      "notes": "",
+      "rows": 17,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 40.9
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Litter Receptacles",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "bin repair/maintenance \u2014 not a garbage complaint",
+      "rows": 2676,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 67.9
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Dirty Conditions",
+      "subcategory": "E15 Illegal Postering",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "posters \u2014 not garbage",
+      "rows": 1184,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 65.5
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Dirty Conditions",
+      "subcategory": "E8 Canine Violation",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "dog waste \u2014 not garbage",
+      "rows": 974,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 26.5
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Dirty Conditions",
+      "subcategory": "E4 18\" Law",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "storefront sweeping ordinance",
+      "rows": 158,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 92.2
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Dirty Conditions",
+      "subcategory": "*",
+      "urbaneye_category": "GARBAGE",
+      "confidence": "PARTIAL",
+      "notes": "improper disposal / dumping / loose rubbish / dirty sidewalk",
+      "rows": 2903,
+      "canonical_categories": [
+        "GARBAGE_DUMPING"
+      ],
+      "median_resolution_h": 91.8
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Water On Street Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "FLOOD",
+      "confidence": "STRONG",
+      "notes": "water pooling or flowing on the street (waterlogging); includes main-break water",
+      "rows": 17317,
+      "canonical_categories": [
+        "WATER_LEAKAGE_WATERLOGGING"
+      ],
+      "median_resolution_h": 53.2
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Sewer",
+      "subcategory": "Street Flooding (SJ)",
+      "urbaneye_category": "FLOOD",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 352,
+      "canonical_categories": [
+        "DRAINAGE_SEWER"
+      ],
+      "median_resolution_h": 19.7
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Sewer",
+      "subcategory": "Catch Basin Clogged/Flooding (Use Comments) (SC)",
+      "urbaneye_category": "FLOOD",
+      "confidence": "STRONG",
+      "notes": "clogged drain with flooding",
+      "rows": 1151,
+      "canonical_categories": [
+        "DRAINAGE_SEWER"
+      ],
+      "median_resolution_h": 93.2
+    },
+    {
+      "source_dataset": "nyc311",
+      "source_category_raw": "Sewer",
+      "subcategory": "Manhole Overflow (Use Comments) (SA1)",
+      "urbaneye_category": "FLOOD",
+      "confidence": "PARTIAL",
+      "notes": "sewer overflow onto street",
+      "rows": 107,
+      "canonical_categories": [
+        "DRAINAGE_SEWER"
+      ],
+      "median_resolution_h": 2.9
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "Sewer Issues",
+      "subcategory": "Flooding",
+      "urbaneye_category": "FLOOD",
+      "confidence": "EXACT",
+      "notes": "",
+      "rows": 805,
+      "canonical_categories": [
+        "DRAINAGE_SEWER"
+      ],
+      "median_resolution_h": 69.0
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Water in Basement Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "private-property water \u2014 not a civic flood report",
+      "rows": 9689,
+      "canonical_categories": [
+        "WATER_LEAKAGE_WATERLOGGING"
+      ],
+      "median_resolution_h": 16.4
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Open Fire Hydrant Complaint",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "hydrant running \u2014 a different service",
+      "rows": 12633,
+      "canonical_categories": [
+        "WATER_LEAKAGE_WATERLOGGING"
+      ],
+      "median_resolution_h": 7.1
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Sewer Cleaning Inspection Request",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "drain inspection; flooding not established from the record",
+      "rows": 25564,
+      "canonical_categories": [
+        "DRAINAGE_SEWER"
+      ],
+      "median_resolution_h": 1994.9
+    },
+    {
+      "source_dataset": "chicago311",
+      "source_category_raw": "Commercial Fire Safety Inspection Request",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "inspection request \u2014 not a citizen fire-hazard report; 710 rows",
+      "rows": 710,
+      "canonical_categories": [
+        "UNMAPPED"
+      ],
+      "median_resolution_h": 40460.6
+    },
+    {
+      "source_dataset": "sf311",
+      "source_category_raw": "General Request - FIRE DEPARTMENT",
+      "subcategory": "*",
+      "urbaneye_category": "UNSUPPORTED",
+      "confidence": "",
+      "notes": "34 rows; content unknown",
+      "rows": 34,
+      "canonical_categories": [
+        "UNMAPPED"
+      ],
+      "median_resolution_h": 19955.9
+    }
+  ],
+  "per_urbaneye_category": {
+    "POTHOLE": {
+      "status": "SUPPORTED",
+      "rows": 157907,
+      "by_source": {
+        "chicago311": 138255,
+        "nyc311": 16802,
+        "sf311": 2850
+      },
+      "by_confidence": {
+        "EXACT": 155057,
+        "PARTIAL": 2850
+      },
+      "median_resolution_h_by_source": {
+        "chicago311": 332.4,
+        "nyc311": 36.9,
+        "sf311": 115.3
+      },
+      "default_priority": "P3",
+      "default_sla_hours": 72,
+      "share_resolved_within_sla_by_source": {
+        "chicago311": 0.248,
+        "nyc311": 0.656,
+        "sf311": 0.379
+      }
+    },
+    "FLOOD": {
+      "status": "SUPPORTED",
+      "rows": 19732,
+      "by_source": {
+        "chicago311": 17317,
+        "nyc311": 1610,
+        "sf311": 805
+      },
+      "by_confidence": {
+        "STRONG": 18468,
+        "EXACT": 1157,
+        "PARTIAL": 107
+      },
+      "median_resolution_h_by_source": {
+        "chicago311": 53.2,
+        "nyc311": 51.7,
+        "sf311": 69.0
+      },
+      "default_priority": "P2",
+      "default_sla_hours": 24,
+      "share_resolved_within_sla_by_source": {
+        "chicago311": 0.358,
+        "nyc311": 0.349,
+        "sf311": 0.38
+      }
+    },
+    "FIRE_HAZARD": {
+      "status": "UNSUPPORTED (no training data)",
+      "rows": 0,
+      "by_source": {},
+      "by_confidence": {},
+      "median_resolution_h_by_source": {},
+      "default_priority": "P1",
+      "default_sla_hours": 4,
+      "share_resolved_within_sla_by_source": {}
+    },
+    "GARBAGE": {
+      "status": "SUPPORTED",
+      "rows": 114644,
+      "by_source": {
+        "sf311": 56436,
+        "chicago311": 55305,
+        "nyc311": 2903
+      },
+      "by_confidence": {
+        "STRONG": 61329,
+        "PARTIAL": 32073,
+        "EXACT": 21242
+      },
+      "median_resolution_h_by_source": {
+        "chicago311": 93.1,
+        "nyc311": 91.8,
+        "sf311": 2.6
+      },
+      "default_priority": "P4",
+      "default_sla_hours": 168,
+      "share_resolved_within_sla_by_source": {
+        "chicago311": 0.66,
+        "nyc311": 0.739,
+        "sf311": 0.963
+      }
+    },
+    "STREETLIGHT": {
+      "status": "SUPPORTED",
+      "rows": 162330,
+      "by_source": {
+        "chicago311": 140211,
+        "nyc311": 19696,
+        "sf311": 2423
+      },
+      "by_confidence": {
+        "EXACT": 162330
+      },
+      "median_resolution_h_by_source": {
+        "chicago311": 554.3,
+        "nyc311": 41.8,
+        "sf311": 68.7
+      },
+      "default_priority": "P3",
+      "default_sla_hours": 72,
+      "share_resolved_within_sla_by_source": {
+        "chicago311": 0.065,
+        "nyc311": 0.601,
+        "sf311": 0.521
+      }
+    },
+    "OTHER": {
+      "status": "UNSUPPORTED (no training data)",
+      "rows": 0,
+      "by_source": {},
+      "by_confidence": {},
+      "median_resolution_h_by_source": {},
+      "default_priority": "P3",
+      "default_sla_hours": 72,
+      "share_resolved_within_sla_by_source": {}
+    }
+  },
+  "canonical_categories_without_urbaneye_equivalent": {
+    "GRAFFITI_VISUAL_POLLUTION": 177920,
+    "FALLEN_TREE": 115771,
+    "GARBAGE_DUMPING": 89689,
+    "SIGNAGE_DAMAGE": 58179,
+    "TRAFFIC_SIGNAL_FAULT": 47234,
+    "DRAINAGE_SEWER": 47185,
+    "WATER_LEAKAGE_WATERLOGGING": 30714,
+    "FOOTPATH_DAMAGE": 20845,
+    "REVIEW_REQUIRED": 12107,
+    "ROAD_DAMAGE": 9549,
+    "PUBLIC_INFRASTRUCTURE_DAMAGE": 9480
+  },
+  "geography": {
+    "training": {
+      "chicago311": {
+        "lat_range": [
+          41.645,
+          42.023
+        ],
+        "lon_range": [
+          -87.931,
+          -87.524
+        ],
+        "missing_coordinates": 0.0043,
+        "rows_inside_bengaluru_bbox": 0,
+        "zone_type": [
+          "ward"
+        ],
+        "period": [
+          "2018-07-01",
+          "2020-08-28"
+        ]
+      },
+      "nyc311": {
+        "lat_range": [
+          40.5,
+          40.912
+        ],
+        "lon_range": [
+          -74.253,
+          -73.701
+        ],
+        "missing_coordinates": 0.1648,
+        "rows_inside_bengaluru_bbox": 0,
+        "zone_type": [
+          "community_board"
+        ],
+        "period": [
+          "2010-01-01",
+          "2010-03-09"
+        ]
+      },
+      "sf311": {
+        "lat_range": [
+          37.708,
+          37.831
+        ],
+        "lon_range": [
+          -122.514,
+          -122.364
+        ],
+        "missing_coordinates": 0.0314,
+        "rows_inside_bengaluru_bbox": 0,
+        "zone_type": [
+          "analysis_neighborhood"
+        ],
+        "period": [
+          "2018-01-01",
+          "2018-05-10"
+        ]
+      }
+    },
+    "bengaluru_bbox": [
+      12.7,
+      13.25,
+      77.35,
+      77.9
+    ],
+    "urbaneye_db_by_city_bbox": {
+      "Chennai": 3,
+      "Bengaluru": 3
+    }
+  },
+  "source_channel": {
+    "training_report_channel": {
+      "phone": 962939,
+      "web": 325330,
+      "other": 324057,
+      "mobile": 286389,
+      "social": 1004,
+      "walk_in": 223,
+      "mail": 58
+    },
+    "urbaneye_source_enum": [
+      "CITIZEN",
+      "CAMERA",
+      "IOT"
+    ],
+    "urbaneye_db_sources": {
+      "CITIZEN": 6
+    },
+    "verdict": "no defensible mapping; report_channel excluded from deployable models"
+  },
+  "department": {
+    "training_distinct": 231,
+    "urbaneye": "no department column",
+    "verdict": "excluded from deployable models"
+  },
+  "zones": {
+    "training": "Chicago ward / SF analysis neighbourhood / NYC community board",
+    "urbaneye": "no zone/ward/city column; PostGIS location only (GiST index exists)",
+    "verdict": "deployable models use no zone; hotspot v2 uses a 1 km grid computed from location"
+  },
+  "sla": {
+    "urbaneye_default_sla_hours": {
+      "P1": 4,
+      "P2": 24,
+      "P3": 72,
+      "P4": 168
+    },
+    "urbaneye_category_default_priority": {
+      "FIRE_HAZARD": "P1",
+      "FLOOD": "P2",
+      "POTHOLE": "P3",
+      "STREETLIGHT": "P3",
+      "GARBAGE": "P4",
+      "OTHER": "P3"
+    },
+    "urbaneye_db_sla_values_seen": {
+      "72": 2,
+      "24": 1,
+      "12": 1,
+      "4": 2
+    },
+    "phase2a_target": "NYC agency Due Date vs closed_date (median deadline 240 h), open cases dropped",
+    "phase2b_target": "UrbanEye default deadline of the mapped category; open past deadline = breach"
+  }
+}

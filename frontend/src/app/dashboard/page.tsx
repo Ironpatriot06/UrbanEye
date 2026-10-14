@@ -8,6 +8,7 @@ import { ImageUploadField } from '@/components/ImageUploadField';
 import { IncidentImages } from '@/components/IncidentImages';
 import { WorkflowTimeline } from '@/components/WorkflowTimeline';
 import { IncidentHistory } from '@/components/IncidentHistory';
+import { IncidentPredictions } from '@/components/IncidentPredictions';
 import {
   DetailHeader,
   IncidentMetadata,
@@ -308,6 +309,10 @@ export default function DashboardPage() {
                   by the city and cannot be changed by reporters.
                 </p>
               </SlaSummary>
+              <IncidentPredictions
+                incidentId={selected.id}
+                slaHours={selected.sla_hours ?? null}
+              />
               <IncidentMetadata incident={selected} showReporter={false} />
               <IncidentImages
                 incidentId={selected.id}

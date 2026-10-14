@@ -1,0 +1,79 @@
+{
+  "class": "scripts.train._common.FeaturePreprocessor (exported)",
+  "predictors": [
+    "ue_category",
+    "sla_hours",
+    "hour",
+    "day_of_week",
+    "month",
+    "is_weekend",
+    "is_night",
+    "hist_breach_rate_own",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "categorical": [
+    "ue_category",
+    "is_weekend",
+    "is_night"
+  ],
+  "numeric": [
+    "sla_hours",
+    "hour",
+    "day_of_week",
+    "month",
+    "hist_breach_rate_own",
+    "wl_backlog_open",
+    "wl_intake_7d",
+    "wl_intake_30d",
+    "wl_closed_7d",
+    "wl_backlog_days",
+    "wl_recent_closures_30d",
+    "wl_recent_mean_log_res",
+    "wl_recent_median_res_h",
+    "wl_city_backlog_open",
+    "wl_city_intake_7d",
+    "sp_samecat_box750_7d",
+    "sp_samecat_box750_30d",
+    "sp_samecat_box750_90d",
+    "sp_samecat_box750_open_now",
+    "sp_all_box750_30d"
+  ],
+  "vocabulary": {
+    "ue_category": [
+      "GARBAGE",
+      "POTHOLE",
+      "STREETLIGHT",
+      "FLOOD"
+    ],
+    "is_weekend": [
+      "False",
+      "True"
+    ],
+    "is_night": [
+      "False",
+      "True"
+    ]
+  },
+  "max_levels": 250,
+  "missing_token": "__MISSING__",
+  "other_token": "__OTHER__",
+  "unknown_code": -1.0,
+  "rules": [
+    "numeric: float, NaN if missing or non-numeric",
+    "categorical: str(value) ('True'/'False' for booleans); missing -> '__MISSING__'; not in vocabulary -> '__OTHER__'; code = index in vocabulary, or -1 if the folded value is not in it"
+  ]
+}

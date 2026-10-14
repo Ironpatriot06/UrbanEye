@@ -81,6 +81,20 @@ def main():
         )
         upsert_user(
             db,
+            name=settings.DEMO_AGENT_NAME_3,
+            email=settings.DEMO_AGENT_EMAIL_3,
+            password=settings.DEMO_AGENT_PASSWORD_3,
+            role=UserRole.AGENT,
+        )
+        upsert_user(
+            db,
+            name=settings.DEMO_AGENT_NAME_4,
+            email=settings.DEMO_AGENT_EMAIL_4,
+            password=settings.DEMO_AGENT_PASSWORD_4,
+            role=UserRole.AGENT,
+        )
+        upsert_user(
+            db,
             name=settings.DEMO_USER_NAME,
             email=settings.DEMO_USER_EMAIL,
             password=settings.DEMO_USER_PASSWORD,
@@ -90,6 +104,8 @@ def main():
         print(f"  ADMIN  → {settings.DEMO_ADMIN_EMAIL}  / {settings.DEMO_ADMIN_PASSWORD}")
         print(f"  AGENT  → {settings.DEMO_AGENT_EMAIL} / {settings.DEMO_AGENT_PASSWORD}")
         print(f"  AGENT  → {settings.DEMO_AGENT_EMAIL_2} / {settings.DEMO_AGENT_PASSWORD_2}")
+        print(f"  AGENT  → {settings.DEMO_AGENT_EMAIL_3} / {settings.DEMO_AGENT_PASSWORD_3}")
+        print(f"  AGENT  → {settings.DEMO_AGENT_EMAIL_4} / {settings.DEMO_AGENT_PASSWORD_4}")
         print(f"  USER   → {settings.DEMO_USER_EMAIL}  / {settings.DEMO_USER_PASSWORD}")
     finally:
         db.close()

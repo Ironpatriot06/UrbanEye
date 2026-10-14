@@ -105,7 +105,10 @@ export function SlaSummary({
   incident: Incident;
   children?: React.ReactNode;
 }) {
-  const delta = formatDeadlineDelta(incident.sla_deadline);
+  // The SLA clock stops at RESOLVED/CLOSED (the backend freezes sla_status), so a
+  // countdown would be meaningless there.
+  const clockStopped = incident.status === 'RESOLVED' || incident.status === 'CLOSED';
+  const delta = clockStopped ? '' : formatDeadlineDelta(incident.sla_deadline);
 
   return (
     <section className="detail-section">
@@ -121,6 +124,7 @@ export function SlaSummary({
           <Field label="Deadline">
             {formatDateTime(incident.sla_deadline)}
             {delta && <span className="field__hint"> · {delta}</span>}
+            {clockStopped && <span className="field__hint"> · clock stopped</span>}
           </Field>
         </dl>
       )}

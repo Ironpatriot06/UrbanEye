@@ -73,6 +73,7 @@ from app.schemas.incident import (
     PriorityUpdate,
     SLAUpdate,
 )
+from app.ml import service as ml_service
 from app.services import history_service, image_service, incident_service
 
 router = APIRouter(prefix="/incidents", tags=["Incidents"])
@@ -124,14 +125,24 @@ async def create_incident(
             detail=f"Invalid incident data: {exc}",
         )
 
+    # Validate every image before anything is written: create_incident commits,
+    # so a file rejected afterwards would leave an incident (and its automatic
+    # assignment) behind while the citizen is told the report failed.
+    uploads = [upload for upload in images if upload.filename]
+    for upload in uploads:
+        await image_service.validate_upload(upload)
+
     incident = incident_service.create_incident(db, payload, reporter=current_user)
 
     # Persist any uploaded images
-    for upload in images:
-        if upload.filename:
-            await image_service.save_image(
-                db, incident.id, upload, actor=current_user
-            )
+    for upload in uploads:
+        await image_service.save_image(
+            db, incident.id, upload, actor=current_user
+        )
+
+    # Shadow-mode prediction log (best effort, after the incident is committed:
+    # a failure here is recorded server-side and cannot affect the report).
+    ml_service.record_predictions(db, incident.id)
 
     # Re-fetch with updated image_count
     return incident_service.get_incident_by_id(db, incident.id)
@@ -262,7 +273,10 @@ def update_sla(
     incident = incident_service.get_incident_by_id(db, incident_id)
     if incident is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found.")
-    return incident_service.update_sla(db, incident, payload, actor=current_user)
+    updated = incident_service.update_sla(db, incident, payload, actor=current_user)
+    # A new SLA window is a new SLA prediction; log it (best effort, after commit).
+    ml_service.record_predictions(db, incident_id)
+    return incident_service.get_incident_by_id(db, updated.id)
 
 
 @router.patch(
@@ -283,7 +297,10 @@ def update_priority(
     incident = incident_service.get_incident_by_id(db, incident_id)
     if incident is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incident not found.")
-    return incident_service.update_priority(db, incident, payload, actor=current_user)
+    updated = incident_service.update_priority(db, incident, payload, actor=current_user)
+    # Re-prioritising resets the SLA window; log the new SLA prediction (best effort).
+    ml_service.record_predictions(db, incident_id)
+    return incident_service.get_incident_by_id(db, updated.id)
 
 
 @router.get(

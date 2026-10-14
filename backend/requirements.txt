@@ -37,6 +37,17 @@ google-auth==2.35.0
 requests==2.32.3                   # transport google-auth uses to fetch Google's certs
 
 # ---------------------------------------------------------------------------
+# ML inference (Phase 2C) — EXACT pins: the bundled models are scikit-learn
+# pickles, which are only guaranteed to load under the version that wrote them.
+# app/ml/registry.py refuses to load them if these differ from the bundle's
+# MANIFEST.json.  No pandas: features are computed with numpy.
+# ---------------------------------------------------------------------------
+numpy==2.2.6
+scipy==1.17.1
+scikit-learn==1.6.1
+joblib==1.5.1
+
+# ---------------------------------------------------------------------------
 # Testing
 # ---------------------------------------------------------------------------
 pytest==8.3.3

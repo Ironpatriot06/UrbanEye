@@ -1,8 +1,7 @@
 # UrbanEye+ ML data pipeline — runtime dependencies
 #
-# Deliberately small. This stage cleans, normalises and validates tabular data;
-# it trains nothing, so there is no torch / scikit-learn / xgboost here. Add
-# those when you start modelling, not before.
+# Deliberately small: pandas/numpy for the data pipeline, scikit-learn for the
+# baselines, training and Phase 2B/2C scripts.  No torch / xgboost.
 #
 # Install:
 #   python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
@@ -11,19 +10,22 @@
 # Python 3.10+ required (the code uses PEP 604 `X | None` annotations).
 # Verified against the versions in the right-hand column.
 
-pandas>=2.0,<4.0          # verified on 3.0.2
-pyarrow>=12.0             # verified on 25.0.1 — Parquet engine, required
+pandas>=2.0,<4.0          # verified on 2.2.3 (all Phase 2A/2B results) and 3.0.6 (tests)
+pyarrow>=12.0             # verified on 20.0.0 and 26.0.0 — Parquet engine, required
 PyYAML>=6.0               # verified on 6.0.3 — config loading
 requests>=2.28            # verified on 2.33.1 — downloads + the SF media-URL probe
-numpy>=1.24               # verified on 2.4.4 — haversine + scoring maths
+numpy>=1.24               # verified on 2.2.6 (Phase 2B) and 2.4.6 (tests)
+
+# Baselines, model training, Phase 2B/2C scripts and the test suite import
+# scikit-learn.  EXACT pin: the trained artifacts are scikit-learn pickles, and
+# the backend's serving bundle refuses any other version (backend/requirements.txt).
+scikit-learn==1.6.1       # brings scipy + joblib (verified: scipy 1.17.1, joblib 1.5.1)
 
 # Tests only (not needed to run the pipeline):
 #   pip install pytest         # verified on 8.3.3 — python -m pytest tests -q
 #
-# Baselines and model training only (scripts/baselines/ and scripts/train/,
-# NOT part of the pipeline — the pipeline itself still trains nothing):
-#   pip install scikit-learn   # verified on 1.6.1; brings joblib, used to
-#                              # persist models and their preprocessors
+# Exact reproduction of the Phase 2B numbers used Python 3.11.8, pandas 2.2.3,
+# numpy 2.2.6, pyarrow 20.0.0 — recorded in every experiment JSON.
 
 # Everything else the pipeline uses is in the standard library:
 # argparse collections concurrent.futures dataclasses datetime functools hashlib
